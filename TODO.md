@@ -1,0 +1,2 @@
+- .val() must be recursive, literal Values can return their direct value, maps/arrays must make a new map/array and populate from the .val() of each key/item
+- .get() should take "key.arrayKey.0.prop" type inputs to quickly retrieve nested values
