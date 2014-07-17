@@ -10,7 +10,7 @@ var rawValues = [
   new Date(),
   {},
   {key: true},
-  new (function(){}),
+  new (function Klass(){}),
   function(){},
   '',
   'string',
