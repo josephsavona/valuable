@@ -41,4 +41,15 @@ Map.prototype.hasKey = function Map$hasKey(key) {
   return (key in this._value);
 };
 
+Map.prototype.val = function Map$val() {
+  if (process.env.NODE_ENV !== 'production') {
+    // return a clone in dev/test to ensure that you
+    // cannot make your code work by directly modifying
+    // the returned value. in production disable
+    // this for speed
+    return _.clone(this._value);
+  }
+  return this._value;
+}
+
 module.exports = Map;
