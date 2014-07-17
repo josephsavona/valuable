@@ -44,6 +44,7 @@ Value.prototype.destroy = function Value$destroy() {
   this._raw = null;
   this._listeners = null;
   this._parent = null;
+  this._child = null;
 };
 
 Value.prototype._notify = function Value$private$_notify() {
