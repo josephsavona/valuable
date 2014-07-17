@@ -34,7 +34,7 @@ describe('value', function() {
     });
   });
 
-  it('notifies observe()-rs when value is set', function() {
+  it('observe()s value changes', function() {
     rawValues.forEach(function(val) {
       var value = valuable(),
           observer = sinon.spy();
