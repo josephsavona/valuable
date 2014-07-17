@@ -1,0 +1,27 @@
+{
+  "name": "valuable",
+  "version": "0.0.0",
+  "description": "Observable values, maps, and lists",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec 'test/**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/capacitorjs/valuable.git"
+  },
+  "keywords": [
+    "observable",
+    "data",
+    "model",
+    "map",
+    "list",
+    "values"
+  ],
+  "author": "Joseph Savona <joe@josephsavona.com>",
+  "license": "MIT License",
+  "bugs": {
+    "url": "https://github.com/capacitorjs/valuable/issues"
+  },
+  "homepage": "https://github.com/capacitorjs/valuable"
+}
