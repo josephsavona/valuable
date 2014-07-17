@@ -1,2 +1,27 @@
-- .val() must be recursive, literal Values can return their direct value, maps/arrays must make a new map/array and populate from the .val() of each key/item
-- .get() should take "key.arrayKey.0.prop" type inputs to quickly retrieve nested values
+Notes:
+- any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
+	- applies to Value.set()
+	- already done in Map.set(key, value) - note that the old value of 'key' is destroy()ed and it is created fresh
+	- need to do for List on push/unshift/splice/replace etc
+- would be handy if val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
+- typed values, eg Integer, Double, Boolean, DateTime, String, etc. cannot set() to anything but the exact type
+- schemas
+
+Schemas:
+
+var PersonSchema = Valuable.Struct({
+	name: Valuable.String,
+	age: Valuable.Integer({min: 0}),
+	dob: Valuable.DateTime(),
+	emails: [Valuable.String],
+	contacts: [Valuable.Struct({
+		name: Valuable.String,
+		photo: Valuable.URL
+	})]
+})
+
+var person = PersonSchema({ ...json blob... });
+person.get('name') # => 'John Doe'
+person.get('contacts.0.photo') => # http://example.com/john-doe.jpg
+person.get('emails').push('john.doe@example.com'); // OK
+person.get('emails').push({ email: 'blah@example.com'}) // TypeError - 'emails' is an array of strings, got an object
