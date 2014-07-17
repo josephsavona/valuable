@@ -41,6 +41,18 @@ describe('value', function() {
       value.observe(observer);
       value.set(val);
       assert.ok(observer.calledOnce, 'observer called when value set()');
+      assert.ok(observer.calledWith, val, 'observer called with the new value');
     });
+  });
+
+  it('can be unobserve()-ed', function() {
+    var value = valuable(),
+        observer = sinon.spy();
+    value.observe(observer);
+    value.set(true);
+    value.unobserve(observer);
+    value.set(false);
+    assert.ok(observer.calledOnce, 'observer called only once');
+    assert.ok(observer.calledWith(true), 'observer called only before unobserved');
   });
 });
