@@ -55,4 +55,12 @@ describe('value', function() {
     assert.ok(observer.calledOnce, 'observer called only once');
     assert.ok(observer.calledWith(true), 'observer called only before unobserved');
   });
+
+  it('always returns the current value (even if re-set() a ton)', function() {
+    var value = valuable();
+    rawValues.forEach(function(val, ix) {
+      value.set(val);
+      assert.deepEqual(value.val(), val);
+    });
+  });
 });
