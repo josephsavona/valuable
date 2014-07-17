@@ -1,9 +1,11 @@
-var assert = require('assert');
+var assert = require('assert'),
+    _ = require('lodash');
 
 var Value = function Value(value) {
   if (!(this instanceof Value)) {
     return new Value(value);
   }
+  this._id = _.uniqueId('valuable');
   this._raw = value;
   this._listeners = [];
   this._parent = null;

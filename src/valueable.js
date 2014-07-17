@@ -5,7 +5,6 @@ var _ = require('lodash'),
 var Valueable = function Valueable(rawValue) {
   for (var ix = 0; ix < matchers.length; ix++) {
     if (matchers[ix].test(rawValue)) {
-      // console.log(matchers[ix].name, rawValue);
       return new matchers[ix].klass(rawValue);
     }
   }

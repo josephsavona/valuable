@@ -10,6 +10,7 @@ var Map = function Map(map) {
   if (!(this instanceof Map)) {
     return new Map(map);
   }
+  Value.apply(this);
   this._map = {};
   this._raw = {};
   if (!map) {
@@ -59,7 +60,8 @@ Map.prototype.del = function Map$del(key) {
   // literal representation
   raw = _.clone(this._raw);
   delete raw[key];
-  Value.prototype.set.call(this, raw);
+  this._raw = raw;
+  this._notify();
 };
 
 Map.prototype.hasKey = function Map$hasKey(key) {
@@ -100,7 +102,8 @@ Map.prototype._updateChild = function Map$private$updateChild(child, rawValue) {
   assert.ok(found, 'Map(): child value not found');
   raw = _.clone(this._raw);
   raw[key] = rawValue;
-  Value.prototype.set.call(this, raw);
+  this._raw = raw;
+  this._notify();
 };
 
 module.exports = Map;
