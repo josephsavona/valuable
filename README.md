@@ -78,6 +78,29 @@ map.val() // => { ar: [1,2,3,4], name: 'new test'}
 
 `var Valuable = require('valuable');` returns a special constructor that attempts to find the best possible wrapped type for the value you give it.
 
+Examples:
+
+```javascript
+// arrays auto-convert to List
+var list = Valuable([1,2,3]); // => list instanceof Valuable.List
+
+// objects auto-convert to Map
+var map = Valuable({key:'value'}); // => map instanceof Valuable.Map
+
+// everything else auto-converts to Value
+var int = Valuable(1); // => int instanceof Valuable.Value
+
+// nested lists/objects are handled too:
+var mixed = Valuable([
+  {
+    key: 'value'
+  }
+]);
+// mixed instanceof Valuable.List
+// mixed.get(0) instanceof Valuable.Map
+// mixed.get(0).get('key') instanceof Valuable.Value
+```
+
 ## `Value`
 
 - `var v = Valuable(literal)` - creates a wrapped value with `literal` as the starting value
