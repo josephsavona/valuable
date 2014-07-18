@@ -112,7 +112,7 @@ var mixed = Valuable([
 - `value.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 
-## `Map`
+## `Map (inherits Value)`
 
 Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. 
 
@@ -134,9 +134,10 @@ assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and
 - `map.val(key)` - gets the literal value at `key` (this is a normal JavaScript value)
 - `map.val()` - get the literal value of the map itself (this is a plain JavaScript object)
 - `map.del(key)` - deletes the key
+- `map.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 
-## `List`
+## `List (inherits Value)`
 
 Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. 
 
@@ -161,6 +162,7 @@ assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and 
 - `list.unshift(value)` - unshifts a wrapped version of `value` onto the front of the list
 - `list.pop()` - removes the last item of the list
 - `list.shift()` - removes the first item of the list
+- `list.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 
 # License
