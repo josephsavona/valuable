@@ -3,7 +3,7 @@ var assert = require('chai').assert,
     valuable = require('..'),
     rawValues = require('./mock_values');
 
-describe('value', function() {
+describe('Value', function() {
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
       var value = valuable();
