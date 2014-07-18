@@ -136,7 +136,7 @@ assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and
 
 ## `List`
 
-Note: `List` is an immutable representation of a Array. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. 
+Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. 
 
 ```javascript
 var list = Valuable(['old']);
