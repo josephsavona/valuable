@@ -8,7 +8,6 @@ var Value = function Value(value) {
   }
   this._id = _.uniqueId('valuable');
   this._raw = value;
-  this._child = null;
   this._listeners = [];
   this._parent = null;
 };
@@ -25,15 +24,11 @@ Value.prototype.unobserve = function Value$unobserve(fn) {
   });
 };
 
-Value.prototype.set = function Value$set(rawValue) {
-  var value;
-  if (this._child) {
-    this._child.destroy();
-  }
-  value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
-  this._child = value;
-  this._child._parent = this;
-  this._updateChild(this._child, value.val());
+Value.prototype.set = function Value$set(value) {
+  var rawValue;
+  rawValue = (value instanceof Value) ? value.val() : value;
+  this._raw = rawValue;
+  this._notify();
 };
 
 Value.prototype.val = function Value$val() {
@@ -58,8 +53,7 @@ Value.prototype._notify = function Value$private$_notify() {
 };
 
 Value.prototype._updateChild = function Value$private$updateChild(child, rawValue) {
-  this._raw = rawValue;
-  this._notify();
+  assert.ok(false, 'Value(): cannot have child values');
 };
 
 module.exports = Value;

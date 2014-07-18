@@ -71,6 +71,18 @@ List.prototype.get = function List$get(ix) {
   return this._list[ix];
 };
 
+List.prototype.set = function List$set(ix, rawValue) {
+  assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
+  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  if (ix in this._list) {
+    this._list[ix].destroy();
+    this._list[ix] = void 0;
+  }
+  this._list[ix] = value;
+  this._list[ix]._parent = this;
+  this._updateChild(value, value.val());
+};
+
 List.prototype.val = function List$val(ix) {
   assert.ok(ix === undefined || (typeof ix === 'number' && ix >= 0), 'List(): index must be undefined or a positive integer');
 

@@ -4,7 +4,7 @@ var Valueable = require('./src/valueable'),
     Value = require('./src/value'),
     _ = require('lodash');
 
-// Valueable.register(_.isArray, List, 'List');
+Valueable.register(_.isArray, List, 'List');
 Valueable.register(_.isPlainObject, Map, 'Map');
 Valueable.register(function() { return true; }, Value, 'Value');
 

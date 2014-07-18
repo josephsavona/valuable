@@ -47,7 +47,7 @@ describe('List', function() {
     });
   });
 
-  it.skip('wraps push()-ed values as valuables', function() {
+  it('wraps push()-ed values as valuables', function() {
     rawValues.forEach(function(val) {
       var value = List();
       value.push(val);
@@ -57,7 +57,7 @@ describe('List', function() {
   });
 
 
-  it.skip('wraps unshift()-ed values as valuables', function() {
+  it('wraps unshift()-ed values as valuables', function() {
     rawValues.forEach(function(val) {
       var value = List();
       value.unshift(val);
@@ -66,43 +66,77 @@ describe('List', function() {
     })
   });
 
-  it.skip('observe()s item changes from get().set()', function() {
+  it('observe()s item changes from set()', function() {
     rawValues.forEach(function(val) {
-      var value = List({key: 0}),
+      var value = List([0]),
           observer = sinon.spy();
       value.observe(observer);
-      value.get('key').set(val);
+      value.set(0, val);
       assert.ok(observer.calledOnce, 'observer called');
-      assert.deepEqual(observer.args[0][0], {key: val});
+      assert.deepEqual(observer.args[0][0], [val]);
     });
   });
 
-  it.skip('observe()s shift() removals', function() {
+  it('observe()s item changes from get().set()', function() {
+    rawValues.forEach(function(val) {
+      var value = List([0]),
+          observer = sinon.spy();
+      value.observe(observer);
+      value.get(0).set(val);
+      assert.ok(observer.calledOnce, 'observer called');
+      assert.deepEqual(observer.args[0][0], [val]);
+    });
+  });
+
+  it('observe()s shift() removals', function() {
     rawValues.forEach(function(val) {
       var value = List(),
           observer = sinon.spy();
       value.observe(observer);
-      value.set('key', val);
-      value.del('key');
+      value.set(0, val);
+      value.shift();
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], {key: val});
-      assert.deepEqual(observer.args[1][0], {});
+      assert.deepEqual(observer.args[0][0], [val]);
+      assert.deepEqual(observer.args[1][0], []);
     });
   });
 
-  it.skip('observe()s pop() removals', function() {
+  it('observe()s pop() removals', function() {
     rawValues.forEach(function(val) {
       var value = List(),
           observer = sinon.spy();
       value.observe(observer);
-      value.set('key', val);
-      value.del('key');
+      value.set(0, val);
+      value.pop();
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], {key: val});
-      assert.deepEqual(observer.args[1][0], {});
+      assert.deepEqual(observer.args[0][0], [val]);
+      assert.deepEqual(observer.args[1][0], []);
     });
   });
 
-  it('nests lists');
+  it('nests lists', function() {
+    var list = [0, [1, 2]],
+        value = List(list),
+        observer = sinon.spy();
+
+    // test basic structure
+    assert.deepEqual(value.val(), list);
+    assert.deepEqual(value.val(0), list[0]);
+    assert.deepEqual(value.get(0).val(), list[0]);
+    assert.deepEqual(value.val(1), list[1]);
+    assert.deepEqual(value.get(1).val(), list[1]);
+    assert.ok(value.get(1) instanceof List, 'nested list should be a List');
+
+    // nesting get/val test
+    assert.deepEqual(value.get(1).get(1).val(), list[1][1]);
+    assert.deepEqual(value.get(1).val(1), list[1][1]);
+
+    // nesting set test
+    value.observe(observer);
+    value.get(1).get(1).set(false);
+    assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
+    list[1][1] = false;
+    assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 
+  });
 });
  
