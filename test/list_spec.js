@@ -20,14 +20,17 @@ describe('List', function() {
     });
   });
 
-  it.skip('throws if index is not a positive integer', function() {
+  it('throws if index is not a positive integer', function() {
     rawValues.forEach(function(val) {
-      if (typeof val === 'number') {
+      if (typeof val === 'number' || typeof val === 'undefined') {
         return;
       }
       assert.throws(function() {
         List().get(val);
-      }, Error, null, 'get() takes string');
+      }, Error, null, 'get() takes int');
+      assert.throws(function() {
+        List().val(val);
+      }, Error, null, 'val() takes int');
     });
   });
 
@@ -36,35 +39,34 @@ describe('List', function() {
     assert.deepEqual(value.val(), []);
   });
 
-  it.skip('sets initial value on list creation', function() {
+  it('sets initial value on list creation', function() {
     rawValues.forEach(function(val) {
-      var map = {key: val},
-          value = List(map);
-      assert.deepEqual(value.val(), map);
+      var list = [val],
+          value = List(list);
+      assert.deepEqual(value.val(), list);
     });
   });
 
-  it.skip('wraps values as valuables', function() {
+  it.skip('wraps push()-ed values as valuables', function() {
     rawValues.forEach(function(val) {
       var value = List();
-      value.set('key', val);
-      assert.ok(value.get('key') instanceof Value, 'wraps values in Value');
-      assert.deepEqual(value.get('key').val(), val, 'wrapped value has the set value');
+      value.push(val);
+      assert.ok(value.get(0) instanceof Value, 'wraps values in Value');
+      assert.deepEqual(value.get(0).val(), val, 'wrapped value has the set value');
     })
   });
 
-  it.skip('observe()s key changes from set()', function() {
+
+it.skip('wraps unshift()-ed values as valuables', function() {
     rawValues.forEach(function(val) {
-      var value = List(),
-          observer = sinon.spy();
-      value.observe(observer);
-      value.set('key', val);
-      assert.ok(observer.calledOnce, 'observer called');
-      assert.deepEqual(observer.args[0][0], {key: val});
-    });
+      var value = List();
+      value.unshift(val);
+      assert.ok(value.get(0) instanceof Value, 'wraps values in Value');
+      assert.deepEqual(value.get(0).val(), val, 'wrapped value has the set value');
+    })
   });
 
-  it.skip('observe()s key changes from get().set()', function() {
+  it.skip('observe()s item changes from get().set()', function() {
     rawValues.forEach(function(val) {
       var value = List({key: 0}),
           observer = sinon.spy();
@@ -75,7 +77,20 @@ describe('List', function() {
     });
   });
 
-  it.skip('observe()s key deletions', function() {
+  it.skip('observe()s shift() removals', function() {
+    rawValues.forEach(function(val) {
+      var value = List(),
+          observer = sinon.spy();
+      value.observe(observer);
+      value.set('key', val);
+      value.del('key');
+      assert.ok(observer.calledTwice, 'observer called once per modifiction');
+      assert.deepEqual(observer.args[0][0], {key: val});
+      assert.deepEqual(observer.args[1][0], {});
+    });
+  });
+
+  it.skip('observe()s pop() removals', function() {
     rawValues.forEach(function(val) {
       var value = List(),
           observer = sinon.spy();
