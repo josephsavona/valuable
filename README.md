@@ -74,14 +74,18 @@ map.val() // => { ar: [1,2,3,4], name: 'new test'}
 
 # API
 
+## `Valuable`
+
+`var Valuable = require('valuable');` returns a special constructor that attempts to find the best possible wrapped type for the value you give it.
+
 ## `Value`
 
-- *`var v = Valuable(literal)`* - creates a wrapped value with `literal` as the starting value
-- *`value.set(literal)`* - changes the value to `literal` (notifies observers).
-- *`value.val()`* - get the raw literal value that was last assigned
-- *`value.observe(fn)`* - add `fn` to list of observers for changes
-- *`value.unobserve(fn)`* - remove `fn` from the list of observers
-- *`value.destroy()`* - removes all listeners and cleans up the object to ensure no memory leaks
+- `var v = Valuable(literal)` - creates a wrapped value with `literal` as the starting value
+- `value.set(literal)` - changes the value to `literal` (notifies observers).
+- `value.val()` - get the raw literal value that was last assigned
+- `value.observe(fn)` - add `fn` to list of observers for changes
+- `value.unobserve(fn)` - remove `fn` from the list of observers
+- `value.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 
 ## `Map`
@@ -99,12 +103,12 @@ var v2 = map.val();
 assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and modified)
 ```
 
-- *`var map = Valuable({...})`* - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
-- *`map.set(key,value)`* - sets the value of map's `key` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
-- *`map.get(key)`* - gets the wrapped value at `key` (this is a `Value`)
-- *`map.val(key)`* - gets the literal value at `key` (this is a normal JavaScript value)
-- *`map.val()`* - get the literal value of the map itself (this is a plain JavaScript object)
-- *`map.del(key)`* - deletes the key
+- `var map = Valuable({...})` - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
+- `map.set(key,value)` - sets the value of map's `key` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
+- `map.get(key)` - gets the wrapped value at `key` (this is a `Value`)
+- `map.val(key)` - gets the literal value at `key` (this is a normal JavaScript value)
+- `map.val()` - get the literal value of the map itself (this is a plain JavaScript object)
+- `map.del(key)` - deletes the key
 
 
 ## `List`
@@ -122,15 +126,15 @@ var v2 = map.val();
 assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and modified)
 ```
 
-- *`var list = Valuable([...])`* - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
-- *`list.set(index,value)`* - sets the value of list's `index` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
-- *`list.get(index)`* - gets the wrapped value at `index` (this is a `Value`)
-- *`list.val(index)`* - gets the literal value at `index` (this is a normal JavaScript value)
-- *`list.val()`* - get the literal value of the list itself (this is a plain JavaScript object)
-- *`list.push(value)`* - pushes a wrapped version of `value` onto the end of the list
-- *`list.unshift(value)`* - unshifts a wrapped version of `value` onto the front of the list
-- *`list.pop()`* - removes the last item of the list
-- *`list.shift()`* - removes the first item of the list
+- `var list = Valuable([...])` - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
+- `list.set(index,value)` - sets the value of list's `index` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
+- `list.get(index)` - gets the wrapped value at `index` (this is a `Value`)
+- `list.val(index)` - gets the literal value at `index` (this is a normal JavaScript value)
+- `list.val()` - get the literal value of the list itself (this is a plain JavaScript object)
+- `list.push(value)` - pushes a wrapped version of `value` onto the end of the list
+- `list.unshift(value)` - unshifts a wrapped version of `value` onto the front of the list
+- `list.pop()` - removes the last item of the list
+- `list.shift()` - removes the first item of the list
 
 
 # License
