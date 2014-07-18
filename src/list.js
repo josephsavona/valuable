@@ -26,8 +26,53 @@ var List = function List(list) {
 
 List.prototype = new Value();
 
+List.prototype.push = function List$push(rawValue) {
+  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  value._parent = this;
+  this._list.push(value);
+  this._updateChild(value, value.val());
+};
+
+List.prototype.pop = function List$pop() {
+  var value = this._list.pop(),
+      raw = _.clone(this._raw);
+  if (!value) {
+    return value;
+  }
+  value.destroy(); 
+  raw.pop();
+  this._raw = raw;
+  this._notify();
+  return value;
+};
+
+List.prototype.unshift = function List$unshift(rawValue) {
+  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  value._parent = this;
+  this._list.unshift(value);
+  this._updateChild(value, value.val());
+};
+
+List.prototype.shift = function List$shift() {
+  var value = this._list.shift(),
+      raw = _.clone(this._raw);
+  if (!value) {
+    return value;
+  }
+  value.destroy();
+  raw.shift();
+  this._raw = raw;
+  this._notify();
+  return value;
+};
+
+List.prototype.get = function List$get(ix) {
+  assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
+  return this._list[ix];
+};
+
 List.prototype.val = function List$val(ix) {
-  assert.ok(ix === undefined || (typeof ix === 'number' && ix >= 0), 'List(): key must be undefined or a positive integer');
+  assert.ok(ix === undefined || (typeof ix === 'number' && ix >= 0), 'List(): index must be undefined or a positive integer');
 
   var raw;
   if (typeof ix !== 'undefined') {
@@ -48,7 +93,7 @@ List.prototype.val = function List$val(ix) {
 
 List.prototype._updateChild = function List$private$updateChild(child, rawValue) {
   var ix, found, raw;
-  // figure out which key this child is
+  // figure out which index this child is
   for (ix = 0; ix < this._list.length; ix++) {
     if (this._list[ix] === child) {
       found = true;
