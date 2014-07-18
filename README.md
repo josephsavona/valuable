@@ -16,7 +16,7 @@ var value = Valuable(1);
 value.observe(function(val) {
 	console.log(val);
 });
-value.get() // => 1
+value.val() // => 1
 value.set(10) // => notifies observe()-er, logs 10
 ```
 
@@ -39,7 +39,7 @@ var value = Valuable(1);
 value.observe(function(val) {
 	console.log(val);
 });
-value.get() // => 1
+value.val() // => 1
 value.set(10) // => notifies observe()-er, logs 10
 value.val() // => 10
 
