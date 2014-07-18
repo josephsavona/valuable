@@ -57,7 +57,7 @@ describe('List', function() {
   });
 
 
-it.skip('wraps unshift()-ed values as valuables', function() {
+  it.skip('wraps unshift()-ed values as valuables', function() {
     rawValues.forEach(function(val) {
       var value = List();
       value.unshift(val);
