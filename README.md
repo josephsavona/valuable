@@ -117,7 +117,7 @@ var mixed = Valuable([
 Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. 
 
 ```javascript
-var map = Valuable({key: 'old'});
+var map = Valuable({key: 'old'}); // same as Valuable.Map({key: 'old'})
 var v1 = map.val();
 var v1b = map.val();
 assert.ok(v1 === v1b);
@@ -142,7 +142,7 @@ assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and
 Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. 
 
 ```javascript
-var list = Valuable(['old']);
+var list = Valuable(['old']); // same as Valuable.List(['old'])
 var v1 = map.val();
 var v1b = map.val();
 assert.ok(v1 === v1b);
