@@ -103,7 +103,8 @@ var mixed = Valuable([
 
 ## `Value`
 
-- `var v = Valuable(literal)` - creates a wrapped value with `literal` as the starting value
+`var v = Valuable(literal)` - creates a wrapped value with `literal` as the starting value
+
 - `value.set(literal)` - changes the value to `literal` (notifies observers).
 - `value.val()` - get the raw literal value that was last assigned
 - `value.observe(fn)` - add `fn` to list of observers for changes
@@ -126,7 +127,8 @@ var v2 = map.val();
 assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and modified)
 ```
 
-- `var map = Valuable({...})` - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
+`var map = Valuable({...})` - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
+
 - `map.set(key,value)` - sets the value of map's `key` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
 - `map.get(key)` - gets the wrapped value at `key` (this is a `Value`)
 - `map.val(key)` - gets the literal value at `key` (this is a normal JavaScript value)
@@ -149,7 +151,8 @@ var v2 = map.val();
 assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and modified)
 ```
 
-- `var list = Valuable([...])` - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
+`var list = Valuable([...])` - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
+
 - `list.set(index,value)` - sets the value of list's `index` to a wrapped version of `value`. note that this will recursively wrap `value` with the most appropriate type - array as List, object literal as Map, others as Value.
 - `list.get(index)` - gets the wrapped value at `index` (this is a `Value`)
 - `list.val(index)` - gets the literal value at `index` (this is a normal JavaScript value)
