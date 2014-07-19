@@ -1,42 +1,57 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    valuable = require('..'),
+    Value = require('../src/value'),
     rawValues = require('./mock_values');
 
 describe('Value', function() {
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
-      var value = valuable();
+      var value = Value();
       value.observe(function(){});
     });
   });
 
   it('throws if observe() called with non-function', function() {
     assert.throws(function() {
-      var value = valuable();
+      var value = Value();
       value.observe(1);
     });
   });
 
   it('returns the real value via val()', function() {
     rawValues.forEach(function(val) {
-      var value = valuable(val);
+      var value = Value(val);
       assert.deepEqual(value.val(), val);
     });
   });
 
   it('modifies the value via set()', function() {
     rawValues.forEach(function(val) {
-      var value = valuable();
+      var value = Value();
       assert.deepEqual(value.val(), undefined);
       value.set(val);
       assert.deepEqual(value.val(), val);
     });
   });
 
+  it('uwraps wrapped values on set()', function() {
+    rawValues.forEach(function(val) {
+      var value = Value(val),
+          other = Value();
+      other.set(value);
+
+      assert.deepEqual(value.val(), val, 'values identical');
+      assert.deepEqual(other.val(), val, 'values identical');
+
+      value.set([val]);
+      assert.deepEqual(value.val(), [val], 'value is changed');
+      assert.deepEqual(other.val(), val, 'other is unaffected');
+    });
+  });
+
   it('observe()s value changes', function() {
     rawValues.forEach(function(val) {
-      var value = valuable(),
+      var value = Value(),
           observer = sinon.spy();
       value.observe(observer);
       value.set(val);
@@ -46,7 +61,7 @@ describe('Value', function() {
   });
 
   it('can be unobserve()-ed', function() {
-    var value = valuable(),
+    var value = Value(),
         observer = sinon.spy();
     value.observe(observer);
     value.set(true);
@@ -57,10 +72,10 @@ describe('Value', function() {
   });
 
   it('always returns the current value (even if re-set() a ton)', function() {
-    var value = valuable();
+    var value = Value();
     rawValues.forEach(function(val, ix) {
       value.set(val);
-      assert.deepEqual(value.val(), val);
+      assert.deepEqual(value.val(), val, 'literal value always updates');
     });
   });
 });

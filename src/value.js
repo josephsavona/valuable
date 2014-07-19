@@ -1,6 +1,5 @@
 var assert = require('assert'),
-    _ = require('lodash'),
-    Valueable = require('./valueable');
+    _ = require('lodash');
 
 var Value = function Value(value) {
   if (!(this instanceof Value)) {

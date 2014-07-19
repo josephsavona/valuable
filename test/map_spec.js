@@ -105,6 +105,31 @@ describe('Map', function() {
     });
   });
 
+  it('unwraps wrapped values in constructor', function() {
+    rawValues.forEach(function(val) {
+      var wrapped = Value(val),
+          map = Map({key: wrapped});
+
+      assert.deepEqual(map.val(), {key: val}, 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(map.val(), {key: val}, 'map remains unaffected');
+    });
+  });
+
+  it('unwraps wrapped values in set()', function() {
+    rawValues.forEach(function(val) {
+      var wrapped = Value(val),
+          map = Map();
+      map.set('key', wrapped);
+
+      assert.deepEqual(map.val(), {key: val}, 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(map.val(), {key: val}, 'map remains unaffected');
+    });
+  });
+
   it('nests maps', function() {
     var map = {key: 1, nested: {key: 11}},
         value = Map(map),

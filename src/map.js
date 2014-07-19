@@ -20,7 +20,7 @@ var Map = function Map(map) {
     if (!map.hasOwnProperty(key)) {
       continue;
     }
-    value = (map[key] instanceof Value) ? map[key] : Valueable(map[key]);
+    value = Valueable(map[key]);
     this._map[key] = value;
     this._map[key]._parent = this;
     this._raw[key] = value.val();
@@ -36,7 +36,7 @@ Map.prototype.set = function Map$set(key, rawValue) {
   if (key in this._map) {
     this._map[key].destroy();
   }
-  value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  value = Valueable(rawValue);
   this._map[key] = value;
   this._map[key]._parent = this;
   this._updateChild(value, value.val());

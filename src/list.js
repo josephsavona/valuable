@@ -17,7 +17,7 @@ var List = function List(list) {
     return;
   }
   for (ix = 0; ix < list.length; ix++) {
-    value = (list[ix] instanceof Value) ? list[ix] : Valueable(list[ix]);
+    value = Valueable(list[ix]);
     this._list[ix] = value;
     this._list[ix]._parent = this;
     this._raw[ix] = value.val();
@@ -27,7 +27,7 @@ var List = function List(list) {
 List.prototype = new Value();
 
 List.prototype.push = function List$push(rawValue) {
-  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  var value = Valueable(rawValue);
   value._parent = this;
   this._list.push(value);
   this._updateChild(value, value.val());
@@ -47,7 +47,7 @@ List.prototype.pop = function List$pop() {
 };
 
 List.prototype.unshift = function List$unshift(rawValue) {
-  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  var value = Valueable(rawValue);
   value._parent = this;
   this._list.unshift(value);
   this._updateChild(value, value.val());
@@ -73,7 +73,7 @@ List.prototype.get = function List$get(ix) {
 
 List.prototype.set = function List$set(ix, rawValue) {
   assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
-  var value = (rawValue instanceof Value) ? rawValue : Valueable(rawValue);
+  var value = Valueable(rawValue);
   if (ix in this._list) {
     this._list[ix].destroy();
     this._list[ix] = void 0;

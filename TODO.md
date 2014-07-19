@@ -1,9 +1,9 @@
 # Notes
 
-- any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
-	- todo in Value.set(value)
-	- todo in Map.set(key, value)
-	- todo in List on push/unshift/splice/replace etc
+DONE: any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
+	- done in Value.set(value)
+	- done in Map.set(key, value)
+	- done in List on push/unshift/splice/replace etc
 
 - would be handy if val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
 	- subclasses should implement _val(), called by standard val()

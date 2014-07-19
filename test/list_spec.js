@@ -114,6 +114,57 @@ describe('List', function() {
     });
   });
 
+  it('unwraps wrapped values in constructor', function() {
+    rawValues.forEach(function(val) {
+      var wrapped = Value(val),
+          list1 = List([wrapped]);
+
+      assert.deepEqual(list1.val(), [val], 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(list1.val(), [val], 'list remains unaffected');
+    });
+  });
+
+  it('unwraps wrapped values in set()', function() {
+    rawValues.forEach(function(val) {
+      var list1 = List(),
+          wrapped = Value(val);
+      list1.set(0, wrapped);
+
+      assert.deepEqual(list1.val(), [val], 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(list1.val(), [val], 'list remains unaffected');
+    });
+  });
+
+  it('unwraps wrapped values in push()', function() {
+    rawValues.forEach(function(val) {
+      var list1 = List(),
+          wrapped = Value(val);
+      list1.push(wrapped);
+
+      assert.deepEqual(list1.val(), [val], 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(list1.val(), [val], 'list remains unaffected');
+    });
+  });
+
+  it('unwraps wrapped values in unshift()', function() {
+    rawValues.forEach(function(val) {
+      var list1 = List(),
+          wrapped = Value(val);
+      list1.unshift(wrapped);
+
+      assert.deepEqual(list1.val(), [val], 'literal value matches');
+      wrapped.set([val]);
+      assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
+      assert.deepEqual(list1.val(), [val], 'list remains unaffected');
+    });
+  });
+
   it('nests lists', function() {
     var list = [0, [1, 2]],
         value = List(list),
