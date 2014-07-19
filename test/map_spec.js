@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    _ = require('lodash'),
     Valueable = require('..'),
     Map = require('../src/map'),
     Value = require('../src/value'),
@@ -37,6 +38,17 @@ describe('Map', function() {
       assert.throws(function() {
         Map().hasKey(val);
       }, Error, null, 'hasKey() takes string');
+    });
+  });
+
+  it('cannot be created with a non-object value', function() {
+    rawValues.forEach(function(val) {
+      if (_.isPlainObject(val) || val === null || typeof val === 'undefined') {
+        return;
+      }
+      assert.throws(function() {
+        Map(val);
+      });
     });
   });
 

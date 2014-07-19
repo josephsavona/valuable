@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    _ = require('lodash'),
     Valueable = require('..'),
     List = require('../src/list'),
     Value = require('../src/value'),
@@ -31,6 +32,17 @@ describe('List', function() {
       assert.throws(function() {
         List().val(val);
       }, Error, null, 'val() takes int');
+    });
+  });
+
+  it('cannot be created with a non-array value', function() {
+    rawValues.forEach(function(val) {
+      if (_.isArray(val) || val === null || typeof val === 'undefined') {
+        return;
+      }
+      assert.throws(function() {
+        List(val);
+      });
     });
   });
 
