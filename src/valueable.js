@@ -6,14 +6,12 @@ var _ = require('lodash'),
 var Valueable = function Valueable(value) {
   var klass, inst;
   if (value instanceof Value) {
-    return new value.__proto__.constructor(value.val());
+    return new value.constructor(value.val());
   }
 
   for (var ix = 0; ix < matchers.length; ix++) {
     if (matchers[ix].test(value)) {
-      klass = matchers[ix].klass;
-      inst = klass(value);
-      return inst;
+      return new matchers[ix].klass(value);
     }
   }
   assert.ok(false, 'Valueable(): type not supported');
