@@ -4,9 +4,9 @@ var assert = require('assert'),
     Valueable = require('./valueable');
 
 var Map = function Map(map) {
-  assert.ok(map === null || typeof map === 'undefined' || _.isPlainObject(map), 'Map(): value must be an object (or null/undefined)');
-
   var key, value;
+
+  Map.assertValidValue(map);
   if (!(this instanceof Map)) {
     return new Map(map);
   }
@@ -25,6 +25,11 @@ var Map = function Map(map) {
     this._map[key]._parent = this;
     this._raw[key] = value.val();
   }
+};
+
+Map.assertValidValue = function Map$$assertValidValue(input) {
+  assert.ok(input === null || typeof input === 'undefined' || _.isPlainObject(input),
+    'Map(): value must be an object (or null/undefined)');
 };
 
 Map.prototype = new Value();

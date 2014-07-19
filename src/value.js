@@ -11,6 +11,10 @@ var Value = function Value(value) {
   this._parent = null;
 };
 
+Value.assertValidValue = function Value$$assertValidValue(input) {
+  assert.ok(true, 'Value(): all inputs welcome');
+};
+
 Value.prototype.observe = function Value$observe(fn) {
   assert.equal(typeof fn, 'function', 'Value(): function required');
   this._listeners.push(fn);

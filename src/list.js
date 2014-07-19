@@ -4,9 +4,9 @@ var assert = require('assert'),
     Valueable = require('./valueable');
 
 var List = function List(list) {
-  assert.ok(list === null || typeof list === 'undefined' || _.isArray(list), 'List(): value must be an array (or null/undefined)');
-
   var ix, value;
+  
+  List.assertValidValue(list);
   if (!(this instanceof List)) {
     return new List(list);
   }
@@ -23,6 +23,11 @@ var List = function List(list) {
     this._raw[ix] = value.val();
   }
 };
+
+List.assertValidValue = function List$$assertValidValue(input) {
+  assert.ok(input === null || typeof input === 'undefined' || _.isArray(input),
+    'List(): value must be an array (or null/undefined)');
+}
 
 List.prototype = new Value();
 
