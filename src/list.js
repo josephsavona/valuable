@@ -24,12 +24,12 @@ var List = function List(list) {
   }
 };
 
-List.assertValidValue = function List$$assertValidValue(input) {
+List.prototype = new Value();
+
+List.assertValidValue = List.prototype.assertValidValue = function List$assertValidValue(input) {
   assert.ok(input === null || typeof input === 'undefined' || _.isArray(input),
     'List(): value must be an array (or null/undefined)');
-}
-
-List.prototype = new Value();
+};
 
 List.prototype.push = function List$push(rawValue) {
   var value = Valueable(rawValue);

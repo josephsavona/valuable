@@ -11,7 +11,7 @@ var Value = function Value(value) {
   this._parent = null;
 };
 
-Value.assertValidValue = function Value$$assertValidValue(input) {
+Value.assertValidValue = Value.prototype.assertValidValue = function Value$assertValidValue(input) {
   assert.ok(true, 'Value(): all inputs welcome');
 };
 

@@ -27,12 +27,12 @@ var Map = function Map(map) {
   }
 };
 
-Map.assertValidValue = function Map$$assertValidValue(input) {
+Map.prototype = new Value();
+
+Map.assertValidValue = Map.prototype.assertValidValue = function Map$assertValidValue(input) {
   assert.ok(input === null || typeof input === 'undefined' || _.isPlainObject(input),
     'Map(): value must be an object (or null/undefined)');
 };
-
-Map.prototype = new Value();
 
 Map.prototype.set = function Map$set(key, rawValue) {
   assert.ok(typeof key === 'string', 'Map(): key must be string');
