@@ -23,9 +23,11 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
 
   // declare the subclass
   var klass = function ValueSubClass(val) {
-    this.assertValidValue(val);
     if (!(this instanceof ValueSubClass)) {
       return new ValueSubClass(val);
+    }
+    if (typeof val !== 'undefined') {
+      this.assertValidValue(val);
     }
     parent.call(this, val);
     constructor.call(this, val);
