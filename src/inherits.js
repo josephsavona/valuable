@@ -3,7 +3,7 @@ var assert = require('assert'),
     Value = require('./value');
 
 var inherits = function Valuable$$inherits(parent, constructor, proto, statics) {
-  assert.ok(typeof parent === 'function' && parent.prototype instanceof Value,
+  assert.ok(typeof parent === 'function' && (parent.prototype instanceof Value || parent === Value),
     'inherits(): can only inherit from a Value class');
   assert.ok(typeof constructor === 'function',
     'inherits(): constructor is a required function that will be run as the last step of the constructor stub');
@@ -16,6 +16,7 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
 
   // if a custom type validator is supplied ensure that the instance and class
   // versions are the same
+  statics = statics || {};
   if (proto.assertValidValue) {
     statics.assertValidValue = proto.assertValidValue;
   }

@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    _ = require('lodash'),
     Valueable = require('..'),
     Struct = require('../src/struct'),
     Map = require('../src/map'),
@@ -20,7 +21,7 @@ describe('Struct', function() {
       list: List,
       literal: Value
     };
-  })
+  });
 
   it('constructor cannot be called directly', function() {
     assert.throws(function() {
@@ -38,6 +39,17 @@ describe('Struct', function() {
     delete MyStruct.prototype.properties;
     assert.throws(function() {
       new MyStruct();
+    });
+  });
+
+  it('cannot be created with a non-object value', function() {
+    rawValues.forEach(function(val) {
+      if (_.isPlainObject(val) || val === null || typeof val === 'undefined') {
+        return;
+      }
+      assert.throws(function() {
+        Map(val);
+      });
     });
   });
 
