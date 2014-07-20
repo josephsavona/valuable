@@ -42,7 +42,26 @@ Valuable is inspired by and improves upon the following libraries:
 - Cortex - Valuable is similar but provides a clearer API and more data types
 - Observ - Valuable adds automatic wrapping of nested objects/arrays
 
-# More Examples
+# Examples
+
+## TodoMVC
+
+We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views.
+
+Feel free to clone `valuable` and run it:
+
+```bash
+# clone valuable
+cd valuable/examples/todomvc
+npm install
+npm run build
+npm start &
+open 'http://localhost:8080'
+```
+
+Then hit `Control-C` to kill.
+
+## Other Examples
 
 ```javascript
 var Valueable = require('valuable');
