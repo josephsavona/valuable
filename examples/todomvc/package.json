@@ -1,0 +1,31 @@
+{
+  "name": "todomvc-valuable",
+  "version": "0.0.0",
+  "description": "TodoMVC - Valuable",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js --debug -t [ reactify --everything --es6 ] -t [ envify ] -o dist.js",
+    "start": "node server.js",
+    "install": "bower install"
+  },
+  "keywords": [
+    "todomvc",
+    "valuable",
+    "observable",
+    "data",
+    "react"
+  ],
+  "author": "Joseph Savona <joe@josephsavona.com>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "~0.11.0",
+    "node-uuid": "~1.4.1"
+  },
+  "devDependencies": {
+    "browserify": "~4.2.3",
+    "ecstatic": "~0.5.4",
+    "envify": "~2.0.1",
+    "reactify": "~0.14.0"
+  }
+}

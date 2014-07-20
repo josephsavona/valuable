@@ -1,0 +1,29 @@
+{
+  "name": "todomvc-valuable",
+  "version": "0.0.3",
+  "homepage": "https://github.com/capacitorjs/valuable",
+  "authors": [
+    "Joseph Savona <joe@josephsavona.com>"
+  ],
+  "description": "TodoMVC - Valuable",
+  "main": "index.js",
+  "keywords": [
+    "todomvc",
+    "valuable",
+    "observable",
+    "data",
+    "react"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "todomvc-common": "~0.1.9"
+  }
+}
