@@ -107,13 +107,15 @@ describe('Map', function() {
   it('observe()s key deletions', function() {
     rawValues.forEach(function(val) {
       var value = Map(),
-          observer = sinon.spy();
+          observer = sinon.spy(),
+          deleted;
       value.observe(observer);
       value.set('key', val);
-      value.del('key');
+      deleted = value.del('key');
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
       assert.deepEqual(observer.args[0][0], {key: val});
       assert.deepEqual(observer.args[1][0], {});
+      assert.deepEqual(deleted, val, 'del() returns the raw value of the key');
     });
   });
 

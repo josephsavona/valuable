@@ -56,7 +56,7 @@ Map.prototype.get = function Map$get(key) {
 Map.prototype.del = function Map$del(key) {
   assert.ok(typeof key === 'string', 'Map(): key must be string');
 
-  var raw;
+  var raw, rawValue;
   if (!(key in this._map)) {
     return;
   }
@@ -65,9 +65,11 @@ Map.prototype.del = function Map$del(key) {
   delete this._map[key];
   // literal representation
   raw = _.clone(this._raw);
+  rawValue = raw[key];
   delete raw[key];
   this._raw = raw;
   this._notify();
+  return rawValue;
 };
 
 Map.prototype.hasKey = function Map$hasKey(key) {

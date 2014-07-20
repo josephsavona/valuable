@@ -42,15 +42,16 @@ List.prototype.push = function List$push(rawValue) {
 
 List.prototype.pop = function List$pop() {
   var value = this._list.pop(),
-      raw = _.clone(this._raw);
+      raw = _.clone(this._raw),
+      rawValue;
   if (!value) {
     return value;
   }
   value.destroy(); 
-  raw.pop();
+  rawValue = raw.pop();
   this._raw = raw;
   this._notify();
-  return value;
+  return rawValue;
 };
 
 List.prototype.unshift = function List$unshift(rawValue) {
@@ -64,15 +65,16 @@ List.prototype.unshift = function List$unshift(rawValue) {
 
 List.prototype.shift = function List$shift() {
   var value = this._list.shift(),
-      raw = _.clone(this._raw);
+      raw = _.clone(this._raw),
+      rawValue;
   if (!value) {
     return value;
   }
   value.destroy();
-  raw.shift();
+  rawValue = raw.shift();
   this._raw = raw;
   this._notify();
-  return value;
+  return rawValue;
 };
 
 List.prototype.get = function List$get(ix) {

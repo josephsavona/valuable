@@ -146,7 +146,7 @@ assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and
 - `map.get(key)` - gets the wrapped value at `key` (this is a `Value`)
 - `map.val(key)` - gets the literal value at `key` (this is a normal JavaScript value)
 - `map.val()` - get the literal value of the map itself (this is a plain JavaScript object)
-- `map.del(key)` - deletes the key
+- `map.del(key)` - deletes the key and returns its literal value (normal JavaScript value)
 - `map.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 
@@ -173,8 +173,8 @@ assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and 
 - `list.val()` - get the literal value of the list itself (this is a plain JavaScript object)
 - `list.push(value)` - pushes a wrapped version of `value` onto the end of the list
 - `list.unshift(value)` - unshifts a wrapped version of `value` onto the front of the list
-- `list.pop()` - removes the last item of the list
-- `list.shift()` - removes the first item of the list
+- `list.pop()` - removes the last item of the list and returns its literal value (normal JavaScript value)
+- `list.shift()` - removes the first item of the list and returns its literal value (normal JavaScript value)
 - `list.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
 

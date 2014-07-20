@@ -103,26 +103,30 @@ describe('List', function() {
   it('observe()s shift() removals', function() {
     rawValues.forEach(function(val) {
       var value = List(),
-          observer = sinon.spy();
+          observer = sinon.spy(),
+          shifted;
       value.observe(observer);
       value.set(0, val);
-      value.shift();
+      shifted = value.shift();
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
       assert.deepEqual(observer.args[0][0], [val]);
       assert.deepEqual(observer.args[1][0], []);
+      assert.deepEqual(shifted, val, 'shift() returns the raw value');
     });
   });
 
   it('observe()s pop() removals', function() {
     rawValues.forEach(function(val) {
       var value = List(),
-          observer = sinon.spy();
+          observer = sinon.spy(),
+          popped;
       value.observe(observer);
       value.set(0, val);
-      value.pop();
+      popped = value.pop();
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
       assert.deepEqual(observer.args[0][0], [val]);
       assert.deepEqual(observer.args[1][0], []);
+      assert.deepEqual(popped, val, 'pop() returns the raw value');
     });
   });
 
