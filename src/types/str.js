@@ -5,7 +5,7 @@ var assert = require('assert'),
 
 var Str = function Str() {
   if (typeof this._raw === 'undefined') {
-    this._raw = 0;
+    this._raw = '';
   }
 };
 
