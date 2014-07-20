@@ -3,8 +3,8 @@ var Valueable = require('./src/valueable'),
     List = require('./src/list'),
     Value = require('./src/value'),
     Struct = require('./src/struct'),
-    Int = require('./src/types/int'),
-    Float = require('./src/types/float'),
+    Decimal = require('./src/types/decimal'),
+    Bool = require('./src/types/bool'),
     _ = require('lodash');
 
 // Valueable.register(_.isNumber, Float, 'Float');
@@ -21,7 +21,7 @@ Valueable.Value = Value;
 
 // stricter types have no auto-converter
 Value.Struct = Struct;
-Value.Int = Int;
-Valueable.Float = Float;
+Valueable.Decimal = Decimal;
+Valueable.Bool = Bool;
 
 module.exports = Valueable;
