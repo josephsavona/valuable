@@ -22,15 +22,16 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
   }
 
   // declare the subclass
-  var klass = function ValueSubClass(val) {
+  var klass = function ValueSubClass(value) {
+    var rawValue = (value instanceof Value) ? value.val() : value;
     if (!(this instanceof ValueSubClass)) {
-      return new ValueSubClass(val);
+      return new ValueSubClass(rawValue);
     }
-    if (typeof val !== 'undefined') {
-      this.assertValidValue(val);
+    if (typeof rawValue !== 'undefined') {
+      this.assertValidValue(rawValue);
     }
-    parent.call(this, val);
-    constructor.call(this, val);
+    parent.call(this, rawValue);
+    constructor.call(this, rawValue);
   };
   klass.prototype = Object.create(parent.prototype);
   klass.prototype.constructor = klass;
