@@ -5,16 +5,20 @@ DONE: any time a value can be set, need to check for the possibility that this i
 	- done in Map.set(key, value)
 	- done in List on push/unshift/splice/replace etc
 
-- would be handy if val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
-	- subclasses should implement _val(), called by standard val()
-	- subclasses should implement _get(), called by standard get()
-	- the standard method can implement the recursive access using _val/_get
-
-- typed values, eg Integer, Double, Boolean, DateTime, String, etc. cannot set() to anything but the exact type (throws TypeError)
+- typed values, - cannot set() to anything but the exact type (throws TypeError)
+	- done Decimal
+	- done Bool
+	- wip Str
 
 - range type (must inherit) - defines a min/max, attempting to set the value below/above will force the value back to min/max respectively (eg like a Int with min/max, but prevents going outside the range and never has an error)
 
 - need hooks to define custom attributes for custom classes to implement validation etc
+	- can probably just override set() for simple things...
+
+- would be handy if val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
+	- subclasses should implement _val(), called by standard val()
+	- subclasses should implement _get(), called by standard get()
+	- the standard method can implement the recursive access using _val/_get
 
 - more array operations and better accessors, eg slice(), map (map and mapv), filter (filter and filterv), negative indexing, range indexing, etc
 
