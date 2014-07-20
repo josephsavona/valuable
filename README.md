@@ -3,21 +3,39 @@ valuable
 
 Observable values, maps, and lists
 
-# Status
-*usable* - values, maps and lists work and are passing all tests. Expect a proper beta release by August 2014.
+# Status & Compatibility
+`valuable` is very new, but already extensively tested and with a stabe API. Please try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
 
 # Summary
 
-*Valuable* wraps your values so that you can observe whenever they are changed. Like Backbone, but automatically handles recursive/nested values. Like cortex, but with a more streamlined API.
+`Valuable` recursively wraps your literals, objects, and arrays so that you can observe whenever any nested value, key, or item is changed. Use a `Valuable` object as a central source of truth and update all your views whenever it changes.
 
-The basic idea:
+Valuable is inspired by and improves upon the following libraries:
+- Backbone - Valuable adds automatic wrapping of nested objects/arrays
+- Cortex - Valuable is similar but provides a clearer API and more data types
+- Observ - Valuable adds automatic wrapping of nested objects/arrays
+
+# Code, Please
+
 ```javascript
-var value = Valuable(1);
-value.observe(function(val) {
-	console.log(val);
+var value = Valuable({
+  items: [1,2,3],
+  name: 'numbers'
 });
-value.val() // => 1
-value.set(10) // => notifies observe()-er, logs 10
+value.observe(function(val) {
+	// val after .set('name'):
+	{ items: [1,2,3], name: '4 numbers' }
+	// val after .get('items').push(4)
+	{ items: [1,2,3,4], name: '4 numbers' }
+});
+value.set('name', '4 numbers') // => notifies observe() function above
+value.get('items').push(4) // => notifies observe() function above
+
+// get the literal value:
+value.val() // => { items: [1,2,3,4], name: '4 numbers'}
+
+// or a nested value:
+value.get('name').val() // => '4 numbers'
 ```
 
 # Installation
@@ -26,10 +44,7 @@ value.set(10) // => notifies observe()-er, logs 10
 npm install --save valuable
 ```
 
-# Features
-
-
-# Examples
+# More Examples
 
 ```javascript
 var Valueable = require('valuable');
