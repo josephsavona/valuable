@@ -10,7 +10,7 @@ var Str = function Str() {
 };
 
 var proto = {
-  assertValidValue: function(val) {
+  assertValidValue: function Str$assertValidValue(val) {
     assert.ok(typeof val === 'string', 'Str(): value must be a string');
   },
   append: function Str$append(val) {

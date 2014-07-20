@@ -44,6 +44,7 @@ Value.prototype.destroy = function Value$destroy() {
   this._listeners = null;
   this._parent = null;
   this._child = null;
+  this._handleChange = null;
 };
 
 Value.prototype._notify = function Value$private$_notify() {
@@ -54,6 +55,12 @@ Value.prototype._notify = function Value$private$_notify() {
   this._listeners.forEach(function(listener) {
     listener(value);
   });
+};
+
+Value.prototype.handleChange = function Value$handleChange() {
+  return this._handleChange || (this._handleChange  = function Value$computed$handleChange(event) {
+    this.set(event.target.value);
+  }.bind(this));
 };
 
 Value.prototype._updateChild = function Value$private$updateChild(child, rawValue) {

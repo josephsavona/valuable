@@ -10,7 +10,7 @@ var Decimal = function Decimal() {
 };
 
 var proto = {
-  assertValidValue: function(val) {
+  assertValidValue: function Decimal$assertValidValue(val) {
     assert.ok(typeof val === 'number', 'Decimal(): value must be a number');
   },
   inc: function Decimal$inc() {

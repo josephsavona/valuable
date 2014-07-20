@@ -26,7 +26,7 @@ var Struct = function Struct(map) {
 };
 
 var proto = {
-  assertValidValue: function(map) {
+  assertValidValue: function Struct$assertValidValue(map) {
     assert.ok(map === null || typeof map === 'undefined' || _.isPlainObject(map),
       'Struct(): value must be an object (or null/undefined)');
   },

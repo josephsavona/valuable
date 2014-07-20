@@ -10,7 +10,7 @@ var Bool = function Bool() {
 };
 
 var proto = {
-  assertValidValue: function(val) {
+  assertValidValue: function Bool$assertValidValue(val) {
     assert.ok(typeof val === 'boolean', 'Bool(): value must be true/false');
   },
   negate: function Bool$negate() {
