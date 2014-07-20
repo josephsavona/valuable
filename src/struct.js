@@ -38,6 +38,10 @@ var proto = {
     // which is an auto-converting function - this means no type safety.
     // therefore manually get the raw value and ensure it is valid before passing down.
     var rawValue = (value instanceof Value) ? value.val() : value;
+    // shortcut in case of a simple value (eg not map/list)
+    if (this.__proto__.properties[key].prototype.set.length === 1) {
+      return this._map[key].set(rawValue);
+    }
     this.__proto__.properties[key].assertValidValue(rawValue);
     Map.prototype.set.call(this, key, rawValue);
   }
