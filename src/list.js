@@ -32,6 +32,8 @@ List.assertValidValue = List.prototype.assertValidValue = function List$assertVa
 };
 
 List.prototype.push = function List$push(rawValue) {
+  assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
+
   var value = Valueable(rawValue);
   value._parent = this;
   this._list.push(value);
@@ -52,6 +54,8 @@ List.prototype.pop = function List$pop() {
 };
 
 List.prototype.unshift = function List$unshift(rawValue) {
+  assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
+  
   var value = Valueable(rawValue);
   value._parent = this;
   this._list.unshift(value);
@@ -78,6 +82,8 @@ List.prototype.get = function List$get(ix) {
 
 List.prototype.set = function List$set(ix, rawValue) {
   assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
+  assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
+
   var value = Valueable(rawValue);
   if (ix in this._list) {
     this._list[ix].destroy();

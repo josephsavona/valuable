@@ -36,6 +36,7 @@ Map.assertValidValue = Map.prototype.assertValidValue = function Map$assertValid
 
 Map.prototype.set = function Map$set(key, rawValue) {
   assert.ok(typeof key === 'string', 'Map(): key must be string');
+  assert.ok(typeof rawValue !== 'undefined', 'Map(): value must be defined');
 
   var value;
   if (key in this._map) {
