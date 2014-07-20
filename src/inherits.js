@@ -33,6 +33,7 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
     constructor.call(this, val);
   };
   klass.prototype = Object.create(parent.prototype);
+  klass.prototype.constructor = klass;
   _.extend(klass.prototype, proto);
   _.extend(klass, parent, statics);
 

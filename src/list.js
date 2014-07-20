@@ -116,6 +116,16 @@ List.prototype.val = function List$val(ix) {
   return raw;
 };
 
+List.prototype.each = function List$each(fn) {
+  assert.equal(typeof fn, 'function', 'List(): must provide function');
+  return this._list.forEach(fn);
+};
+
+List.prototype.map = function List$map(fn) {
+  assert.equal(typeof fn, 'function', 'List(): must provide function');
+  return this._list.map(fn);
+};
+
 List.prototype._updateChild = function List$private$updateChild(child, rawValue) {
   var ix, found, raw;
   // figure out which index this child is
