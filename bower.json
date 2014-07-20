@@ -1,0 +1,26 @@
+{
+  "name": "valuable",
+  "main": "index.js",
+  "version": "0.0.2",
+  "homepage": "https://github.com/capacitorjs/valuable",
+  "authors": [
+    "Joseph Savona <joe@josephsavona.com>"
+  ],
+  "description": "Observable values, maps, and lists",
+  "keywords": [
+    "observable",
+    "data",
+    "model",
+    "map",
+    "list",
+    "values"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
