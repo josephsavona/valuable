@@ -6,6 +6,9 @@ var assert = require('chai').assert,
     Map = require('../src/map'),
     List = require('../src/list'),
     Value = require('../src/value'),
+    Decimal = require('../src/types/decimal'),
+    Bool = require('../src/types/bool'),
+    Str = require('../src/types/str'),
     rawValues = require('./mock_values');
 
 describe('Struct', function() {
@@ -19,7 +22,10 @@ describe('Struct', function() {
     MyStruct.prototype.properties = {
       map: Map,
       list: List,
-      literal: Value
+      literal: Value,
+      decimal: Decimal,
+      str: Str,
+      bool: Bool
     };
   });
 
@@ -62,7 +68,10 @@ describe('Struct', function() {
     assert.deepEqual(struct.val(), {
       map: {},
       list: [],
-      literal: undefined
+      literal: undefined,
+      decimal: 0,
+      bool: false,
+      str: ''
     });
   });
 
@@ -70,11 +79,17 @@ describe('Struct', function() {
     var map = {key: 'value'},
         list = ['item'],
         literal = 123,
+        decimal = 98.6,
+        bool = true,
+        str = 'hi',
         struct;
     struct = new MyStruct({
       map: map,
       list: list,
-      literal: literal
+      literal: literal,
+      decimal: decimal,
+      bool: bool,
+      str: str
     });
     assert.ok(struct instanceof MyStruct);
     assert.ok(struct.get('map') instanceof Map);
@@ -83,7 +98,10 @@ describe('Struct', function() {
     assert.deepEqual(struct.val(), {
       map: map,
       list: list,
-      literal: literal
+      literal: literal,
+      decimal: decimal,
+      bool: bool,
+      str: str
     });
   });
 
@@ -94,7 +112,20 @@ describe('Struct', function() {
       {map: 123},
       {list: {}},
       {list: true},
-      {list: 123}
+      {list: 123},
+      {decimal: true},
+      {decimal: []},
+      {decimal: {}},
+      {decimal: ''},
+      {bool: 0},
+      {bool: null},
+      {bool: ''},
+      {bool: {}},
+      {bool: []},
+      {str: true},
+      {str: []},
+      {str: {}},
+      {str: 0}
     ];
     invalid.forEach(function(map) {
       assert.throws(function() {
@@ -105,18 +136,34 @@ describe('Struct', function() {
 
   it('enforces the types of properties in set()', function() {
     var invalid = [
-      ['map', []],
-      ['map', true],
-      ['map', 123],
-      ['list', {}],
-      ['list', true],
-      ['list', 123]
+      {map: []},
+      {map: true},
+      {map: 123},
+      {list: {}},
+      {list: true},
+      {list: 123},
+      {decimal: true},
+      {decimal: []},
+      {decimal: {}},
+      {decimal: ''},
+      {bool: 0},
+      {bool: null},
+      {bool: ''},
+      {bool: {}},
+      {bool: []},
+      {str: true},
+      {str: []},
+      {str: {}},
+      {str: 0}
     ];
     invalid.forEach(function(params) {
-      assert.throws(function() {
-        var struct = new MyStruct();
-        struct.set.apply(struct, params);
-      });
+      _.forEach(params, function(value, key) {
+        assert.throws(function() {
+          // console.log(key, value);
+          var struct = new MyStruct();
+          struct.set(key, value);
+        })
+      })
     })
   });
 });
