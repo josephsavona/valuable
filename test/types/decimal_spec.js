@@ -63,8 +63,8 @@ describe('Decimal', function() {
     val: 2
   },{
     fn: 'dec',
-    set: 1,
-    val: 0
+    set: 2,
+    val: 1
   }, {
     fn: 'add',
     set: 0,
@@ -171,7 +171,7 @@ describe('Decimal', function() {
   }];
 
   updates.forEach(function(update, index) {
-    var label = update.set + ' ' + update.fn + ' ' + (update.args || []).join(',') + ' ' + (update.resp || update.val);
+    var label = update.set + '.' + update.fn + '(' + (update.args || []).join(',') + ') == ' + (update.resp || update.val || 'false');
     it(label, function() {
       var d, val, resp;
       d = Decimal();
