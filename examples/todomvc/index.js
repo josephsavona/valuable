@@ -35,46 +35,54 @@ var TodoView = React.createClass({
   getInitialState: function() {
     return {
       todos: todoList,
-      todo: ''
+      todo: Todo({
+        id: uuid.v4()
+      })
     };
   },
   componentDidMount: function() {
     this.observer = function() {
       this.setState({
-        todos: todoList
+        todos: this.state.todos,
+        todo: this.state.todo
       });
     }.bind(this);
-    todoList.observe(this.observer);
+    this.state.todos.observe(this.observer);
+    this.state.todo.observe(this.observer);
   },
   componentWillUnmount: function() {
-    todoList.unobserve(this.observer);
+    this.state.todos.unobserve(this.observer);
+    this.state.todo.unobserve(this.observer);
   },
   addTodo: function(event) {
     event.preventDefault();
-    this.state.todos.push({
-      id: uuid.v4(),
-      title: this.state.todo,
-      completed: false
-    });
-    this.setState({
-      todo: ''
-    });
-  },
-  onTodoChange: function(event) {
-    this.setState({
-      todo: event.target.value
-    });
+    this.state.todos.push(this.state.todo);
+    this.state.todo.set('id', uuid.v4());
+    this.state.todo.set('title', '');
   },
   render: function() {
     console.log(this.state.todos.val());
     return (
       <div id="main">
         <form id="newtodo" onSubmit={this.addTodo}>
-          <input className="edit" type="text" value={this.state.todo} onChange={this.onTodoChange} placeholder="Add todo" autoFocus />
+          <input className="edit" type="text" value={this.state.todo.get('title').val()} onChange={this.state.todo.get('title').handleChange()} placeholder="Add todo" autoFocus />
         </form>
-        <ul>
+        <ul id="todo-list">
           {this.state.todos.map(function(todo) {
-            return (<li key={todo.val('id')} onClick={todo.toggle.bind(todo)}>{todo.val('title')}</li>);
+            return (
+              <li key={todo.val('id')} onClick={todo.toggle.bind(todo)}>
+                <div className="view">
+                  <input
+                    className="toggle"
+                    type="checkbox"
+                    checked={todo.val('completed')}
+                    onChange={todo.toggle.bind(todo)} />
+                  <label>
+                    {todo.val('title')}
+                  </label>
+                </div>
+              </li>
+            );
           })}
         </ul>
       </div>
