@@ -13,10 +13,6 @@ var proto = {
   assertValidValue: function(val) {
     assert.ok(typeof val === 'string', 'Str(): value must be a string');
   },
-  set: function Str$set(val) {
-    this.assertValidValue(val);
-    Value.prototype.set.call(this, val);
-  },
   append: function Str$append(val) {
     this.assertValidValue(val);
     this.set(this._raw + val);

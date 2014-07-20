@@ -13,10 +13,6 @@ var proto = {
   assertValidValue: function(val) {
     assert.ok(typeof val === 'number', 'Decimal(): value must be a number');
   },
-  set: function Decimal$set(val) {
-    this.assertValidValue(val);
-    Value.prototype.set.call(this, val);
-  },
   inc: function Decimal$inc() {
     this.set(this._raw + 1);
   },

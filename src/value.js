@@ -30,6 +30,7 @@ Value.prototype.unobserve = function Value$unobserve(fn) {
 Value.prototype.set = function Value$set(value) {
   var rawValue;
   rawValue = (value instanceof Value) ? value.val() : value;
+  this.assertValidValue(rawValue);
   this._raw = rawValue;
   this._notify();
 };

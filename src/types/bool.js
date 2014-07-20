@@ -13,10 +13,6 @@ var proto = {
   assertValidValue: function(val) {
     assert.ok(typeof val === 'boolean', 'Bool(): value must be true/false');
   },
-  set: function Bool$set(val) {
-    this.assertValidValue(val);
-    Value.prototype.set.call(this, val);
-  },
   negate: function Bool$negate() {
     this.set(!this._raw);
   }
