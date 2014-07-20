@@ -1,19 +1,7 @@
 valuable
 ========
 
-Observable values, maps, and lists
-
-# Status & Compatibility
-`valuable` is very new, but already extensively tested and with a stabe API. Please try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
-
-# Summary
-
 `Valuable` recursively wraps your literals, objects, and arrays so that you can observe whenever any nested value, key, or item is changed. Use a `Valuable` object as a central source of truth and update all your views whenever it changes.
-
-Valuable is inspired by and improves upon the following libraries:
-- Backbone - Valuable adds automatic wrapping of nested objects/arrays
-- Cortex - Valuable is similar but provides a clearer API and more data types
-- Observ - Valuable adds automatic wrapping of nested objects/arrays
 
 # Code, Please
 
@@ -43,6 +31,16 @@ value.get('name').val() // => '4 numbers'
 ```bash
 npm install --save valuable
 ```
+
+# Status & Compatibility
+`valuable` is very new, but already extensively tested and with a stabe API. Please try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
+
+# Features
+
+Valuable is inspired by and improves upon the following libraries:
+- Backbone - Valuable adds automatic wrapping of nested objects/arrays
+- Cortex - Valuable is similar but provides a clearer API and more data types
+- Observ - Valuable adds automatic wrapping of nested objects/arrays
 
 # More Examples
 
