@@ -15,18 +15,18 @@ describe('Struct', function() {
   var MyStruct;
 
   beforeEach(function() {
-    MyStruct = function MyStruct(map) {
-      Struct.call(this, map);
-    };
-    MyStruct.prototype = Object.create(Struct.prototype);
-    MyStruct.prototype.properties = {
+    var properties = {
       map: Map,
       list: List,
       literal: Value,
       decimal: Decimal,
       str: Str,
       bool: Bool
-    };
+    }
+    // MyStruct = Valueable.inherits(Struct, function MyStruct(){}, {
+    //   properties: properties
+    // });
+    MyStruct = Struct.define(properties);
   });
 
   it('constructor cannot be called directly', function() {
@@ -44,7 +44,7 @@ describe('Struct', function() {
   it('cannot construct instances of subclass if properties are not defined', function() {
     delete MyStruct.prototype.properties;
     assert.throws(function() {
-      new MyStruct();
+      MyStruct();
     });
   });
 
@@ -60,7 +60,7 @@ describe('Struct', function() {
   });
 
   it('constructs instances of subclass with empty values for the defined property types', function() {
-    var struct = new MyStruct();
+    var struct = MyStruct();
     assert.ok(struct instanceof MyStruct);
     assert.ok(struct.get('map') instanceof Map);
     assert.ok(struct.get('list') instanceof List);
@@ -83,7 +83,7 @@ describe('Struct', function() {
         bool = true,
         str = 'hi',
         struct;
-    struct = new MyStruct({
+    struct = MyStruct({
       map: map,
       list: list,
       literal: literal,
@@ -129,7 +129,7 @@ describe('Struct', function() {
     ];
     invalid.forEach(function(map) {
       assert.throws(function() {
-        new MyStruct(map);
+        MyStruct(map);
       });
     })
   });
@@ -159,8 +159,7 @@ describe('Struct', function() {
     invalid.forEach(function(params) {
       _.forEach(params, function(value, key) {
         assert.throws(function() {
-          // console.log(key, value);
-          var struct = new MyStruct();
+          var struct = MyStruct();
           struct.set(key, value);
         })
       })

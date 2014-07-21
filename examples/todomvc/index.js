@@ -3,16 +3,20 @@ var Valuable = require('../../index'),
     uuid = require('node-uuid'),
     React = require('react');
 
-var Todo = Valuable.inherits(Valuable.Struct, function Todo(){}, {
-  toggle: function() {
-    this.get('completed').negate()
-  },
-  properties: {
+var Todo = Valuable.Struct.define(
+  /* struct properties */
+  {
     id: Valuable.Str,
     title: Valuable.Str,
     completed: Valuable.Bool
+  }, 
+  /* prototype methods */
+  {
+    toggle: function() {
+      this.get('completed').negate();
+    }
   }
-});
+);
 
 var TodoList = Valuable.inherits(Valuable.List, function TodoList(){}, {
   push: function(item) {

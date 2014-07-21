@@ -25,7 +25,7 @@ var Struct = function Struct(map) {
   }
 };
 
-var proto = {
+var StructProto = {
   assertValidValue: function Struct$assertValidValue(map) {
     assert.ok(map === null || typeof map === 'undefined' || _.isPlainObject(map),
       'Struct(): value must be an object (or null/undefined)');
@@ -47,4 +47,19 @@ var proto = {
   }
 };
 
-module.exports = inherits(Map, Struct, proto);
+var StructStatics = {
+  define: function(properties, proto, statics) {
+    assert.ok(_.isPlainObject(properties),
+      'Struct(): properties is a required object');
+    assert.ok(!proto || _.isPlainObject(proto),
+      'Struct(): prototype is an optional plain object');
+
+    proto = _.defaults(proto || {}, StructProto);
+    proto.properties = properties;
+    statics = _.defaults(statics || {}, StructStatics);
+
+    return inherits(Map, Struct, proto, statics);
+  }
+};
+
+module.exports = inherits(Map, Struct, StructProto, StructStatics);
