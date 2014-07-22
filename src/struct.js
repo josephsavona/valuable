@@ -43,7 +43,7 @@ var StructProto = {
       return this._map[key].set(rawValue);
     }
     this.__proto__.properties[key].assertValidValue(rawValue);
-    Map.prototype.set.call(this, key, rawValue);
+    Map.prototype.set.call(this, key, this.__proto__.properties[key](rawValue));
   }
 };
 
@@ -57,6 +57,17 @@ var StructStatics = {
     proto = _.defaults(proto || {}, StructProto);
     proto.properties = properties;
     statics = _.defaults(statics || {}, StructStatics);
+
+    return inherits(Map, Struct, proto, statics);
+  },
+  schema: function(schema) {
+    var proto, statics;
+    assert.ok(_.isPlainObject(schema),
+      'Struct(): schema is a required object');
+
+    proto = _.defaults({}, StructProto);
+    proto.properties = schema;
+    statics = _.defaults({}, StructStatics);
 
     return inherits(Map, Struct, proto, statics);
   }
