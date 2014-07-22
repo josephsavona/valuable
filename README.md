@@ -108,18 +108,7 @@ var mixed = Valuable([
 
 ## `Map (inherits Value)`
 
-Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. 
-
-```javascript
-var map = Valuable({key: 'old'}); // same as Valuable.Map({key: 'old'})
-var v1 = map.val();
-var v1b = map.val();
-assert.ok(v1 === v1b);
-
-map.set('key', 'new');
-var v2 = map.val();
-assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and modified)
-```
+Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. See the [Immutability](#immutability) section for details.
 
 `var map = Valuable({...})` - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
 
@@ -133,18 +122,8 @@ assert.ok(v1 !== v2); // value is a new JavaScript object (internally cloned and
 
 ## `List (inherits Value)`
 
-Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. 
+Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. See the [Immutability](#immutability) section for details.
 
-```javascript
-var list = Valuable(['old']); // same as Valuable.List(['old'])
-var v1 = map.val();
-var v1b = map.val();
-assert.ok(v1 === v1b);
-
-list.set(0, 'new');
-var v2 = map.val();
-assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and modified)
-```
 
 `var list = Valuable([...])` - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
 
