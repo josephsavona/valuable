@@ -150,7 +150,7 @@ var ListProto = {
 var ListStatics = {
   of: function List$$of(klass) {
     assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
-      'List(): of() requires a subclass of Value as the type');
+      'List(): requires a subclass of Value as the type');
 
     var proto = _.extend({type: klass}, ListProto);
     return inherits(List, function TypedList(){}, proto, ListStatics);
