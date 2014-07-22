@@ -8,12 +8,12 @@ var assert = require('assert'),
 var Struct = function Struct(map) {
   var key, value, properties;
 
-  assert.ok(this.__proto__.properties && _.isPlainObject(this.__proto__.properties),
+  assert.ok(this.properties && _.isPlainObject(this.properties),
     'Struct(): must inherit and provide prototype.properties (be sure to use `*new* YourStructSubclass(...)`');
     
   // custom property instantiation for only the defined properties
   map = map || {};
-  properties = this.__proto__.properties;
+  properties = this.properties;
   for (key in properties) {
     if (!properties.hasOwnProperty(key)) {
       continue;
@@ -32,7 +32,7 @@ var StructProto = {
   },
   set: function Struct$set(key, value) {
     assert.ok(typeof key === 'string', 'Struct(): key must be string');
-    assert.ok(key in this.__proto__.properties, 'Struct(): key must be a defined property');
+    assert.ok(key in this.properties, 'Struct(): key must be a defined property');
     this._map[key].setVal(value);
   }
 };
