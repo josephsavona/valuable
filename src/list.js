@@ -1,7 +1,8 @@
 var assert = require('assert'),
     _ = require('lodash'),
     Value = require('./value'),
-    Valueable = require('./valueable');
+    Valueable = require('./valueable'),
+    inherits = require('./inherits');
 
 var List = function List(list) {
   var ix, value;
@@ -139,6 +140,37 @@ List.prototype._updateChild = function List$private$updateChild(child, rawValue)
   raw = _.clone(this._raw);
   raw[ix] = rawValue;
   Value.prototype.set.call(this, raw);
+};
+
+var TypedListProto = {
+  set: function TypedList$set(ix, value) {
+    var rawValue = (value instanceof Value) ? value.val() : value;
+    this.type.assertValidValue(rawValue);
+    List.prototype.set.call(this, ix, this.type(rawValue));
+  },
+  push: function TypedList$push(value) {
+    var rawValue = (value instanceof Value) ? value.val() : value;
+    this.type.assertValidValue(rawValue);
+    List.prototype.push.apply(this, this.type(rawValue));
+  },
+  unshift: function TypedList$unshift(value) {
+    var rawValue = (value instanceof Value) ? value.val() : value;
+    this.type.assertValidValue(rawValue);
+    List.prototype.unshift.apply(this, this.type(rawValue));
+  }
+};
+
+List.typed = function List$$typed(klass, proto, statics) {
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+    'List(): of() requires a subclass of Value as the type');
+  assert.ok(!proto || _.isPlainObject(proto),
+    'List(): proto is an optional object');
+  assert.ok(!statics || _.isPlainObject(statics),
+    'List(): proto is an optional object');
+
+  proto = proto || {};
+  proto.type = klass;
+  return inherits(List, function TypedList(){}, proto, statics);
 };
 
 module.exports = List;
