@@ -1,9 +1,7 @@
 valuable
 ========
 
-`Valuable` recursively wraps your literals, objects, and arrays so that you can observe whenever any nested value, key, or item is changed. Use a `Valuable` object as a central source of truth and update all your views whenever it changes.
-
-# Code, Please
+Provides structs, maps, lists, and literal values that you can observe for changes. Use a `Valuable` object as a central source of truth and update your React app whenever data changes. Freely pass around wrapped data and manipulate it anywhere in your view. Valuable bubbles these changes up so that React can re-render top-down. 
 
 ```javascript
 var value = Valuable({
@@ -11,7 +9,7 @@ var value = Valuable({
   name: 'numbers'
 });
 value.observe(function(val) {
-	// val after .set('name'):
+	// val after .set('name', '4 numbers):
 	{ items: [1,2,3], name: '4 numbers' }
 	// val after .get('items').push(4)
 	{ items: [1,2,3,4], name: '4 numbers' }
@@ -26,25 +24,15 @@ value.val() // => { items: [1,2,3,4], name: '4 numbers'}
 value.get('name').val() // => '4 numbers'
 ```
 
-# Installation
+# Use It
 
 ```bash
 npm install --save valuable
 ```
 
-# Status & Compatibility
-`valuable` is very new, but already extensively tested and with a stabe API. Please try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
+* `valuable` is new, but extensively tested and with a stable API. Try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
 
-# Features
-
-Valuable is inspired by and improves upon the following libraries:
-- Backbone - Valuable adds automatic wrapping of nested objects/arrays
-- Cortex - Valuable is similar but provides a clearer API and more data types
-- Observ - Valuable adds automatic wrapping of nested objects/arrays
-
-# Examples
-
-## TodoMVC
+# Example - TodoMVC
 
 We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views.
 
@@ -60,49 +48,6 @@ open 'http://localhost:8080'
 ```
 
 Then hit `Control-C` to kill.
-
-## Other Examples
-
-```javascript
-var Valueable = require('valuable');
-
-// literal
-var value = Valuable(1);
-value.observe(function(val) {
-	console.log(val);
-});
-value.val() // => 1
-value.set(10) // => notifies observe()-er, logs 10
-value.val() // => 10
-
-// nested object/list
-var map = Valuable({
-	ar: [1,2,3]
-	name: 'test'
-});
-// access the raw value of a key:
-assert.deepEqual(map.val('ar'), [1,2,3]);
-assert.deepEqual(map.val('name'), 'test');
-
-// or get the wrapped key and then its value:
-assert.deepEqual(map.get('ar').val(), [1,2,3]);
-assert.deepEqual(map.get('name').val(), 'test');
-
-// observe changes and log the new raw values
-map.observe(function(mapValue) {
-	console.dir(mapValue);
-});
-
-// push a value onto the array at key 'ar'
-map.get('ar').push(4); // => notifies observe()-er
-
-// set the map key 'name' to a new value
-map.set('name', 'new test'); // => notifies observe()-er
-
-// get the raw value
-map.val() // => { ar: [1,2,3,4], name: 'new test'}
-```
-
 
 # API
 
@@ -195,6 +140,13 @@ assert.ok(v1 !== v2); // value is a new JavaScript Array (internally cloned and 
 - `list.pop()` - removes the last item of the list and returns its literal value (normal JavaScript value)
 - `list.shift()` - removes the first item of the list and returns its literal value (normal JavaScript value)
 - `list.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
+
+# Inspired By
+
+Valuable is inspired by and improves upon the following libraries:
+- Backbone - Valuable adds automatic wrapping of nested objects/arrays
+- Cortex - Valuable is similar but provides a clearer API and more data types
+- Observ - Valuable adds automatic wrapping of nested objects/arrays
 
 
 # License
