@@ -99,6 +99,10 @@ List.prototype.set = function List$set(ix, rawValue) {
   this._updateChild(value, value.val());
 };
 
+List.prototype.setVal = function List$setVal(map) {
+  assert.ok(false, 'List(): setVal() not implemented');
+};
+
 List.prototype.val = function List$val(ix) {
   assert.ok(ix === undefined || (typeof ix === 'number' && ix >= 0), 'List(): index must be undefined or a positive integer');
 
