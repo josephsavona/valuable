@@ -14,7 +14,7 @@ var proto = {
     assert.ok(typeof val === 'boolean', 'Bool(): value must be true/false');
   },
   negate: function Bool$negate() {
-    this.set(!this._raw);
+    this.setVal(!this._raw);
   }
 };
 

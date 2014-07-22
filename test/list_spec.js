@@ -94,7 +94,7 @@ describe('List', function() {
       var value = List([0]),
           observer = sinon.spy();
       value.observe(observer);
-      value.get(0).set(val);
+      value.get(0).setVal(val);
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -136,7 +136,7 @@ describe('List', function() {
           list1 = List([wrapped]);
 
       assert.deepEqual(list1.val(), [val], 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(list1.val(), [val], 'list remains unaffected');
     });
@@ -149,7 +149,7 @@ describe('List', function() {
       list1.set(0, wrapped);
 
       assert.deepEqual(list1.val(), [val], 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(list1.val(), [val], 'list remains unaffected');
     });
@@ -162,7 +162,7 @@ describe('List', function() {
       list1.push(wrapped);
 
       assert.deepEqual(list1.val(), [val], 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(list1.val(), [val], 'list remains unaffected');
     });
@@ -175,7 +175,7 @@ describe('List', function() {
       list1.unshift(wrapped);
 
       assert.deepEqual(list1.val(), [val], 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(list1.val(), [val], 'list remains unaffected');
     });
@@ -200,7 +200,7 @@ describe('List', function() {
 
     // nesting set test
     value.observe(observer);
-    value.get(1).get(1).set(false);
+    value.get(1).get(1).setVal(false);
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     list[1][1] = false;
     assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 

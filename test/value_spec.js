@@ -29,7 +29,7 @@ describe('Value', function() {
     rawValues.forEach(function(val) {
       var value = Value();
       assert.deepEqual(value.val(), undefined);
-      value.set(val);
+      value.setVal(val);
       assert.deepEqual(value.val(), val);
     });
   });
@@ -38,12 +38,12 @@ describe('Value', function() {
     rawValues.forEach(function(val) {
       var value = Value(val),
           other = Value();
-      other.set(value);
+      other.setVal(value);
 
       assert.deepEqual(value.val(), val, 'values identical');
       assert.deepEqual(other.val(), val, 'values identical');
 
-      value.set([val]);
+      value.setVal([val]);
       assert.deepEqual(value.val(), [val], 'value is changed');
       assert.deepEqual(other.val(), val, 'other is unaffected');
     });
@@ -54,7 +54,7 @@ describe('Value', function() {
       var value = Value(),
           observer = sinon.spy();
       value.observe(observer);
-      value.set(val);
+      value.setVal(val);
       assert.ok(observer.calledOnce, 'observer called when value set()');
       assert.ok(observer.calledWith, val, 'observer called with the new value');
     });
@@ -64,9 +64,9 @@ describe('Value', function() {
     var value = Value(),
         observer = sinon.spy();
     value.observe(observer);
-    value.set(true);
+    value.setVal(true);
     value.unobserve(observer);
-    value.set(false);
+    value.setVal(false);
     assert.ok(observer.calledOnce, 'observer called only once');
     assert.ok(observer.calledWith(true), 'observer called only before unobserved');
   });
@@ -74,7 +74,7 @@ describe('Value', function() {
   it('always returns the current value (even if re-set() a ton)', function() {
     var value = Value();
     rawValues.forEach(function(val, ix) {
-      value.set(val);
+      value.setVal(val);
       assert.deepEqual(value.val(), val, 'literal value always updates');
     });
   });

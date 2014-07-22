@@ -98,7 +98,7 @@ describe('Map', function() {
       var value = Map({key: 0}),
           observer = sinon.spy();
       value.observe(observer);
-      value.get('key').set(val);
+      value.get('key').setVal(val);
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -125,7 +125,7 @@ describe('Map', function() {
           map = Map({key: wrapped});
 
       assert.deepEqual(map.val(), {key: val}, 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(map.val(), {key: val}, 'map remains unaffected');
     });
@@ -138,7 +138,7 @@ describe('Map', function() {
       map.set('key', wrapped);
 
       assert.deepEqual(map.val(), {key: val}, 'literal value matches');
-      wrapped.set([val]);
+      wrapped.setVal([val]);
       assert.deepEqual(wrapped.val(), [val], 'original wrapped changes');
       assert.deepEqual(map.val(), {key: val}, 'map remains unaffected');
     });
@@ -155,7 +155,7 @@ describe('Map', function() {
     assert.deepEqual(value.get('nested').val('key'), map.nested.key);
 
     value.observe(observer);
-    value.get('nested').get('key').set(false);
+    value.get('nested').get('key').setVal(false);
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     map.nested.key = false;
     assert.deepEqual(observer.args[0][0], map, 'new value is as expected');

@@ -34,15 +34,17 @@ Map.assertValidValue = Map.prototype.assertValidValue = function Map$assertValid
     'Map(): value must be an object (or null/undefined)');
 };
 
+Map.prototype.type = Valueable;
+
 Map.prototype.set = function Map$set(key, rawValue) {
+  var value;
   assert.ok(typeof key === 'string', 'Map(): key must be string');
   assert.ok(typeof rawValue !== 'undefined', 'Map(): value must be defined');
 
-  var value;
   if (key in this._map) {
     this._map[key].destroy();
   }
-  value = Valueable(rawValue);
+  value = this.type(rawValue);
   this._map[key] = value;
   this._map[key]._parent = this;
   this._updateChild(value, value.val());
@@ -76,6 +78,10 @@ Map.prototype.hasKey = function Map$hasKey(key) {
   assert.ok(typeof key === 'string', 'Map(): key must be string');
 
   return (key in this._map);
+};
+
+Map.prototype.setVal = function Map$setVal(map) {
+  assert.ok(false, 'Map(): setVal() not implemented');
 };
 
 Map.prototype.val = function Map$val(key) {

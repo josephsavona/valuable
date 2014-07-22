@@ -14,26 +14,26 @@ var proto = {
     assert.ok(typeof val === 'number', 'Decimal(): value must be a number');
   },
   inc: function Decimal$inc() {
-    this.set(this._raw + 1);
+    this.setVal(this._raw + 1);
   },
   dec: function Decimal$dec() {
-    this.set(this._raw - 1);
+    this.setVal(this._raw - 1);
   },
   add: function Decimal$add(val) {
     this.assertValidValue(val);
-    this.set(this._raw + val);
+    this.setVal(this._raw + val);
   },
   sub: function Decimal$sub(val) {
     this.assertValidValue(val);
-    this.set(this._raw - val);
+    this.setVal(this._raw - val);
   },
   mult: function Decimal$mult(val) {
     this.assertValidValue(val);
-    this.set(this._raw * val);
+    this.setVal(this._raw * val);
   },
   div: function Decimal$div(val) {
     this.assertValidValue(val);
-    this.set(this._raw / val);
+    this.setVal(this._raw / val);
   },
   isNaN: function Decimal$isNaN() {
     return isNaN(this._raw);
@@ -65,7 +65,7 @@ var proto = {
   update: function Decimal$update(fn) {
     var val;
     assert.equal(typeof fn, 'function');
-    this.set(fn(this._raw))
+    this.setVal(fn(this._raw))
   }
 };
 

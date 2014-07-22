@@ -37,7 +37,7 @@ describe('Bool', function() {
       }
       d = Bool();
       assert.throws(function() {
-        d.set(val);
+        d.setVal(val);
       })
     });
   });
@@ -45,7 +45,7 @@ describe('Bool', function() {
   it('sets to true/false', function() {
     [true,false].forEach(function(val) {
       var d = Bool();
-      d.set(val);
+      d.setVal(val);
       assert.deepEqual(d.val(), val);
       assert.ok(isNaN(d.val()) || typeof d.val() === 'boolean');
     });

@@ -40,7 +40,7 @@ describe('Decimal', function() {
       }
       d = Decimal();
       assert.throws(function() {
-        d.set(val);
+        d.setVal(val);
       })
     });
   });
@@ -51,7 +51,7 @@ describe('Decimal', function() {
         return;
       }
       var d = Decimal();
-      d.set(val);
+      d.setVal(val);
       assert.deepEqual(d.val(), val);
       assert.ok(isNaN(d.val()) || typeof d.val() === 'number');
     });
@@ -175,7 +175,7 @@ describe('Decimal', function() {
     it(label, function() {
       var d, val, resp;
       d = Decimal();
-      d.set(update.set);
+      d.setVal(update.set);
       resp = d[update.fn].apply(d, update.args || []);
       if ('resp' in update) {
         assert.deepEqual(resp, update.resp, label);

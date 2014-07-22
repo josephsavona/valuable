@@ -27,16 +27,16 @@ Value.prototype.unobserve = function Value$unobserve(fn) {
   });
 };
 
-Value.prototype.set = function Value$set(value) {
+Value.prototype.val = function Value$val() {
+  return this._raw;
+};
+
+Value.prototype.setVal = function Value$setVal(value) {
   var rawValue;
   rawValue = (value instanceof Value) ? value.val() : value;
   this.assertValidValue(rawValue);
   this._raw = rawValue;
   this._notify();
-};
-
-Value.prototype.val = function Value$val() {
-  return this._raw;
 };
 
 Value.prototype.destroy = function Value$destroy() {
@@ -59,7 +59,7 @@ Value.prototype._notify = function Value$private$_notify() {
 
 Value.prototype.handleChange = function Value$handleChange() {
   return this._handleChange || (this._handleChange  = function Value$computed$handleChange(event) {
-    this.set(event.target.value);
+    this.setVal(event.target.value);
   }.bind(this));
 };
 

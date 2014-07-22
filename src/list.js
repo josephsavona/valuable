@@ -32,10 +32,12 @@ List.assertValidValue = List.prototype.assertValidValue = function List$assertVa
     'List(): value must be an array (or null/undefined)');
 };
 
+List.prototype.type = Valueable;
+
 List.prototype.push = function List$push(rawValue) {
   assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
 
-  var value = Valueable(rawValue);
+  var value = this.type(rawValue);
   value._parent = this;
   this._list.push(value);
   this._updateChild(value, value.val());
@@ -58,7 +60,7 @@ List.prototype.pop = function List$pop() {
 List.prototype.unshift = function List$unshift(rawValue) {
   assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
   
-  var value = Valueable(rawValue);
+  var value = this.type(rawValue);
   value._parent = this;
   this._list.unshift(value);
   this._updateChild(value, value.val());
@@ -87,11 +89,11 @@ List.prototype.set = function List$set(ix, rawValue) {
   assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
   assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
 
-  var value = Valueable(rawValue);
   if (ix in this._list) {
     this._list[ix].destroy();
     this._list[ix] = void 0;
   }
+  var value = this.type(rawValue);
   this._list[ix] = value;
   this._list[ix]._parent = this;
   this._updateChild(value, value.val());
@@ -139,34 +141,13 @@ List.prototype._updateChild = function List$private$updateChild(child, rawValue)
   assert.ok(found, 'List(): child value not found');
   raw = _.clone(this._raw);
   raw[ix] = rawValue;
-  Value.prototype.set.call(this, raw);
+  this._raw = raw;
+  this._notify();
 };
 
-var TypedListProto = {
-  set: function TypedList$set(ix, value) {
-    var rawValue = (value instanceof Value) ? value.val() : value;
-    this.type.assertValidValue(rawValue);
-    List.prototype.set.call(this, ix, this.type(rawValue));
-  },
-  push: function TypedList$push(value) {
-    var rawValue = (value instanceof Value) ? value.val() : value;
-    this.type.assertValidValue(rawValue);
-    List.prototype.push.apply(this, this.type(rawValue));
-  },
-  unshift: function TypedList$unshift(value) {
-    var rawValue = (value instanceof Value) ? value.val() : value;
-    this.type.assertValidValue(rawValue);
-    List.prototype.unshift.apply(this, this.type(rawValue));
-  }
-};
-
-List.typed = function List$$typed(klass, proto, statics) {
+List.of = function List$$typed(klass) {
   assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
     'List(): of() requires a subclass of Value as the type');
-  assert.ok(!proto || _.isPlainObject(proto),
-    'List(): proto is an optional object');
-  assert.ok(!statics || _.isPlainObject(statics),
-    'List(): proto is an optional object');
 
   proto = proto || {};
   proto.type = klass;

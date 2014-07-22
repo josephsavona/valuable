@@ -33,17 +33,7 @@ var StructProto = {
   set: function Struct$set(key, value) {
     assert.ok(typeof key === 'string', 'Struct(): key must be string');
     assert.ok(key in this.__proto__.properties, 'Struct(): key must be a defined property');
-
-    // Map$set() destroys the previous value and makes a new one via Valuable()
-    // which is an auto-converting function - this means no type safety.
-    // therefore manually get the raw value and ensure it is valid before passing down.
-    var rawValue = (value instanceof Value) ? value.val() : value;
-    // shortcut in case of a simple value (eg not map/list)
-    if (this.__proto__.properties[key].prototype.set.length === 1) {
-      return this._map[key].set(rawValue);
-    }
-    this.__proto__.properties[key].assertValidValue(rawValue);
-    Map.prototype.set.call(this, key, this.__proto__.properties[key](rawValue));
+    this._map[key].setVal(value);
   }
 };
 

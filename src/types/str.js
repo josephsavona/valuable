@@ -15,16 +15,16 @@ var proto = {
   },
   append: function Str$append(val) {
     this.assertValidValue(val);
-    this.set(this._raw + val);
+    this.setVal(this._raw + val);
   },
   prepend: function Str$prepend(val) {
     this.assertValidValue(val);
-    this.set(val + this._raw);
+    this.setVal(val + this._raw);
   },
   wrap: function Str$wrap(pre, post) {
     this.assertValidValue(pre);
     this.assertValidValue(post);
-    this.set(pre + this._raw + post);
+    this.setVal(pre + this._raw + post);
   },
   length: function() {
     return this._raw.length;
@@ -32,7 +32,7 @@ var proto = {
   update: function Str$update(fn) {
     var val;
     assert.equal(typeof fn, 'function');
-    this.set(fn(this._raw))
+    this.setVal(fn(this._raw))
   }
 };
 
