@@ -4,7 +4,10 @@
   "description": "Observable values, maps, and lists",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec 'test/**/*.js'"
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec 'test/**/*.js'",
+    "coverage": "npm test && open coverage/lcov-report/index.html",
+    "test-watch": "./node_modules/.bin/mocha --watch --reporter min 'test/**/*.js'",
+    "start": "cd examples/todomvc && npm run build && npm start"
   },
   "repository": {
     "type": "git",
@@ -29,8 +32,9 @@
     "moment": "~2.7.0"
   },
   "devDependencies": {
-    "mocha": "~1.20.1",
     "chai": "~1.9.1",
+    "istanbul": "^0.3.0",
+    "mocha": "~1.20.1",
     "sinon": "~1.10.3"
   }
 }
