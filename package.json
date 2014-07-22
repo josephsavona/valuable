@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/capacitorjs/valuable.git"
+    "url": "git://github.com/josephsavona/valuable.git"
   },
   "keywords": [
     "observable",
@@ -21,9 +21,9 @@
   "author": "Joseph Savona <joe@josephsavona.com>",
   "license": "MIT License",
   "bugs": {
-    "url": "https://github.com/capacitorjs/valuable/issues"
+    "url": "https://github.com/josephsavona/valuable/issues"
   },
-  "homepage": "https://github.com/capacitorjs/valuable",
+  "homepage": "https://github.com/josephsavona/valuable",
   "dependencies": {
     "lodash": "~2.4.1",
     "moment": "~2.7.0"
