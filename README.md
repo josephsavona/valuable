@@ -3,7 +3,7 @@ valuable
 
 Provides immutable* structs, maps, lists, and literal values that you can observe for changes. Use a `Valuable` object as a central source of truth and update your React app whenever data changes. Freely pass around wrapped data and manipulate it anywhere in your view. Valuable bubbles these changes up so that React can re-render top-down. 
 
-** Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone. See the [Immutability](#Immutability) section below. 
+** Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone. See the [Immutability](#immutability) section below. 
 
 ```javascript
 var value = Valuable({
