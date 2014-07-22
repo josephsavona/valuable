@@ -38,18 +38,28 @@
 create a custom class with Valuable.inherits(Valuable.Klass, {..options..})
 
 ```
+
+// schema() is shortcut for extend with schema prototype value
+Struct.schema(schema) == Struct.extend({ schema: schema, ..other proto..})
+
+// of() is shortcut for extend with type prototype value
+List.of(Klass) == List.extend({ type: Klass, ..other proto..})
+Map.of(Klass) == Map.extend({ type: Klass, ..other proto..})
+
 var Person = Valuable.Struct.extend(
-	// the available typed properties
+	// strongly-typed property definition
 	schema: {
 		firstName: Valuable.String,
 		lastName: Valuable.String,
 		age: Valuable.Integer({min: 0}),
 		dob: Valuable.DateTime(),
-		emails: [Valuable.String],
-		contacts: [Valuable.Struct({
-			name: Valuable.String,
-			photo: Valuable.URL
-		})]
+		emails: Valuable.List.of(Valuable.String),
+		contacts: Valuable.List.extend({
+			type: Valuable.Struct.extend({
+				name: Valuable.String,
+				photo: Valuable.URL
+			})
+		})
 	},
 	// instance method
 	name: function() {
@@ -63,8 +73,8 @@ var CustomInt = Valuable.inherits(Valuable.Int, {
 })
 
 var person = PersonSchema({ ...json blob... });
-person.get('name') # => 'John Doe'
-person.get('contacts.0.photo') => # http://example.com/john-doe.jpg
+person.val('name') # => 'John Doe'
+person.val('contacts.0.photo') => # http://example.com/john-doe.jpg
 person.get('emails').push('john.doe@example.com'); // OK
 person.get('emails').push({ email: 'blah@example.com'}) // TypeError - 'emails' is an array of strings, got an object
 ```
