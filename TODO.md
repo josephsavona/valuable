@@ -1,5 +1,14 @@
 # Notes
 
+- cleaner API for val/set/get:
+	- val() -> returns raw value
+	- val(value) -> replaces the raw value with the given value (if given a Value object, extracts its raw value with .val())
+	- get(key) -> returns the wrapped value at key
+	- set(key, value) -> maps/structs: convenience for .get(key).val(value) but creates the key if missing
+	- set(index, value) -> lists: convenience for .at(index).val(value) but creates the key if missing
+
+- constructors could/should use .val(value) for consistency so that values are only ever set in one place
+
 - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
 	- done in Value.set(value)
 	- done in Map.set(key, value)
@@ -11,7 +20,6 @@
 	- done Bool
 	- wip Str
 	- DateTime - using momentjs
-
 
 - typed collections (eg values must be of a type)
 	- list
@@ -32,7 +40,6 @@
 	- MaskedStr - make it easy to generate xxxx-xxxx-xxxx-1234 for credit cards where the true value is kept interally
 	- FormattedStr - make it easy to generate (xxx) xxx-xxxx given a string xxxxxxxxxx
 
-
 # Schemas:
 
 create a custom class with Valuable.inherits(Valuable.Klass, {..options..})
@@ -40,11 +47,11 @@ create a custom class with Valuable.inherits(Valuable.Klass, {..options..})
 ```
 
 // schema() is shortcut for extend with schema prototype value
-Struct.schema(schema) == Struct.extend({ schema: schema, ..other proto..})
+Struct.schema(schema) ~~ Struct.extend({ schema: schema, ..other proto..})
 
 // of() is shortcut for extend with type prototype value
-List.of(Klass) == List.extend({ type: Klass, ..other proto..})
-Map.of(Klass) == Map.extend({ type: Klass, ..other proto..})
+List.of(Klass) ~~ List.extend({ type: Klass, ..other proto..})
+Map.of(Klass) ~~ Map.extend({ type: Klass, ..other proto..})
 
 var Person = Valuable.Struct.extend(
 	// strongly-typed property definition
