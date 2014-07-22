@@ -1,29 +1,36 @@
 # Notes
 
-DONE: any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
+- any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
 	- done in Value.set(value)
 	- done in Map.set(key, value)
 	- done in List on push/unshift/splice/replace etc
+	- need more tests for Struct
 
 - typed values, - cannot set() to anything but the exact type (throws TypeError)
 	- done Decimal
 	- done Bool
 	- wip Str
+	- DateTime - using momentjs
 
-- range type (must inherit) - defines a min/max, attempting to set the value below/above will force the value back to min/max respectively (eg like a Int with min/max, but prevents going outside the range and never has an error)
 
-- need hooks to define custom attributes for custom classes to implement validation etc
-	- can probably just override set() for simple things...
+- typed collections (eg values must be of a type)
+	- list
+	- map
 
-- would be handy if val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
+- make val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
 	- subclasses should implement _val(), called by standard val()
 	- subclasses should implement _get(), called by standard get()
 	- the standard method can implement the recursive access using _val/_get
 
 - more array operations and better accessors, eg slice(), map (map and mapv), filter (filter and filterv), negative indexing, range indexing, etc
 
-- schemas
-
+- additional convenience value types
+	- UUID
+	- Range - defines a min/max, attempting to set the value below/above will force the value back to min/max respectively (eg like a Int with min/max, but prevents going outside the range and never has an error)
+	- Email
+	- USPhone
+	- MaskedStr - make it easy to generate xxxx-xxxx-xxxx-1234 for credit cards where the true value is kept interally
+	- FormattedStr - make it easy to generate (xxx) xxx-xxxx given a string xxxxxxxxxx
 
 
 # Schemas:
@@ -31,15 +38,23 @@ DONE: any time a value can be set, need to check for the possibility that this i
 create a custom class with Valuable.inherits(Valuable.Klass, {..options..})
 
 ```
-var PersonSchema = Valuable.inherits(Valuable.Struct, {
-	name: Valuable.String,
-	age: Valuable.Integer({min: 0}),
-	dob: Valuable.DateTime(),
-	emails: [Valuable.String],
-	contacts: [Valuable.Struct({
-		name: Valuable.String,
-		photo: Valuable.URL
-	})]
+var Person = Valuable.Struct.extend(
+	// the available typed properties
+	schema: {
+		firstName: Valuable.String,
+		lastName: Valuable.String,
+		age: Valuable.Integer({min: 0}),
+		dob: Valuable.DateTime(),
+		emails: [Valuable.String],
+		contacts: [Valuable.Struct({
+			name: Valuable.String,
+			photo: Valuable.URL
+		})]
+	},
+	// instance method
+	name: function() {
+		return this.val('firstName') + ' ' + this.val('lastName');
+	}
 })
 
 var CustomInt = Valuable.inherits(Valuable.Int, {
