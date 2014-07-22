@@ -4,8 +4,8 @@
   "description": "Observable values, maps, and lists",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec 'test/**/*.js'",
-    "coverage": "npm test && open coverage/lcov-report/index.html",
+    "test": "mocha --reporter spec 'test/**/*.js'",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec 'test/**/*.js' && open coverage/lcov-report/index.html",
     "test-watch": "./node_modules/.bin/mocha --watch --reporter min 'test/**/*.js'",
     "start": "cd examples/todomvc && npm run build && npm start"
   },
