@@ -46,6 +46,20 @@ var StructStatics = {
     proto = _.defaults({properties: schema}, StructProto);
 
     return inherits(Map, Struct, proto, StructStatics);
+  },
+  inherits: function(schema, proto, statics) {
+    assert.ok(_.isPlainObject(schema),
+      'Struct(): schema is a required object');
+    assert.ok(!proto || _.isPlainObject(proto),
+      'Struct(): proto is an optional object');
+    assert.ok(!statics || _.isPlainObject(statics),
+      'Struct(): statics is an optional object');
+
+    proto = _.defaults(proto || {}, StructProto);
+    statics = _.defaults(statics || {}, StructStatics);
+    proto.properties = schema;
+
+    return inherits(Map, Struct, proto, statics);
   }
 };
 

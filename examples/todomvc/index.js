@@ -3,7 +3,7 @@ var Valuable = require('../../index'),
     uuid = require('node-uuid'),
     React = require('react');
 
-var Todo = Valuable.Struct.define(
+var Todo = Valuable.Struct.inherits(
   /* struct properties */
   {
     id: Valuable.Str,
@@ -18,21 +18,9 @@ var Todo = Valuable.Struct.define(
   }
 );
 
-var TodoList = Valuable.inherits(Valuable.List, function TodoList(){}, {
-  push: function(item) {
-    var todo = Todo(item);
-    Valuable.List.prototype.push.call(this, todo);
-  },
-  unshift: function(item) {
-    var todo = Todo(item);
-    Valuable.List.prototype.unshift.call(this, todo);
-  },
-  set: function(index, item) {
-    var todo = Todo(item);
-    Valuable.List.prototype.set.call(index, todo);
-  }
-});
-// empty todo list
+// custom list with specified item type
+var TodoList = Valuable.List.of(Todo);
+
 var todoList = TodoList([]);
 
 var TodoView = React.createClass({
