@@ -35,6 +35,16 @@
     "chai": "~1.9.1",
     "istanbul": "^0.3.0",
     "mocha": "~1.20.1",
-    "sinon": "~1.10.3"
+    "sinon": "~1.10.3",
+    "testling": "^1.7.0"
+  },
+  "testling": {
+    "harness": "mocha-bdd",
+    "files": "test/**/*.js",
+    "browsers": [
+      "ie/9..latest",
+      "chrome/latest",
+      "firefox/latest"
+    ]
   }
 }
