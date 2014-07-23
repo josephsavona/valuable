@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec 'test/**/*.js'",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec 'test/**/*.js' && open coverage/lcov-report/index.html",
+    "cov": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --reporter spec 'test/**/*.js' && open coverage/lcov-report/index.html",
+    "bench": "node test/benchmark.js",
     "test-watch": "./node_modules/.bin/mocha --watch --reporter min 'test/**/*.js'",
     "start": "cd examples/todomvc && npm run build && npm start"
   },
@@ -32,6 +33,7 @@
     "moment": "~2.7.0"
   },
   "devDependencies": {
+    "benchmark": "^1.0.0",
     "chai": "~1.9.1",
     "istanbul": "^0.3.0",
     "mocha": "~1.20.1",
