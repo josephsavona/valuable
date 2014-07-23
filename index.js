@@ -8,9 +8,6 @@ var Valueable = require('./src/valueable'),
     Str = require('./src/types/str'),
     _ = require('lodash');
 
-// Valueable.register(_.isNumber, Float, 'Float');
-// Value.Float = Float;
-
 Valueable.register(_.isArray, List, 'List');
 Valueable.List = List;
 
