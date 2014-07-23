@@ -111,8 +111,20 @@ var mixed = Valuable([
 	<input type="text" value={value.val()} onChange={value.handleChange()} />
 ```
 
+### `Decimal`
 
-## `Map (inherits Value)`
+A typed version of `Value` that only accepts values where typeof is `number`. Methods include: inc(), dec() add(x), sub(x), div(x), mult(x), update(fn(cur)->new), eq(), ne(), gt(), gte(), lt(), lte().
+
+### `Str`
+
+A typed version of `Value` that only accepts values where typeof is `string`. Methods include: append(str), prepend(str), wrap(before, after), update(fn(cur)->new), length()->int.
+
+### `Bool`
+
+A typed version of `Value` that only accepts `true` or `false` (not even falsy values - coerce to boolean for now). Methods include negate() (switches true->false and false->true).
+
+
+## `Map`
 
 Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. See the [Immutability](#immutability) section for details.
 
@@ -126,7 +138,20 @@ Note: `Map` is an immutable representation of a key->value object/map/hash. All 
 - `map.del(key)` - deletes the key and returns its literal value (normal JavaScript value)
 - `map.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 
-## `List (inherits Value)`
+### `Map.of(Klass)`
+
+Creates a custom `Map` class that only accepts values of the given `Klass`, which must be `Value` of a subclass. Example:
+
+```javascript
+// define custom map class
+var IntMap = Valuable.Map.of(Valuable.Int);
+// create map instance
+var map = IntMap([]);
+map.set('age', 21); // ok
+map.set('age', 'nope'); // throws error - value is of wrong type
+```
+
+## `List`
 
 Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. See the [Immutability](#immutability) section for details.
 
@@ -143,6 +168,49 @@ Note: `List` is an immutable representation of a Array. All changes to the list 
 - `list.pop()` - removes the last item of the list and returns its literal value (normal JavaScript value)
 - `list.shift()` - removes the first item of the list and returns its literal value (normal JavaScript value)
 - `list.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
+
+### `List.of(Klass)`
+
+Creates a custom `List` class that only accepts values of the given `Klass`, which must be `Value` of a subclass. Example:
+
+```javascript
+// define custom list class
+var IntList = Valuable.List.of(Valuable.Int);
+// create list instance
+var ints = IntList([]);
+ints.push(1); // ok
+ints.push(true); // throws error - value is of wrong type
+```
+
+## `Struct`
+
+Allows you to define object-like structures with a defined set of keys, each with a specific type. `Struct`s cannot be created directly but must be subclassed with `schema()` or `inherits()`.
+
+### `Struct.schema({...schema...})`
+
+Shortcut to define a Struct type with a specific schema but no custom instance methods. Example:
+
+```javascript
+var Person = Valuable.Struct.schema({
+  name: Valuable.Str, // note the use of class constructors as property values
+  age: Valuable.Decimal,
+  isDeveloper: Valuable.Bool,
+  emails: Valuable.List.of(Valuable.Str) // property can be a complex type
+});
+var mark = Person({
+  name: 'Mark',
+  age: 30,
+  isDeveloper: false,
+  emails: ['mark@example.com']
+});
+mark.observe((val) -> console.log(val) );
+mark.set('isDeveloper', true); // ok, type correct
+mark.set('isDeveloper', 'yes'); // throws error, incorrect type for property
+if (/* mark's bday */) {
+  // the wrapped age is a Valuable.Decimal which has conveniences methods like inc(), dec(), etc
+  mark.get('age').inc(); 
+}
+```
 
 # Inspired By
 
