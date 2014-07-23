@@ -42,6 +42,13 @@ var StructStatics = {
     var proto;
     assert.ok(_.isPlainObject(schema),
       'Struct(): schema is a required object');
+    for (var key in schema) {
+      if (schema.hasOwnProperty(key)) {
+        assert.ok(typeof schema[key] === 'function' &&
+          (schema[key].prototype instanceof Value || schema[key] === Value || schema[key] === Valueable),
+          'Struct(): all schema values must be Value or a subclass');
+      }
+    }
 
     proto = _.defaults({properties: schema}, StructProto);
 
@@ -50,6 +57,13 @@ var StructStatics = {
   inherits: function(schema, proto, statics) {
     assert.ok(_.isPlainObject(schema),
       'Struct(): schema is a required object');
+    for (var key in schema) {
+      if (schema.hasOwnProperty(key)) {
+        assert.ok(typeof schema[key] === 'function' &&
+          (schema[key].prototype instanceof Value || schema[key] === Value || schema[key] === Valueable),
+          'Struct(): all schema values must be Value or a subclass');
+      }
+    }
     assert.ok(!proto || _.isPlainObject(proto),
       'Struct(): proto is an optional object');
     assert.ok(!statics || _.isPlainObject(statics),

@@ -101,13 +101,13 @@ var MapProto = {
       raw = this._raw;
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-      // return a clone in dev/test to ensure that you
-      // cannot make your code work by directly modifying
-      // the returned value. in production disable
-      // this for speed
-      return _.clone(raw);
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   // return a clone in dev/test to ensure that you
+    //   // cannot make your code work by directly modifying
+    //   // the returned value. in production disable
+    //   // this for speed
+    //   return _.clone(raw);
+    // }
     return raw;
   },
 

@@ -33,6 +33,7 @@
     "moment": "~2.7.0"
   },
   "devDependencies": {
+    "backbone": "^1.1.2",
     "benchmark": "^1.0.0",
     "chai": "~1.9.1",
     "istanbul": "^0.3.0",
