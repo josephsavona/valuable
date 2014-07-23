@@ -146,10 +146,10 @@ Note: `List` is an immutable representation of a Array. All changes to the list 
 
 # Inspired By
 
-Valuable is inspired by and improves upon the following libraries:
-- Backbone - Valuable adds automatic wrapping of nested objects/arrays
-- Cortex - Valuable is similar but provides a clearer API and more data types
-- Observ - Valuable adds automatic wrapping of nested objects/arrays
+Valuable is inspired by and hopes to improve upon the following libraries:
+- [Backbone](http://backbonejs.org/) - Valuable adds automatic wrapping of nested objects/arrays
+- [Cortex](http://mquan.github.io/cortex/) - Valuable is similar but provides a clearer API and more data types
+- [Observ](https://github.com/Raynos/observ) - Valuable adds automatic wrapping of nested objects/arrays
 
 
 # License
