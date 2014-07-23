@@ -104,6 +104,14 @@ var mixed = Valuable([
 - `value.observe(fn)` - add `fn` to list of observers for changes
 - `value.unobserve(fn)` - remove `fn` from the list of observers
 - `value.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
+- `value.handleChange()` - returns a function that can be passed as the `onChange={}` prop in a React component or to handle any other normalized event value. the returned callback function is created only once and then cached, so repeated calls will get the original cached callback handler.
+
+```javascript
+	var value = Value('');
+	// React example
+	// dead simple onChange - no need for LinkedState or custom handlers everywhere!
+	<input type="text" value={value.val()} onChange={value.handleChange()} />
+```
 
 
 ## `Map (inherits Value)`

@@ -34,6 +34,18 @@ describe('Value', function() {
     });
   });
 
+  it('can handle DOM-like events with a .target.value via .handleChange()', function() {
+    rawValues.forEach(function(val) {
+      var value = Value(),
+          change = value.handleChange(),
+          observer = sinon.spy();
+      value.observe(observer);
+      change({target: {value: val}});
+      assert.ok(observer.calledOnce, 'observer notified');
+      assert.deepEqual(value.val(), val, 'value is updated');
+    });
+  });
+
   it('uwraps wrapped values on set()', function() {
     rawValues.forEach(function(val) {
       var value = Value(val),

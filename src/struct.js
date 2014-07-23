@@ -38,28 +38,14 @@ var StructProto = {
 };
 
 var StructStatics = {
-  define: function(properties, proto, statics) {
-    assert.ok(_.isPlainObject(properties),
-      'Struct(): properties is a required object');
-    assert.ok(!proto || _.isPlainObject(proto),
-      'Struct(): prototype is an optional plain object');
-
-    proto = _.defaults(proto || {}, StructProto);
-    proto.properties = properties;
-    statics = _.defaults(statics || {}, StructStatics);
-
-    return inherits(Map, Struct, proto, statics);
-  },
   schema: function(schema) {
-    var proto, statics;
+    var proto;
     assert.ok(_.isPlainObject(schema),
       'Struct(): schema is a required object');
 
-    proto = _.defaults({}, StructProto);
-    proto.properties = schema;
-    statics = _.defaults({}, StructStatics);
+    proto = _.defaults({properties: schema}, StructProto);
 
-    return inherits(Map, Struct, proto, statics);
+    return inherits(Map, Struct, proto, StructStatics);
   }
 };
 

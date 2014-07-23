@@ -4,6 +4,9 @@ var assert = require('chai').assert,
     Valueable = require('..'),
     Map = require('../src/map'),
     Value = require('../src/value'),
+    Bool = require('../src/types/bool'),
+    Decimal = require('../src/types/decimal'),
+    Str = require('../src/types/str'),
     rawValues = require('./mock_values');
 
 describe('Map', function() {
@@ -159,6 +162,31 @@ describe('Map', function() {
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     map.nested.key = false;
     assert.deepEqual(observer.args[0][0], map, 'new value is as expected');
+  });
+
+  var types = [
+    {klass: Decimal, label: 'Decimal', test: _.isNumber},
+    {klass: Str, label: 'Str', test: _.isString},
+    {klass: Bool, label: 'Bool', test: _.isBoolean}
+  ];
+  _.forEach(types, function(type) {
+    rawValues.forEach(function(val) {
+      if (type.test.call(_, val)) {
+        var label = 'Map.of(' + type.label + ') OK ' + typeof val;
+        it(label, function() {
+          assert.doesNotThrow(function() {
+            Map.of(type.klass)({key: val});
+          }, label);
+        });
+      } else {
+        var label = 'Map.of(' + type.label + ') rejects ' + typeof val;
+        it(label, function() {
+          assert.throws(function() {
+            Map.of(type.klass)({key: val});
+          }, Error, null, label);
+        });
+      }
+    });
   });
 });
  

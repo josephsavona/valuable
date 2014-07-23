@@ -63,8 +63,9 @@ Value.prototype.handleChange = function Value$handleChange() {
   }.bind(this));
 };
 
-Value.prototype._updateChild = function Value$private$updateChild(child, rawValue) {
-  assert.ok(false, 'Value(): cannot have child values');
-};
+// Value cannot have child values, probably don't need
+// Value.prototype._updateChild = function Value$private$updateChild(child, rawValue) {
+//   assert.ok(false, 'Value(): cannot have child values');
+// };
 
 module.exports = Value;

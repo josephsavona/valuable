@@ -23,10 +23,7 @@ describe('Struct', function() {
       str: Str,
       bool: Bool
     }
-    // MyStruct = Valueable.inherits(Struct, function MyStruct(){}, {
-    //   properties: properties
-    // });
-    MyStruct = Struct.define(properties);
+    MyStruct = Struct.schema(properties);
   });
 
   it('constructor cannot be called directly', function() {

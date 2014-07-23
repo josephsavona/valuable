@@ -19,7 +19,7 @@ var Map = function Map(map) {
     if (!map.hasOwnProperty(key)) {
       continue;
     }
-    value = Valueable(map[key]);
+    value = this.type(map[key]);
     this._map[key] = value;
     this._map[key]._parent = this;
     this._raw[key] = value.val();
@@ -124,7 +124,7 @@ var MapStatics = {
     assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
       'Map(): requires a subclass of Value as the type');
 
-    var proto = _.extend({type: klass}, ListProto);
+    var proto = _.defaults({type: klass}, MapProto);
     return inherits(Value, Map, proto, MapStatics);
   }
 };

@@ -16,7 +16,7 @@ var List = function List(list) {
     return;
   }
   for (ix = 0; ix < list.length; ix++) {
-    value = Valueable(list[ix]);
+    value = this.type(list[ix]);
     this._list[ix] = value;
     this._list[ix]._parent = this;
     this._raw[ix] = value.val();
@@ -152,8 +152,8 @@ var ListStatics = {
     assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
       'List(): requires a subclass of Value as the type');
 
-    var proto = _.extend({type: klass}, ListProto);
-    return inherits(List, function TypedList(){}, proto, ListStatics);
+    var proto = _.defaults({type: klass}, ListProto);
+    return inherits(Value, List, proto, ListStatics);
   }
 };
 
