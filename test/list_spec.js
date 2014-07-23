@@ -30,7 +30,7 @@ describe('List', function() {
         return;
       }
       assert.throws(function() {
-        List().get(val);
+        List().at(val);
       }, Error, null, 'get() takes int');
       assert.throws(function() {
         List().val(val);
@@ -66,8 +66,8 @@ describe('List', function() {
     rawValues.forEach(function(val) {
       var value = List();
       value.push(val);
-      assert.ok(value.get(0) instanceof Value, 'wraps values in Value');
-      assert.deepEqual(value.get(0).val(), val, 'wrapped value has the set value');
+      assert.ok(value.at(0) instanceof Value, 'wraps values in Value');
+      assert.deepEqual(value.at(0).val(), val, 'wrapped value has the set value');
     })
   });
 
@@ -76,8 +76,8 @@ describe('List', function() {
     rawValues.forEach(function(val) {
       var value = List();
       value.unshift(val);
-      assert.ok(value.get(0) instanceof Value, 'wraps values in Value');
-      assert.deepEqual(value.get(0).val(), val, 'wrapped value has the set value');
+      assert.ok(value.at(0) instanceof Value, 'wraps values in Value');
+      assert.deepEqual(value.at(0).val(), val, 'wrapped value has the set value');
     })
   });
 
@@ -92,12 +92,12 @@ describe('List', function() {
     });
   });
 
-  it('observe()s item changes from get().set()', function() {
+  it('observe()s item changes from at().set()', function() {
     rawValues.forEach(function(val) {
       var value = List([0]),
           observer = sinon.spy();
       value.observe(observer);
-      value.get(0).setVal(val);
+      value.at(0).setVal(val);
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -192,18 +192,18 @@ describe('List', function() {
     // test basic structure
     assert.deepEqual(value.val(), list);
     assert.deepEqual(value.val(0), list[0]);
-    assert.deepEqual(value.get(0).val(), list[0]);
+    assert.deepEqual(value.at(0).val(), list[0]);
     assert.deepEqual(value.val(1), list[1]);
-    assert.deepEqual(value.get(1).val(), list[1]);
-    assert.ok(value.get(1) instanceof List, 'nested list should be a List');
+    assert.deepEqual(value.at(1).val(), list[1]);
+    assert.ok(value.at(1) instanceof List, 'nested list should be a List');
 
     // nesting get/val test
-    assert.deepEqual(value.get(1).get(1).val(), list[1][1]);
-    assert.deepEqual(value.get(1).val(1), list[1][1]);
+    assert.deepEqual(value.at(1).at(1).val(), list[1][1]);
+    assert.deepEqual(value.at(1).val(1), list[1][1]);
 
     // nesting set test
     value.observe(observer);
-    value.get(1).get(1).setVal(false);
+    value.at(1).at(1).setVal(false);
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     list[1][1] = false;
     assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 

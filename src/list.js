@@ -77,7 +77,13 @@ var ListProto = {
     return rawValue;
   },
 
+  at: function List$at(ix) {
+    assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
+    return this._list[ix];
+  },
+
   get: function List$get(ix) {
+    console.warn('List$get(): deprecated: please use List$at() instead');
     assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
     return this._list[ix];
   },
@@ -96,8 +102,15 @@ var ListProto = {
     this._updateChild(value, value.val());
   },
 
-  setVal: function List$setVal(map) {
-    assert.ok(false, 'List(): setVal() not implemented');
+  setVal: function List$setVal(list) {
+    var ix = 0,
+        rawValue = (list instanceof Value) ? list.val() : list;
+    this.assertValidValue(rawValue);
+    for (ix = 0; ix < this._list.length; ix++) {
+      this._list[ix].destroy();
+    }
+    List.apply(this, rawValue);
+    this._notify();
   },
 
   val: function List$val(ix) {

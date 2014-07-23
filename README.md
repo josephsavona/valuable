@@ -92,8 +92,8 @@ var mixed = Valuable([
   }
 ]);
 // mixed instanceof Valuable.List
-// mixed.get(0) instanceof Valuable.Map
-// mixed.get(0).get('key') instanceof Valuable.Value
+// mixed.at(0) instanceof Valuable.Map
+// mixed.at(0).get('key') instanceof Valuable.Value
 ```
 
 ## `Value`
@@ -165,7 +165,7 @@ Note: `List` is an immutable representation of a Array. All changes to the list 
 - `list.val()` - get the literal value of the list itself (this is a normal JavaScript object)
 - `list.setVal([])` - replaces the list with the given array, recursively wrapping all keys
 - `list.set(index,value)` - shortcut to `.at(index).setVal(value)` - set the value at `index` to `value`
-- `list.get(index)` - gets the wrapped value at `index` (this is a `Value`)
+- `list.at(index)` - gets the wrapped value at `index` (this is a `Value`)
 - `list.push(value)` - pushes a wrapped version of `value` onto the end of the list
 - `list.unshift(value)` - unshifts a wrapped version of `value` onto the front of the list
 - `list.pop()` - removes the last item of the list and returns its literal value (normal JavaScript value)
