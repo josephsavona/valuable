@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/josephsavona/valuable.svg?branch=master)](https://travis-ci.org/josephsavona/valuable)
+
 valuable
 ========
 
