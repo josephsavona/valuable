@@ -34,9 +34,6 @@ npm install --save valuable
 
 `valuable` is new, but extensively tested and with a stable API. Try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
 
-[![browser support](https://ci.testling.com/josephsavona/max-by.png)
-](https://ci.testling.com/josephsavona/max-by)
-
 # Example - TodoMVC
 
 We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views.
