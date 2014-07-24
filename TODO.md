@@ -25,6 +25,8 @@
 	- wip Str
 	- DateTime - using momentjs
 
+- performance improvments (currently about 5-10% slower than backbone for object create-update-read `npm run bench`)
+
 - make val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
 	- subclasses should implement _val(), called by standard val()
 	- subclasses should implement _get(), called by standard get()
