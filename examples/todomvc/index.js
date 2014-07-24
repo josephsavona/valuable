@@ -1,33 +1,15 @@
 /* @jsx React.DOM */
-var Valuable = require('../../index'),
-    uuid = require('node-uuid'),
-    React = require('react');
+var uuid = require('node-uuid'),
+    React = require('react'),
+    models = require('./js/models');
 
-var Todo = Valuable.Struct.inherits(
-  /* struct properties */
-  {
-    id: Valuable.Str,
-    title: Valuable.Str,
-    completed: Valuable.Bool
-  }, 
-  /* prototype methods */
-  {
-    toggle: function() {
-      this.get('completed').negate();
-    }
-  }
-);
-
-// custom list with specified item type
-var TodoList = Valuable.List.of(Todo);
-
-var todoList = TodoList([]);
+var todoList = models.TodoList([]);
 
 var TodoView = React.createClass({
   getInitialState: function() {
     return {
       todos: todoList,
-      todo: Todo({
+      todo: models.Todo({
         id: uuid.v4()
       })
     };
