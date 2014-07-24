@@ -6,35 +6,35 @@ var BModel = Backbone.Model.extend({
   initialize: function() {}
 });
 
-var BCollection = Backbone.Collection.extend({
-  model: BModel
-});
-
 var VModel = Valuable.Struct.schema({
   key: Valuable.Str
 });
 
-new Benchmark.Suite()
-.add('Object create modify read', function() {
+new Benchmark.Suite('Object Create-Modify-Read')
+.add('Native', function() {
   var o = {};
   o.key = 'value';
   return o.key;
+}, {
+  minSamples: 200
 })
-.add('Backbone create modify read', function() {
+.add('Backbone', function() {
   var o = new BModel();
   o.set('key', 'value');
   return o.get('key');
+}, {
+  minSamples: 200
 })
-.add('Valuable create modify read', function() {
+.add('Valuable', function() {
   var o = VModel({});
   o.set('key', 'value');
   return o.val('key');
-})
-.on('cycle', function(event) {
-  console.log(String(event.target));
+}, {
+  minSamples: 200
 })
 .on('complete', function() {
-  // console.log(this.filter('successful'));
-  console.log(this);
+  this.filter('successful').forEach(function(benchmark) {
+    console.log(String(benchmark));
+  })
 })
 .run({ async: true })
