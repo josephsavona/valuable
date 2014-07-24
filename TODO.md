@@ -13,6 +13,10 @@
 	- set(key, value) -> maps/structs: convenience for .get(key).setVal(value) but creates the key if missing
 	- set(index, value) -> lists: convenience for .at(index).setVal(value) but creates the key if missing
 
+- ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
+
+- consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
+
 - WIP - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
 	- done in Value.set(value)
 	- done in Map.set(key, value)
@@ -23,7 +27,8 @@
 	- done Decimal
 	- done Bool
 	- wip Str
-	- DateTime - using momentjs
+	- wip DateTime - using momentjs
+	- wip Func
 
 - performance improvments (currently about 5-10% slower than backbone for object create-update-read `npm run bench`)
 
