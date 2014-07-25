@@ -2,6 +2,8 @@ var Valuable = require('../index'),
     Backbone = require('backbone'),
     Benchmark = require('benchmark');
 
+var minSamples = 200;
+
 var BModel = Backbone.Model.extend({
   initialize: function() {}
 });
@@ -17,26 +19,29 @@ var VModel = Valuable.Struct.schema({
 var VCollection = Valuable.List.of(VModel);
 
 new Benchmark.Suite('Nested Create-Modify-Read')
-.add('Native', function() {
-  var o = [{key: ''}];
-  o[0].key = 'value';
-  return o[0].key;
-}, {
-  minSamples: 200
+.add('Native', {
+  fn: function() {
+    var o = [{key: ''}];
+    o[0].key = 'value';
+    return o[0].key;
+  },
+  // minSamples: minSamples
 })
-.add('Backbone', function() {
-  var o = new BCollection([{key: ''}]);
-  o.at(0).set('key', 'value');
-  return o.at(0).get('key');
-}, {
-  minSamples: 200
+.add('Backbone', {
+  fn: function() {
+    var o = new BCollection([{key: ''}]);
+    o.at(0).set('key', 'value');
+    return o.at(0).get('key');
+  },
+  // minSamples: minSamples
 })
-.add('Valuable', function() {
-  var o = VCollection([{key: ''}]);
-  o.at(0).set('key', 'value');
-  return o.at(0).val('key');
-}, {
-  minSamples: 200
+.add('Valuable', {
+  fn: function() {
+    var o = VCollection([{key: ''}]);
+    o.at(0).set('key', 'value');
+    return o.at(0).val('key');
+  },
+  // minSamples: minSamples
 })
 .on('complete', function() {
   console.log(this.name);
