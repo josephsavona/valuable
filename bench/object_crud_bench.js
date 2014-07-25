@@ -33,6 +33,7 @@ new Benchmark.Suite('Object Create-Modify-Read')
   minSamples: 200
 })
 .on('complete', function() {
+  console.log(this.name);
   this.filter('successful').forEach(function(benchmark) {
     console.log(String(benchmark));
   })
