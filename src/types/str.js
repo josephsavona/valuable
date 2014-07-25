@@ -3,7 +3,8 @@ var assert = require('assert'),
     Value = require('../value'),
     inherits = require('../inherits');
 
-var Str = function Str() {
+var Str = function Str(value) {
+  Value.call(this, value);
   if (typeof this._raw === 'undefined') {
     this._raw = '';
   }

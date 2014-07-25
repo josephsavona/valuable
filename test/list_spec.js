@@ -209,6 +209,7 @@ describe('List', function() {
     assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 
   });
 
+  // typed list checks
   var types = [
     {klass: Decimal, label: 'Decimal', test: _.isNumber},
     {klass: Str, label: 'Str', test: _.isString},
@@ -232,6 +233,26 @@ describe('List', function() {
         });
       }
     });
+  });
+
+  it('can be inherited', function() {
+    var DecimalList = List.inherits(Decimal, {
+      sum: function DecimalList$sum() {
+        return this._raw.reduce(function(sum, item) {
+          return sum + item;
+        }, 0);
+      }
+    });
+    var list = DecimalList([0,1,2,3,0]);
+    list.push(0); // test list modification to ensure that everything is wired up
+    list.at(4).setVal(4);
+    list.set(5, 5);
+    var sum = list.sum();
+    assert.ok(list instanceof DecimalList);
+    assert.ok(list instanceof List);
+    assert.ok(list instanceof Value);
+    assert.equal(sum, 15, 'prototype method works');
+    assert.deepEqual(list.val(), [0,1,2,3,4,5], 'val() returns original value');
   });
 });
  

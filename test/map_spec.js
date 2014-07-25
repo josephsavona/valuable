@@ -188,5 +188,27 @@ describe('Map', function() {
       }
     });
   });
+
+  it('can be inherited', function() {
+    var DecimalMap = Map.inherits(Decimal, {
+      sum: function DecimalMap$sum() {
+        var sum = 0;
+        for (key in this._raw) {
+          sum += this._raw[key];
+        }
+        return sum;
+      }
+    });
+    var map = DecimalMap({zero: 0, one: 1, two: 2, three: 3, four: 0});
+    map.set('five', 0);
+    map.set('four', 4);
+    map.set('five', 5);
+    var sum = map.sum();
+    assert.ok(map instanceof DecimalMap);
+    assert.ok(map instanceof Map);
+    assert.ok(map instanceof Value);
+    assert.equal(sum, 15, 'prototype method works');
+    assert.deepEqual(map.val(), {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5}, 'val() returns original value');
+  });
 });
  

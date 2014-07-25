@@ -4,11 +4,13 @@ var assert = require('assert'),
     Valueable = require('./valueable'),
     inherits = require('./inherits');
 
-var Map = function Map(map) {
+var MapConstructor = function Map(map) {
   var key, value;
 
   assert.ok(this.type && (this.type.prototype instanceof Value || this.type === Value || this.type === Valueable),
     'Map(): must provide prototype.type (use `Map.of(ValueSubClas)`');
+
+  Value.call(this, map);
 
   this._map = {};
   this._raw = {};
@@ -128,14 +130,33 @@ var MapProto = {
   }
 };
 
-var MapStatics = {
-  of: function List$$of(klass) {
-    assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
-      'Map(): requires a subclass of Value as the type');
+var Map = inherits(Value, MapConstructor, MapProto, {});
 
-    var proto = _.defaults({type: klass}, MapProto);
-    return inherits(Value, Map, proto, MapStatics);
-  }
+Map.of = function Map$$of(klass) {
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+    'Map(): requires a subclass of Value as the type');
+
+  var proto = {type: klass};
+  return inherits(Map, function MyMap(value) {
+    Map.call(this, value);
+  }, proto);
 };
 
-module.exports = inherits(Value, Map, MapProto, MapStatics);
+Map.inherits = function Map$$inherits(klass, proto, statics) {
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+    'Map(): requires a subclass of Value as the type');
+  assert.ok(!proto || _.isPlainObject(proto),
+    'Map(): proto is an optional object');
+  assert.ok(!statics || _.isPlainObject(statics),
+    'Map(): statics is an optional object');
+
+  proto = proto || {};
+  statics = statics || {};
+  proto.type = klass;
+
+  return inherits(Map, function MyMap(value){
+    Map.call(this, value);
+  }, proto, statics);
+};
+
+module.exports = Map;

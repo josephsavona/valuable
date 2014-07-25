@@ -12,7 +12,8 @@ var assert = require('assert'),
  * the user changes the date. 
  */
 
-var DateTime = function DateTime() {
+var DateTime = function DateTime(value) {
+  Value.call(this, value);
   if (typeof this._raw === 'undefined') {
     this._raw = moment();
   }

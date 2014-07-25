@@ -3,7 +3,8 @@ var assert = require('assert'),
     Value = require('../value'),
     inherits = require('../inherits');
 
-var Decimal = function Decimal() {
+var Decimal = function Decimal(value) {
+  Value.call(this, value);
   if (typeof this._raw === 'undefined') {
     this._raw = 0;
   }

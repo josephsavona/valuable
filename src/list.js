@@ -4,11 +4,13 @@ var assert = require('assert'),
     Valueable = require('./valueable'),
     inherits = require('./inherits');
 
-var List = function List(list) {
+var ListConstructor = function List(list) {
   var ix, value;
   
   assert.ok(this.type && (this.type.prototype instanceof Value || this.type === Value || this.type === Valueable),
     'List(): must provide prototype.type (use `List.of(ValueSubClas)`');
+
+  Value.call(this, list);
   
   this._list = [];
   this._raw = [];
@@ -160,14 +162,33 @@ var ListProto = {
   }
 };
 
-var ListStatics = {
-  of: function List$$of(klass) {
-    assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
-      'List(): requires a subclass of Value as the type');
+var List = inherits(Value, ListConstructor, ListProto, {});
 
-    var proto = _.defaults({type: klass}, ListProto);
-    return inherits(Value, List, proto, ListStatics);
-  }
+List.of = function List$$of(klass) {
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+    'List(): requires a subclass of Value as the type');
+
+  var proto = {type: klass};
+  return inherits(List, function MyList(value) {
+    List.call(this, value);
+  }, proto);
 };
 
-module.exports = inherits(Value, List, ListProto, ListStatics);
+List.inherits = function List$$inherits(klass, proto, statics) {
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+    'List(): requires a subclass of Value as the type');
+  assert.ok(!proto || _.isPlainObject(proto),
+    'List(): proto is an optional object');
+  assert.ok(!statics || _.isPlainObject(statics),
+    'List(): statics is an optional object');
+
+  proto = proto || {};
+  statics = statics || {};
+  proto.type = klass;
+
+  return inherits(List, function MyList(value){
+    List.call(this, value);
+  }, proto, statics);
+};
+
+module.exports = List;

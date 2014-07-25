@@ -30,7 +30,6 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
     if (typeof rawValue !== 'undefined') {
       this.assertValidValue(rawValue);
     }
-    parent.call(this, rawValue);
     constructor.call(this, rawValue);
   };
   klass.prototype = Object.create(parent.prototype);

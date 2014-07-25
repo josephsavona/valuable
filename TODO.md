@@ -13,7 +13,7 @@
 	- set(key, value) -> maps/structs: convenience for .get(key).setVal(value) but creates the key if missing
 	- set(index, value) -> lists: convenience for .at(index).setVal(value) but creates the key if missing
 
-- ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
+- DONE ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
 
 - consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
 
@@ -26,9 +26,9 @@
 - WIP - typed values, - cannot set() to anything but the exact type (throws TypeError)
 	- done Decimal
 	- done Bool
-	- wip Str
-	- wip DateTime - using momentjs
-	- wip Func
+	- wip Str - needs tests
+	- DateTime
+	- Func
 
 - performance improvments (currently about 5-10% slower than backbone for object create-update-read `npm run bench`)
 

@@ -3,7 +3,8 @@ var assert = require('assert'),
     Value = require('../value'),
     inherits = require('../inherits');
 
-var Func = function Func() {
+var Func = function Func(value) {
+  Value.call(this, value);
   assert.equal(typeof this._raw, 'function', 'Func(): must specify a function value');
 };
 
