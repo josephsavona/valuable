@@ -146,17 +146,12 @@ var ListProto = {
   },
 
   _updateChild: function List$private$updateChild(child, rawValue) {
-    var ix, found, raw;
-    // figure out which index this child is
-    for (ix = 0; ix < this._list.length; ix++) {
-      if (this._list[ix] === child) {
-        found = true;
-        break;
-      }
+    var ix, length, raw;
+    length = this._list.length;
+    raw = Array(length);
+    for (ix = 0; ix < length; ix++) {
+      raw[ix] = this._list[ix] === child ? rawValue : this._raw[ix];
     }
-    assert.ok(found, 'List(): child value not found');
-    raw = _.clone(this._raw);
-    raw[ix] = rawValue;
     this._raw = raw;
     this._notify();
   }

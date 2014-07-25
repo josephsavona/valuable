@@ -114,17 +114,13 @@ var MapProto = {
   },
 
   _updateChild: function Map$private$updateChild(child, rawValue) {
-    var key, found, raw;
-    // figure out which key this child is
+    var key, raw;
+    raw = {};
     for (key in this._map) {
-      if (this._map[key] === child) {
-        found = true;
-        break;
+      if (this._map.hasOwnProperty(key)) {
+        raw[key] = this._map[key] === child ? rawValue : this._raw[key];
       }
     }
-    assert.ok(found, 'Map(): child value not found');
-    raw = _.clone(this._raw);
-    raw[key] = rawValue;
     this._raw = raw;
     this._notify();
   }
