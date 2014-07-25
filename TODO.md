@@ -15,13 +15,11 @@
 
 - DONE ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
 
-- consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
-
-- WIP - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
-	- done in Value.set(value)
-	- done in Map.set(key, value)
+- DONE - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
+	- done in Value.setVal(value)
+	- done in Map.set(key, value) via use of class constructors
 	- done in List on push/unshift/splice/replace etc
-	- need more tests for Struct
+	- done Struct via .get().setVal()
 
 - WIP - typed values, - cannot set() to anything but the exact type (throws TypeError)
 	- done Decimal
@@ -32,6 +30,8 @@
 
 - performance improvments (currently about 5-10% slower than backbone for object create-update-read `npm run bench`)
 
+- consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
+
 - make val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
 	- subclasses should implement _val(), called by standard val()
 	- subclasses should implement _get(), called by standard get()
@@ -39,7 +39,7 @@
 
 - more array operations and better accessors, eg slice(), map (map and mapv), filter (filter and filterv), negative indexing, range indexing, etc
 
-- constructors could/should use .setVal(value) for consistency so that values are only ever set in one place (or vice-versa)
+- setVal() reuses constructor
 
 - additional convenience value types
 	- UUID

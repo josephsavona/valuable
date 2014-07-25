@@ -89,7 +89,7 @@ var MapProto = {
       }
     }
     this.assertValidValue(rawValue);
-    Map.apply(this, rawValue);
+    MapConstructor.apply(this, rawValue);
     this._notify();
   },
 

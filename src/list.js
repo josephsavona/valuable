@@ -111,7 +111,7 @@ var ListProto = {
     for (ix = 0; ix < this._list.length; ix++) {
       this._list[ix].destroy();
     }
-    List.apply(this, rawValue);
+    ListConstructor.apply(this, rawValue);
     this._notify();
   },
 
@@ -164,10 +164,13 @@ var ListProto = {
 
 var List = inherits(Value, ListConstructor, ListProto, {});
 
-List.of = function List$$of(klass) {
+List.assertValidType = function List$$assertValidType(klass) {
   assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
     'List(): requires a subclass of Value as the type');
+};
 
+List.of = function List$$of(klass) {
+  List.assertValidType(klass);
   var proto = {type: klass};
   return inherits(List, function MyList(value) {
     List.call(this, value);
@@ -175,8 +178,7 @@ List.of = function List$$of(klass) {
 };
 
 List.inherits = function List$$inherits(klass, proto, statics) {
-  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
-    'List(): requires a subclass of Value as the type');
+  List.assertValidType(klass);
   assert.ok(!proto || _.isPlainObject(proto),
     'List(): proto is an optional object');
   assert.ok(!statics || _.isPlainObject(statics),

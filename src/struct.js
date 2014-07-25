@@ -36,13 +36,24 @@ var StructProto = {
     assert.ok(typeof key === 'string', 'Struct(): key must be string');
     assert.ok(key in this.properties, 'Struct(): key must be a defined property');
     this._map[key].setVal(value);
+  },
+  setVal: function Struct$setVal(value) {
+    var key,
+        rawValue = (map instanceof Value) ? map.val() : map;
+    for (key in this._map) {
+      if (this._map.hasOwnProperty(key)) {
+        this._map[key].destroy();
+      }
+    }
+    this.assertValidValue(rawValue);
+    StructConstructor.apply(this, rawValue);
+    this._notify();
   }
 };
 
 var Struct = inherits(Map, StructConstructor, StructProto, {});
 
-Struct.schema = function Struct$$schema(schema) {
-  var proto;
+Struct.assertValidSchema = function Struct$$assertValidSchema(schema) {
   assert.ok(_.isPlainObject(schema),
     'Struct(): schema is a required object');
 
@@ -53,7 +64,11 @@ Struct.schema = function Struct$$schema(schema) {
         'Struct(): all schema values must be Value or a subclass');
     }
   }
+};
 
+Struct.schema = function Struct$$schema(schema) {
+  var proto;
+  Struct.assertValidSchema(schema);
   proto = {properties: schema};
 
   return inherits(Struct, function MyStruct(value) {
@@ -62,16 +77,7 @@ Struct.schema = function Struct$$schema(schema) {
 };
 
 Struct.inherits = function Struct$$inherits(schema, proto, statics) {
-  assert.ok(_.isPlainObject(schema),
-    'Struct(): schema is a required object');
-
-  for (var key in schema) {
-    if (schema.hasOwnProperty(key)) {
-      assert.ok(typeof schema[key] === 'function' &&
-        (schema[key].prototype instanceof Value || schema[key] === Value || schema[key] === Valueable),
-        'Struct(): all schema values must be Value or a subclass');
-    }
-  }
+  Struct.assertValidSchema(schema);
   assert.ok(!proto || _.isPlainObject(proto),
     'Struct(): proto is an optional object');
   assert.ok(!statics || _.isPlainObject(statics),
