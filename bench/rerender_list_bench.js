@@ -8,17 +8,16 @@ function setupDom() {
   global.document = jsdom.jsdom();
   global.window = document.createWindow();
   global.navigator = window.navigator;
-  global.React = require('react/addons');
 }
 
 function teardownDom() {
   delete global.document;
   delete global.window;
   delete global.navigator;
-  delete global.React;
 }
 
 setupDom();
+var React = require('react/addons');
 
 var BModel = Backbone.Model.extend({
   initialize: function() {}
@@ -89,24 +88,24 @@ new Benchmark.Suite('List Rendering with Update')
 .add('Backbone', function() {
   var models = new BCollection(initialStateBackbone);
   setupDom();
-  React.addons.TestUtils.renderIntoDocument(BListView({models: models}));
+  React.renderComponent(BListView({models: models}), document.body);
   models.at(updateIndex).set('label', 'changed!');
-  React.addons.TestUtils.renderIntoDocument(BListView({models: models}));
+  React.renderComponent(BListView({models: models}), document.body);
   teardownDom();
   return models.models[updateIndex].attributes.label;
 }, {
-  minSamples: 200
+  minSamples: 20
 })
 .add('Valuable', function() {
   var models = VCollection(initialStateValuable);
   setupDom();
-  React.addons.TestUtils.renderIntoDocument(VListView({models: models}));
+  React.renderComponent(VListView({models: models}), document.body);
   models.at(Math.floor(length/2)).set('label', 'changed!');
-  React.addons.TestUtils.renderIntoDocument(VListView({models: models}));
+  React.renderComponent(VListView({models: models}), document.body);
   teardownDom();
   return models.val()[updateIndex].label;
 }, {
-  minSamples: 200
+  minSamples: 20
 })
 .on('complete', function() {
   console.log(this.name);
