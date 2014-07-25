@@ -1,8 +1,24 @@
 var Valuable = require('../index'),
     _ = require('lodash'),
-    React = require('react'),
+    jsdom = require('jsdom'),
     Backbone = require('backbone'),
     Benchmark = require('benchmark');
+
+function setupDom() {
+  global.document = jsdom.jsdom();
+  global.window = document.createWindow();
+  global.navigator = window.navigator;
+  global.React = require('react/addons');
+}
+
+function teardownDom() {
+  delete global.document;
+  delete global.window;
+  delete global.navigator;
+  delete global.React;
+}
+
+setupDom();
 
 var BModel = Backbone.Model.extend({
   initialize: function() {}
@@ -29,7 +45,7 @@ var BListView = React.createClass({
   render: function() {
     return React.DOM.div({},
       this.props.models.map(function(model) {
-        return ItemView({model: model});
+        return BItemView({key: model.cid, model: model});
       })
     );
   }
@@ -48,7 +64,7 @@ var VListView = React.createClass({
   render: function() {
     return React.DOM.div({},
       this.props.models.map(function(model) {
-        return ItemView({model: model});
+        return VItemView({key: model.val('id'), model: model});
       })
     );
   },
@@ -72,14 +88,22 @@ var initialStateValuable = _.cloneDeep(initializeState);
 new Benchmark.Suite('List Rendering with Update')
 .add('Backbone', function() {
   var models = new BCollection(initialStateBackbone);
+  setupDom();
+  React.addons.TestUtils.renderIntoDocument(BListView({models: models}));
   models.at(updateIndex).set('label', 'changed!');
+  React.addons.TestUtils.renderIntoDocument(BListView({models: models}));
+  teardownDom();
   return models.models[updateIndex].attributes.label;
 }, {
   minSamples: 200
 })
 .add('Valuable', function() {
   var models = VCollection(initialStateValuable);
+  setupDom();
+  React.addons.TestUtils.renderIntoDocument(VListView({models: models}));
   models.at(Math.floor(length/2)).set('label', 'changed!');
+  React.addons.TestUtils.renderIntoDocument(VListView({models: models}));
+  teardownDom();
   return models.val()[updateIndex].label;
 }, {
   minSamples: 200
