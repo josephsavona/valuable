@@ -11,7 +11,9 @@ var StructConstructor = function Struct(map) {
   assert.ok(this.properties && _.isPlainObject(this.properties),
     'Struct(): must inherit and provide prototype.properties (be sure to use `*new* YourStructSubclass(...)`');
 
-  Map.call(this, map);
+  Value.call(this, map);
+  this._map = {};
+  this._raw = {};
     
   // custom property instantiation for only the defined properties
   map = map || {};
@@ -38,15 +40,19 @@ var StructProto = {
     this._map[key].setVal(value);
   },
   setVal: function Struct$setVal(value) {
-    var key,
-        rawValue = (map instanceof Value) ? map.val() : map;
-    for (key in this._map) {
-      if (this._map.hasOwnProperty(key)) {
-        this._map[key].destroy();
+    var rawValue = (value instanceof Value) ? value.val() : value,
+        key;
+    this.assertValidValue(rawValue);
+    for (key in this.properties) {
+      if (!this.properties.hasOwnProperty(key)) {
+        continue;
+      }
+      if (key in rawValue) {
+        this._map[key].setVal(rawValue[key])
+      } else {
+        this.del(key);
       }
     }
-    this.assertValidValue(rawValue);
-    StructConstructor.apply(this, rawValue);
     this._notify();
   }
 };

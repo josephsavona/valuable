@@ -83,13 +83,23 @@ var MapProto = {
   setVal: function Map$setVal(map) {
     var key,
         rawValue = (map instanceof Value) ? map.val() : map;
+    this.assertValidValue(rawValue);
     for (key in this._map) {
       if (this._map.hasOwnProperty(key)) {
         this._map[key].destroy();
       }
     }
-    this.assertValidValue(rawValue);
-    MapConstructor.apply(this, rawValue);
+    this._map = {};
+    this._raw = {};
+
+    for (key in map) {
+      if (!map.hasOwnProperty(key)) {
+        continue;
+      }
+      this._map[key] = this.type(map[key]);
+      this._map[key]._parent = this;
+      this._raw[key] = this._map[key].val();
+    }
     this._notify();
   },
 

@@ -111,7 +111,13 @@ var ListProto = {
     for (ix = 0; ix < this._list.length; ix++) {
       this._list[ix].destroy();
     }
-    ListConstructor.apply(this, rawValue);
+    this._list = [];
+    this._raw = [];
+    for (ix = 0; ix < rawValue.length; ix++) {
+      this._list[ix] = this.type(rawValue[ix]);
+      this._list[ix]._parent = this;
+      this._raw[ix] = this._list[ix].val();
+    }
     this._notify();
   },
 

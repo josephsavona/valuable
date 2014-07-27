@@ -12,17 +12,33 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('Struct', function() {
-  var MyStruct;
+  var MyStruct, properties, sample, emptySample;
 
   beforeEach(function() {
-    var properties = {
+    properties = {
       map: Map,
       list: List,
       literal: Value,
       decimal: Decimal,
       str: Str,
       bool: Bool
-    }
+    };
+    sample = {
+      map: {key: 'value'},
+      list: ['item'],
+      literal: 123,
+      decimal: 98.6,
+      str: 'hi',
+      bool: true
+    };
+    emptySample = {
+      map: {},
+      list: [],
+      literal: undefined,
+      decimal: 0,
+      bool: false,
+      str: ''
+    };
     MyStruct = Struct.schema(properties);
   });
 
@@ -62,14 +78,7 @@ describe('Struct', function() {
     assert.ok(struct.get('map') instanceof Map);
     assert.ok(struct.get('list') instanceof List);
     assert.ok(struct.get('literal') instanceof Value);
-    assert.deepEqual(struct.val(), {
-      map: {},
-      list: [],
-      literal: undefined,
-      decimal: 0,
-      bool: false,
-      str: ''
-    });
+    assert.deepEqual(struct.val(), emptySample);
   });
 
   it('constructs instances with the given values for defined property types', function() {
@@ -161,5 +170,23 @@ describe('Struct', function() {
         })
       })
     })
+  });
+
+  it('constructs custom subclasses with Struct.inherits()', function() {
+    var SubStruct = Struct.inherits(properties, {
+      proxyVal: function() {
+        return this.val();
+      }
+    });
+    var struct = SubStruct(sample);
+    assert.deepEqual(struct.val(), sample, 'val() works');
+    assert.deepEqual(struct.proxyVal(), sample, 'instance methods work');
+  });
+
+  it('can reset the value with setVal()', function() {
+    var struct = MyStruct({});
+    assert.deepEqual(struct.val(), emptySample);
+    struct.setVal(sample);
+    assert.deepEqual(struct.val(), sample);
   });
 });
