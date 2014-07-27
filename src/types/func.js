@@ -3,12 +3,12 @@ var assert = require('assert'),
     Value = require('../value'),
     inherits = require('../inherits');
 
-var Func = function Func(value) {
+var FuncConstructor = function Func(value) {
   Value.call(this, value);
   assert.equal(typeof this._raw, 'function', 'Func(): must specify a function value');
 };
 
-var proto = {
+var FuncProto = {
   assertValidValue: function Func$assertValidValue(val) {
     assert.equal(typeof val, 'function', 'Func(): value must be a function');
   },
@@ -22,4 +22,6 @@ var proto = {
   }
 };
 
-module.exports = inherits(Value, Func, proto);
+var Func = inherits(Value, FuncConstructor, FuncProto, {});
+
+module.exports = Func;
