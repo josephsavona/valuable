@@ -50,7 +50,7 @@ var StructProto = {
       if (key in rawValue) {
         this._map[key].setVal(rawValue[key])
       } else {
-        this.del(key);
+        this._map[key].setVal(void 0);
       }
     }
     this._notify();
