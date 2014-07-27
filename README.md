@@ -32,7 +32,10 @@ value.get('name').val() // => '4 numbers'
 npm install --save valuable
 ```
 
-`valuable` is new, but extensively tested and with a stable API. Try it for side projects and give us feedback. Browser support is modern browsers and IE9+ (baiscally anything that supports `Object.create()` and `Function.prototype.bind()`).
+`valuable` is new but ready to try:
+- Extensively tested, stable API
+- Benchmarks show performance on par and better than Backbone (2x faster on list item updates)
+- Browser support is modern browsers and IE9+
 
 # Example - TodoMVC
 
