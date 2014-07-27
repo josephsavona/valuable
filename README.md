@@ -186,11 +186,11 @@ ints.push(true); // throws error - value is of wrong type
 
 ## `Struct`
 
-Allows you to define object-like structures with a defined set of keys, each with a specific type. `Struct`s cannot be created directly but must be subclassed with `schema()` or `inherits()`.
+Allows you to define object-like structures with a defined set of keys, each with a specific type. `Struct`s cannot be created directly but must be subclassed with `schema()` or `inherits()`. `Struct` inherits from `Map` and has all the same instance methods eg `set()`, `val()`, etc.
 
 ### `Struct.schema({...schema...})`
 
-Shortcut to define a Struct type with a specific schema but no custom instance methods. Example:
+Shortcut to define a Struct type with a specific schema (property values are `Value` subclasses). Example:
 
 ```javascript
 var Person = Valuable.Struct.schema({
