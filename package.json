@@ -1,6 +1,6 @@
 {
   "name": "valuable",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Observable values, maps, and lists",
   "main": "index.js",
   "scripts": {
