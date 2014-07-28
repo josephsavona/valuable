@@ -18,7 +18,7 @@ describe('Map', function() {
   });
   afterEach(function() {
     delete Object.prototype.prototypeKey;
-  })
+  });
 
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
@@ -156,6 +156,16 @@ describe('Map', function() {
     });
   });
 
+  it('unwraps wrapped values in setVal()', function() {
+    rawValues.forEach(function(val) {
+      var map = Map({key: val}),
+          map2 = Map({newKey: 'new value'}); // using a different key here to check that the old key is destroyed
+      map.setVal(map2);
+      assert.deepEqual(map.val(), map2.val());
+      assert.deepEqual(map.val(), {newKey: 'new value'});
+    });
+  });
+
   it('unwraps wrapped values in set()', function() {
     rawValues.forEach(function(val) {
       var wrapped = Value(val),
@@ -191,23 +201,21 @@ describe('Map', function() {
     {klass: Str, label: 'Str', test: _.isString},
     {klass: Bool, label: 'Bool', test: _.isBoolean}
   ];
-  _.forEach(types, function(type) {
-    rawValues.forEach(function(val) {
-      if (type.test.call(_, val)) {
-        var label = 'Map.of(' + type.label + ') OK ' + typeof val;
-        it(label, function() {
+  it('typed maps accept/reject correct types', function () {
+    _.forEach(types, function(type) {
+      rawValues.forEach(function(val) {
+        if (type.test.call(_, val)) {
+          var label = 'Map.of(' + type.label + ') OK ' + typeof val;
           assert.doesNotThrow(function() {
             Map.of(type.klass)({key: val});
           }, label);
-        });
-      } else {
-        var label = 'Map.of(' + type.label + ') rejects ' + typeof val;
-        it(label, function() {
+        } else {
+          var label = 'Map.of(' + type.label + ') rejects ' + typeof val;
           assert.throws(function() {
             Map.of(type.klass)({key: val});
           }, Error, null, label);
-        });
-      }
+        }
+      });
     });
   });
 
@@ -240,6 +248,9 @@ describe('Map', function() {
     klasses.forEach(function(klass) {
       assert.doesNotThrow(function() {
         Map.inherits(klass, {});
+      });
+      assert.doesNotThrow(function() {
+        Map.of(klass);
       });
     });
   });

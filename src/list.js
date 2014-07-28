@@ -85,7 +85,6 @@ var ListProto = {
   },
 
   get: function List$get(ix) {
-    console.warn('List$get(): deprecated: please use List$at() instead');
     assert.ok(typeof ix === 'number' && ix >= 0, 'List(): index must be undefined or a positive integer');
     return this._list[ix];
   },
@@ -146,9 +145,19 @@ var ListProto = {
     return this._list.forEach(fn);
   },
 
+  eachv: function List$eachv(fn) {
+    assert.equal(typeof fn, 'function', 'List(): must provide function');
+    return this._raw.forEach(fn);
+  },
+
   map: function List$map(fn) {
     assert.equal(typeof fn, 'function', 'List(): must provide function');
     return this._list.map(fn);
+  },
+
+  mapv: function List$mapv(fn) {
+    assert.equal(typeof fn, 'function', 'List(): must provide function');
+    return this._raw.map(fn);
   },
 
   _updateChild: function List$private$updateChild(child, rawValue) {
@@ -164,6 +173,17 @@ var ListProto = {
 };
 
 var List = inherits(Value, ListConstructor, ListProto, {});
+
+
+Object.defineProperties(List.prototype, {
+  length: {
+    get: function List$length() {
+      return this._raw.length;
+    },
+    enumerable: false,
+    configurable: false
+  }
+});
 
 List.assertValidType = function List$$assertValidType(klass) {
   assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Value || klass === Valueable),

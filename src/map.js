@@ -92,11 +92,11 @@ var MapProto = {
     this._map = {};
     this._raw = {};
 
-    for (key in map) {
-      if (!map.hasOwnProperty(key)) {
+    for (key in rawValue) {
+      if (!rawValue.hasOwnProperty(key)) {
         continue;
       }
-      this._map[key] = this.type(map[key]);
+      this._map[key] = this.type(rawValue[key]);
       this._map[key]._parent = this;
       this._raw[key] = this._map[key].val();
     }

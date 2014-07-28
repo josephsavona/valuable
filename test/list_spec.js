@@ -31,6 +31,9 @@ describe('List', function() {
       }
       assert.throws(function() {
         List().at(val);
+      }, Error, null, 'at() takes int');
+      assert.throws(function() {
+        List().get(val);
       }, Error, null, 'get() takes int');
       assert.throws(function() {
         List().val(val);
@@ -46,6 +49,25 @@ describe('List', function() {
       assert.throws(function() {
         List(val);
       });
+    });
+  });
+
+  it('can be created with a wrapped list', function() {
+    rawValues.forEach(function(val) {
+      var value = List([val]),
+          value2 = List(value);
+      assert.deepEqual(value2.val(), [val]);
+      assert.deepEqual(value.val(), value2.val());
+    });
+  });
+
+  it('can be updated with a wrapped list in setVal()', function() {
+    rawValues.forEach(function(val) {
+      var value = List([val]),
+          value2 = List([0,1,2,3]);
+      value2.setVal(value);
+      assert.deepEqual(value2.val(), [val]);
+      assert.deepEqual(value.val(), value2.val());
     });
   });
 
@@ -67,7 +89,9 @@ describe('List', function() {
       var value = List();
       value.push(val);
       assert.ok(value.at(0) instanceof Value, 'wraps values in Value');
+      assert.ok(value.get(0) instanceof Value, 'wraps values in Value');
       assert.deepEqual(value.at(0).val(), val, 'wrapped value has the set value');
+      assert.deepEqual(value.get(0).val(), val, 'wrapped value has the set value');
     })
   });
 
@@ -133,6 +157,12 @@ describe('List', function() {
     });
   });
 
+  it('does nothing popping/unshifting from empty list', function() {
+    var value = List();
+    assert.deepEqual(value.pop(), void 0);
+    assert.deepEqual(value.shift(), void 0);
+  });
+
   it('unwraps wrapped values in constructor', function() {
     rawValues.forEach(function(val) {
       var wrapped = Value(val),
@@ -184,6 +214,15 @@ describe('List', function() {
     });
   });
 
+  it('returns the list length', function() {
+    var value = List();
+    assert.equal(value.length, 0);
+    value.push(1);
+    assert.equal(value.length, 1);
+    value.pop();
+    assert.equal(value.length, 0);
+  });
+
   it('nests lists', function() {
     var list = [0, [1, 2]],
         value = List(list),
@@ -193,9 +232,12 @@ describe('List', function() {
     assert.deepEqual(value.val(), list);
     assert.deepEqual(value.val(0), list[0]);
     assert.deepEqual(value.at(0).val(), list[0]);
+    assert.deepEqual(value.get(0).val(), list[0]);
     assert.deepEqual(value.val(1), list[1]);
     assert.deepEqual(value.at(1).val(), list[1]);
+    assert.deepEqual(value.get(1).val(), list[1]);
     assert.ok(value.at(1) instanceof List, 'nested list should be a List');
+    assert.ok(value.get(1) instanceof List, 'nested list should be a List');
 
     // nesting get/val test
     assert.deepEqual(value.at(1).at(1).val(), list[1][1]);
@@ -215,23 +257,21 @@ describe('List', function() {
     {klass: Str, label: 'Str', test: _.isString},
     {klass: Bool, label: 'Bool', test: _.isBoolean}
   ];
-  _.forEach(types, function(type) {
-    rawValues.forEach(function(val) {
-      if (type.test.call(_, val)) {
-        var label = 'List.of(' + type.label + ') OK ' + typeof val;
-        it(label, function() {
+  it('typed lists accept/reject correct types', function () {
+    _.forEach(types, function(type) {
+      rawValues.forEach(function(val) {
+        if (type.test.call(_, val)) {
+          var label = 'List.of(' + type.label + ') OK ' + typeof val;
           assert.doesNotThrow(function() {
             List.of(type.klass)([val]);
           }, label);
-        });
-      } else {
-        var label = 'List.of(' + type.label + ') rejects ' + typeof val;
-        it(label, function() {
+        } else {
+          var label = 'List.of(' + type.label + ') rejects ' + typeof val;
           assert.throws(function() {
             List.of(type.klass)([val]);
           }, Error, null, label);
-        });
-      }
+        }
+      });
     });
   });
 
@@ -261,7 +301,44 @@ describe('List', function() {
       assert.doesNotThrow(function() {
         List.inherits(klass, {});
       });
+      assert.doesNotThrow(function() {
+        List.of(klass);
+      })
     });
+  });
+
+  it('iterates over wrapped items with each()', function() {
+    var value = List([1,2,3,4]),
+        cb = sinon.spy();
+    value.each(cb);
+    assert.equal(cb.callCount, value.length);
+    assert.equal(cb.args[0][0].val(), 1);
+    assert.equal(cb.args[1][0].val(), 2);
+    assert.equal(cb.args[2][0].val(), 3);
+    assert.equal(cb.args[3][0].val(), 4);
+  });
+
+  it('iterates over items literal values with eachv()', function() {
+    var value = List([1,2,3,4]),
+        cb = sinon.spy();
+    value.eachv(cb);
+    assert.equal(cb.callCount, value.length);
+    assert.equal(cb.args[0][0], 1);
+    assert.equal(cb.args[1][0], 2);
+    assert.equal(cb.args[2][0], 3);
+    assert.equal(cb.args[3][0], 4);
+  });
+
+  it('maps the literal values with map()', function() {
+    var value = List([1,2,3,4]),
+        cb = sinon.spy(function(x) { return x * x; }),
+        mapped = value.mapv(cb);
+    assert.equal(cb.callCount, value.length);
+    assert.equal(cb.args[0][0], 1);
+    assert.equal(cb.args[1][0], 2);
+    assert.equal(cb.args[2][0], 3);
+    assert.equal(cb.args[3][0], 4);
+    assert.deepEqual(mapped, [1,4,9,16]);
   });
 });
  

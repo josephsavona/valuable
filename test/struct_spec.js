@@ -14,6 +14,15 @@ var assert = require('chai').assert,
 describe('Struct', function() {
   var MyStruct, properties, sample, emptySample;
 
+  // need to ensure that any Object.prototype hacking
+  // will not interfere (also helps ensure 100% test coverage)
+  beforeEach(function() {
+    Object.prototype.prototypeKey = 'prototypeKey';
+  });
+  afterEach(function() {
+    delete Object.prototype.prototypeKey;
+  });
+
   beforeEach(function() {
     properties = {
       map: Map,
@@ -108,6 +117,19 @@ describe('Struct', function() {
       decimal: decimal,
       bool: bool,
       str: str
+    });
+  });
+
+  it('unwraps wrapped values in setVal()', function() {
+    rawValues.forEach(function(val) {
+      var s1 = MyStruct(sample),
+          s2 = MyStruct({bool: true});
+      var newValue = _.cloneDeep(emptySample);
+      newValue.bool = true;
+
+      s1.setVal(s2);
+      assert.deepEqual(s1.val(), s2.val());
+      assert.deepEqual(s1.val(), newValue);
     });
   });
 
