@@ -4,7 +4,6 @@ var rawValues = [
   99999,
   NaN,
   null,
-  // undefined,
   true,
   false,
   new Date(),

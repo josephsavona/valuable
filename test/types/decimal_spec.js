@@ -57,6 +57,21 @@ describe('Decimal', function() {
     });
   });
 
+  it('throws if helper function args are not numbers (add/eq/gt etc)', function() {
+    rawValues.forEach(function(val) {
+      if (_.isNumber(val)) {
+        return;
+      }
+      var d = Decimal();
+      var methods = ['add', 'sub', 'mult', 'div', 'eq', 'ne', 'lt', 'lte', 'gt', 'gte'];
+      methods.forEach(function(method) {
+        assert.throws(function() {
+          d[method](val);
+        }, null, null, d.val() + '.' + method + '(' + val + ')');
+      });
+    });
+  });
+
   var updates = [{
     fn:'inc',
     set: 1,

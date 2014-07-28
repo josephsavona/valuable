@@ -13,7 +13,7 @@ describe('Str', function() {
 
   it('cannot construct from non-string values', function() {
     rawValues.forEach(function(val) {
-      if (_.isString(val) || val === null || typeof val === 'undefined') {
+      if (_.isString(val)) {
         return;
       }
       assert.throws(function() {
@@ -34,9 +34,9 @@ describe('Str', function() {
     });
   });
 
-  it('cannot set to a non-number value', function() {
+  it('cannot set to a non-string value', function() {
     rawValues.forEach(function(val) {
-      if (_.isString(val) || val === null || typeof val === 'undefined') {
+      if (_.isString(val)) {
         return;
       }
       d = Str();
@@ -56,6 +56,32 @@ describe('Str', function() {
       assert.deepEqual(d.val(), val, 'value should match');
       assert.ok(typeof d.val() === 'string', 'value should be a string');
       assert.equal(d.length, val.length, 'length should match');
+    });
+  });
+
+  it('cannot append/prepend/wrap/update with a non-string value', function() {
+    rawValues.forEach(function(val) {
+      if (_.isString(val)) {
+        return;
+      }
+      d = Str();
+      assert.throws(function() {
+        d.append(val);
+      });
+      assert.throws(function() {
+        d.prepend(val);
+      });
+      assert.throws(function() {
+        d.wrap(val, '');
+      });
+      assert.throws(function() {
+        d.wrap('', val);
+      });
+      assert.throws(function() {
+        d.update(function(x) {
+          return val;
+        });
+      });
     });
   });
 
