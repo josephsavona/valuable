@@ -1,48 +1,30 @@
 /* @jsx React.DOM */
 var uuid = require('node-uuid'),
     React = require('react'),
-    models = require('./js/models');
-
-var todoList = models.TodoList([]);
+    TodoApp = require('./js/models');
 
 var TodoView = React.createClass({
-  getInitialState: function() {
-    return {
-      todos: todoList,
-      todo: models.Todo({
-        id: uuid.v4()
-      })
-    };
-  },
-  componentDidMount: function() {
-    this.observer = function() {
-      this.setState({
-        todos: this.state.todos,
-        todo: this.state.todo
-      });
-    }.bind(this);
-    this.state.todos.observe(this.observer);
-    this.state.todo.observe(this.observer);
-  },
-  componentWillUnmount: function() {
-    this.state.todos.unobserve(this.observer);
-    this.state.todo.unobserve(this.observer);
-  },
   addTodo: function(event) {
     event.preventDefault();
-    this.state.todos.push(this.state.todo);
-    this.state.todo.set('id', uuid.v4());
-    this.state.todo.set('title', '');
+    this.props.app.addTodo();
+  },
+  shouldComponentUpdate: function(newProps) {
+    // val is an immutable representation of the app state:
+    // if its the same object, nothing changed
+    return newProps.appVal !== this.props.appVal;
   },
   render: function() {
-    console.log(this.state.todos.val());
+    var edit = this.props.app.get('edit'),
+        todos = this.props.app.get('todos');
     return (
       <div id="main">
         <form id="newtodo" onSubmit={this.addTodo}>
-          <input className="edit" type="text" value={this.state.todo.get('title').val()} onChange={this.state.todo.get('title').handleChange()} placeholder="Add todo" autoFocus />
+          <input className="edit" type="text" placeholder="Add todo" autoFocus
+            value={edit.get('title').val()}
+            onChange={edit.get('title').handleChange()} />
         </form>
         <ul id="todo-list">
-          {this.state.todos.map(function(todo) {
+          {todos.map(function(todo) {
             return (
               <li key={todo.val('id')} onClick={todo.toggle.bind(todo)}>
                 <div className="view">
@@ -65,4 +47,10 @@ var TodoView = React.createClass({
 });
 
 window.React = React;
-React.renderComponent(TodoView(), document.getElementById('todoapp'));
+TodoApp.observe(function(val) {
+  React.renderComponent(TodoView({
+    app: TodoApp,
+    appVal: val
+  }), document.getElementById('todoapp'));
+});
+TodoApp.init(); // force a change to start rendering
