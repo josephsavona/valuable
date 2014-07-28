@@ -254,5 +254,14 @@ describe('List', function() {
     assert.equal(sum, 15, 'prototype method works');
     assert.deepEqual(list.val(), [0,1,2,3,4,5], 'val() returns original value');
   });
+
+  it('can be inherited with any Value subclass or Valuable', function() {
+    var klasses = [Value, Valueable, Valueable.List, Valueable.Map, Valueable.Decimal, Valueable.Str];
+    klasses.forEach(function(klass) {
+      assert.doesNotThrow(function() {
+        List.inherits(klass, {});
+      });
+    });
+  });
 });
  

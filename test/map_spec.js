@@ -9,7 +9,17 @@ var assert = require('chai').assert,
     Str = require('../src/types/str'),
     rawValues = require('./mock_values');
 
+
 describe('Map', function() {
+  // need to ensure that any Object.prototype hacking
+  // will not interfere (also helps ensure 100% test coverage)
+  beforeEach(function() {
+    Object.prototype.prototypeKey = 'prototypeKey';
+  });
+  afterEach(function() {
+    delete Object.prototype.prototypeKey;
+  })
+
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
       var value = Map();
@@ -122,6 +132,18 @@ describe('Map', function() {
     });
   });
 
+  it('ignores deletions of undefined keys', function() {
+    var value = Map(),
+        observer = sinon.spy(),
+        deleted;
+    value.observe(observer);
+    deleted = value.del('key');
+    assert.notOk(value.hasKey('key'));
+    assert.ok(typeof deleted === 'undefined', 'nothing to delete');
+    assert.notOk(observer.called, 'no change, observer not called');
+    assert.deepEqual(value.val(), {});
+  });
+
   it('unwraps wrapped values in constructor', function() {
     rawValues.forEach(function(val) {
       var wrapped = Value(val),
@@ -194,7 +216,9 @@ describe('Map', function() {
       sum: function DecimalMap$sum() {
         var sum = 0;
         for (key in this._raw) {
-          sum += this._raw[key];
+          if (this._raw.hasOwnProperty(key)) {
+            sum += this._raw[key];
+          }
         }
         return sum;
       }
@@ -209,6 +233,15 @@ describe('Map', function() {
     assert.ok(map instanceof Value);
     assert.equal(sum, 15, 'prototype method works');
     assert.deepEqual(map.val(), {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5}, 'val() returns original value');
+  });
+
+  it('can be inherited with any Value subclass or Valuable', function() {
+    var klasses = [Value, Valueable, Valueable.List, Valueable.Map, Valueable.Decimal, Valueable.Str];
+    klasses.forEach(function(klass) {
+      assert.doesNotThrow(function() {
+        Map.inherits(klass, {});
+      });
+    });
   });
 });
  

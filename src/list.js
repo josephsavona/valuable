@@ -166,7 +166,7 @@ var ListProto = {
 var List = inherits(Value, ListConstructor, ListProto, {});
 
 List.assertValidType = function List$$assertValidType(klass) {
-  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Value || klass === Valueable),
     'List(): requires a subclass of Value as the type');
 };
 

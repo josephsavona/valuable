@@ -139,7 +139,7 @@ var MapProto = {
 var Map = inherits(Value, MapConstructor, MapProto, {});
 
 Map.of = function Map$$of(klass) {
-  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Value || klass === Valueable),
     'Map(): requires a subclass of Value as the type');
 
   var proto = {type: klass};
@@ -149,7 +149,7 @@ Map.of = function Map$$of(klass) {
 };
 
 Map.inherits = function Map$$inherits(klass, proto, statics) {
-  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Valueable),
+  assert.ok(typeof klass === 'function' && (klass.prototype instanceof Value || klass === Value || klass === Valueable),
     'Map(): requires a subclass of Value as the type');
   assert.ok(!proto || _.isPlainObject(proto),
     'Map(): proto is an optional object');
