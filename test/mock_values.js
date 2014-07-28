@@ -16,6 +16,7 @@ var rawValues = [
   'string',
 ];
 
+// create single-item arrays wrapping each of the above values
 var length = rawValues.length;
 for (var ix = 0; ix < length; ix++) {
   rawValues.push([rawValues[ix]]);

@@ -3,14 +3,14 @@ var assert = require('assert'),
     Value = require('../value'),
     inherits = require('../inherits');
 
-var Str = function Str(value) {
+var StrConstructor = function Str(value) {
   Value.call(this, value);
   if (typeof this._raw === 'undefined') {
     this._raw = '';
   }
 };
 
-var proto = {
+var StrProto = {
   assertValidValue: function Str$assertValidValue(val) {
     assert.ok(typeof val === 'string', 'Str(): value must be a string');
   },
@@ -27,9 +27,6 @@ var proto = {
     this.assertValidValue(post);
     this.setVal(pre + this._raw + post);
   },
-  length: function() {
-    return this._raw.length;
-  },
   update: function Str$update(fn) {
     var val;
     assert.equal(typeof fn, 'function');
@@ -37,4 +34,16 @@ var proto = {
   }
 };
 
-module.exports = inherits(Value, Str, proto);
+var Str = inherits(Value, StrConstructor, StrProto);
+
+Object.defineProperties(Str.prototype, {
+  length: {
+    get: function Str$length() {
+      return this._raw.length;
+    },
+    enumerable: false,
+    configurable: false
+  }
+});
+
+module.exports = Str;
