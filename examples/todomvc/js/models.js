@@ -22,7 +22,8 @@ var TodoApp = Valuable.Struct.inherits(
   /* struct properties */
   {
     edit: Todo, // item to edit
-    todos: Valuable.List.of(Todo) // list generic; items are Todo
+    todos: Valuable.List.of(Todo), // list generic; items are Todo
+    history: Valuable.Undo
   },
   {
     addTodo: function() {
@@ -33,8 +34,13 @@ var TodoApp = Valuable.Struct.inherits(
       edit.set('completed', false);
     },
     init: function() {
+      var edit = this.get('edit'),
+          history = this.get('history');
+
       // force a change to start rendering
-      this.get('edit').set('id', uuid.v4());
+      edit.set('id', uuid.v4());
+      history.setVal(this.get('todos'));
+      history.setMax(25); // max number of undo/redo
     }
   }
 );

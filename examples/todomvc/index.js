@@ -15,7 +15,8 @@ var TodoView = React.createClass({
   },
   render: function() {
     var edit = this.props.app.get('edit'),
-        todos = this.props.app.get('todos');
+        todos = this.props.app.get('todos'),
+        history = this.props.app.get('history');
     return (
       <div id="main">
         <form id="newtodo" onSubmit={this.addTodo}>
@@ -41,6 +42,8 @@ var TodoView = React.createClass({
             );
           })}
         </ul>
+        <button type="button" onClick={history.undo.bind(history)}>Undo</button>
+        <button type="button" onClick={history.redo.bind(history)}>Redo</button>
       </div>
     );
   }
