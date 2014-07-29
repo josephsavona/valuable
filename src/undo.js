@@ -69,16 +69,11 @@ var UndoProto = {
     }
     // any change should clear the possible redo stack
     this._stack = this._stack.slice(0, this._index + 1);
-    if (source === this._lastSrc && source instanceof Str) {
-      // changes to the same string literal are replaced not recorded anew
-      this._stack[this._index] = val;
-    } else {
-      // complex types always record changes
-      // changes to a different literal type also record
-      this._lastSrc = source;
-      this._stack.push(val);
-      this._index++;  
-    }
+    // complex types always record changes
+    // changes to a different literal type also record
+    this._lastSrc = source;
+    this._stack.push(val);
+    this._index++;  
     this._compact();
   },
   _compact: function Undo$private$compact() {
@@ -89,6 +84,7 @@ var UndoProto = {
     }
   },
   setVal: function(watch) {
+    this.assertValidValue(watch);
     this._raw.unobserve(this._watch);
     UndoConstructor.call(this, watch);
   }

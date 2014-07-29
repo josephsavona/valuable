@@ -12,12 +12,6 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('Undo', function() {
-  var literals = [
-    {klass: Str, values: ['', 'hello', 'hello world']},
-    {klass: Bool, values: [true, false, false, true]},
-    {klass: Decimal, values: [0.1, 1, 5, 999]},
-  ];
-
   it('rejects anything other than a Value instance', function() {
     rawValues.forEach(function(val) {
       assert.throws(function() {
@@ -51,13 +45,21 @@ describe('Undo', function() {
   it('can undo/redo a change', function() {
     var value = Valueable('0'),
         undo = Undo(value);
+    // 0 -> (1)
     value.setVal('1');
     assert.ok(undo.canUndo());
+    assert.notOk(undo.canRedo());
+
+    // (0) -> 1
     undo.undo();
-    assert.deepEqual(value.val(), '0');
     assert.notOk(undo.canUndo());
     assert.ok(undo.canRedo());
+    assert.deepEqual(value.val(), '0');
+
+    // 0 -> (1)
     undo.redo();
+    assert.ok(undo.canUndo());
+    assert.notOk(undo.canRedo());
     assert.deepEqual(value.val(), '1');
   });
 
@@ -74,21 +76,56 @@ describe('Undo', function() {
     assert.notOk(undo.canUndo());
     assert.ok(undo.canRedo());
     
-    // 0 -> (1b)
+    // 0 -> (1b) -- removes previous '1'
     value.setVal('1b');
     assert.ok(undo.canUndo());
     assert.notOk(undo.canRedo());
     
     // (0) -> 1b
     undo.undo();
-    assert.deepEqual(value.val(), '0');
     assert.notOk(undo.canUndo());
     assert.ok(undo.canRedo());
+    assert.deepEqual(value.val(), '0');
     
     // 0 -> (1b)
     undo.redo();
     assert.ok(undo.canUndo());
     assert.notOk(undo.canRedo());
     assert.deepEqual(value.val(), '1b');
+  });
+
+  it('can change the watched Value via setVal()', function() {
+    rawValues.forEach(function(val) {
+      var undo = Valueable.Undo(Valueable());
+      assert.throws(function() {
+        undo.setVal(val);
+      });
+      assert.doesNotThrow(function() {
+        undo.setVal(Valueable(val));
+      });
+    });
+  });
+
+  it('can undo/redo only after setVal called', function() {
+    var value = Valueable('0'),
+        undo = Undo(Valueable());
+    value.setVal('1'); // change value before watching with Undo
+
+    // (1)
+    // start watching w Undo
+    undo.setVal(value);
+    assert.notOk(undo.canUndo());
+    assert.notOk(undo.canRedo());
+
+    // 1 -> (2)
+    value.setVal('2');
+    assert.ok(undo.canUndo());
+    assert.notOk(undo.canRedo());
+
+    // (1) -> 2
+    undo.undo();
+    assert.notOk(undo.canUndo());
+    assert.ok(undo.canRedo());
+    assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
   });
 });
