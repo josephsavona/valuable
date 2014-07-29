@@ -32,6 +32,10 @@ value.get('name').val() // => '4 numbers'
 npm install --save valuable
 ```
 
+```javascript
+var Valuable = require('valuable'); // use browserify/webpack
+```
+
 `valuable` is new but ready to try:
 - Extensively tested, stable API
 - Benchmarks show performance on par and better than Backbone (2x faster on list item updates)

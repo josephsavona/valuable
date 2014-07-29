@@ -16,10 +16,10 @@
 - DONE ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
 
 - DONE - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
-	- done in Value.setVal(value)
-	- done in Map.set(key, value) via use of class constructors
-	- done in List on push/unshift/splice/replace etc
-	- done Struct via .get().setVal()
+	- in Value.setVal(value)
+	- in Map.set(key, value) via use of class constructors
+	- in List on push/unshift/splice/replace etc
+	- Struct via .get().setVal()
 
 - DONE setVal() reuses constructor
 
@@ -45,12 +45,12 @@
 		Backbone x 73,730 ops/sec ±2.86% (69 runs sampled)
 		Valuable x 101,921 ops/sec ±1.62% (87 runs sampled)
 
-- WIP - typed values, - cannot set() to anything but the exact type (throws TypeError)
-	- done Decimal
-	- done Bool
-	- wip Str - needs tests
-	- DateTime
-	- Func
+- DONE - easy undo/redo functionality
+
+- DONE - core typed literal values, - cannot set() to anything but the exact type (throws TypeError)
+	- Decimal
+	- Bool
+	- Str
 
 - consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
 
@@ -58,6 +58,7 @@
 
 - additional convenience value types
 	- UUID
+	- DateTime
 	- Range - defines a min/max, attempting to set the value below/above will force the value back to min/max respectively (eg like a Int with min/max, but prevents going outside the range and never has an error)
 	- Email
 	- USPhone
