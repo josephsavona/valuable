@@ -86,21 +86,27 @@ var MapProto = {
         rawValue = (map instanceof Value) ? map.val() : map;
     this.assertValidValue(rawValue);
     for (key in this._map) {
-      if (this._map.hasOwnProperty(key)) {
+      if (this._map.hasOwnProperty(key) && !rawValue.hasOwnProperty(key)) {
         this._map[key].destroy();
+        delete this._map[key];
       }
     }
-    this._map = {};
     this._raw = {};
+    this._isSetVal = true;
 
     for (key in rawValue) {
       if (!rawValue.hasOwnProperty(key)) {
         continue;
       }
-      this._map[key] = this.type(rawValue[key]);
-      this._map[key]._parent = this;
+      if (key in this._map) {
+        this._map[key].setVal(rawValue[key]);
+      } else {
+        this._map[key] = this.type(rawValue[key]);
+        this._map[key]._parent = this;
+      }
       this._raw[key] = this._map[key].val();
     }
+    this._isSetVal = false;
     this._notify(this);
   },
 
@@ -133,7 +139,9 @@ var MapProto = {
       }
     }
     this._raw = raw;
-    this._notify(source);
+    if (this._isSetVal !== true) {
+      this._notify(source);  
+    }
   }
 };
 

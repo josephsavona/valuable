@@ -194,7 +194,7 @@ describe('Struct', function() {
     assert.deepEqual(struct.val(), sample);
   });
 
-  it.skip('get() is a lense into a Struct property value', function() {
+  it('get() is a lense into a Struct property value', function() {
     var struct = MyStruct(sample),
         strLense = struct.get('str'),
         listLense = struct.get('list');

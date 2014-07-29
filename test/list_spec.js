@@ -399,5 +399,19 @@ describe('List', function() {
     value.setVal([true]);
     assert.equal(observer.args[0][1], value);
   });
+
+  it('at() returns a lense into the targeted index', function() {
+    var value = List([ [ [ {key: 'value'} ] ] ]),
+        lense,
+        lense2;
+    lense = value.at(0).at(0).at(0).get('key');
+    assert.deepEqual(lense.val(), 'value');
+
+    value.setVal([ [ [ {key: 'new value'} ]]]);
+    lense2 = value.at(0).at(0).at(0).get('key')
+    assert.equal(lense, lense2);
+    assert.deepEqual(lense.val(), 'new value');
+    assert.deepEqual(lense2.val(), 'new value');
+  });
 });
  

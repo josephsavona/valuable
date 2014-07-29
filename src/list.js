@@ -105,18 +105,28 @@ var ListProto = {
 
   setVal: function List$setVal(list) {
     var ix = 0,
-        rawValue = (list instanceof Value) ? list.val() : list;
+        rawValue = (list instanceof Value) ? list.val() : list,
+        currentLength = this._list.length,
+        last;
     this.assertValidValue(rawValue);
-    for (ix = 0; ix < this._list.length; ix++) {
-      this._list[ix].destroy();
+
+    while (this._list.length > rawValue.length) {
+      last = this._list.pop();
+      last.destroy();
     }
-    this._list = [];
+
     this._raw = [];
+    this._isSetVal = true;
     for (ix = 0; ix < rawValue.length; ix++) {
-      this._list[ix] = this.type(rawValue[ix]);
-      this._list[ix]._parent = this;
+      if (ix < currentLength) {
+        this._list[ix].setVal(rawValue[ix]);
+      } else {
+        this._list[ix] = this.type(rawValue[ix]);
+        this._list[ix]._parent = this;
+      }
       this._raw[ix] = this._list[ix].val();
     }
+    this._isSetVal = false;
     this._notify(this);
   },
 
@@ -168,7 +178,9 @@ var ListProto = {
       raw[ix] = this._list[ix] === child ? rawValue : this._raw[ix];
     }
     this._raw = raw;
-    this._notify(source);
+    if (this._isSetVal !== true) {
+      this._notify(source);  
+    }
   }
 };
 
