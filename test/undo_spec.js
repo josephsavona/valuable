@@ -114,18 +114,41 @@ describe('Undo', function() {
     // (1)
     // start watching w Undo
     undo.setVal(value);
-    assert.notOk(undo.canUndo());
-    assert.notOk(undo.canRedo());
+    assert.notOk(undo.canUndo(), 'cannot undo');
+    assert.notOk(undo.canRedo(), 'cannot redo');
 
     // 1 -> (2)
     value.setVal('2');
-    assert.ok(undo.canUndo());
-    assert.notOk(undo.canRedo());
+    assert.ok(undo.canUndo(), 'can undo once new vaue is set');
+    assert.notOk(undo.canRedo(), 'cannot redo until after an undo');
 
     // (1) -> 2
     undo.undo();
-    assert.notOk(undo.canUndo());
-    assert.ok(undo.canRedo());
+    assert.notOk(undo.canUndo(), 'cannot undo once all changes undone');
+    assert.ok(undo.canRedo(), 'can redo once undo is called');
+    assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
+  });
+
+  it('can undo/redo only after setVal called (Undo starts undefined)', function() {
+    var value = Valueable('0'),
+        undo = Undo(); // <-- cann pass undefined
+    value.setVal('1'); // change value before watching with Undo
+
+    // (1)
+    // start watching w Undo
+    undo.setVal(value);
+    assert.notOk(undo.canUndo(), 'cannot undo');
+    assert.notOk(undo.canRedo(), 'cannot redo');
+
+    // 1 -> (2)
+    value.setVal('2');
+    assert.ok(undo.canUndo(), 'can undo once new vaue is set');
+    assert.notOk(undo.canRedo(), 'cannot redo until after an undo');
+
+    // (1) -> 2
+    undo.undo();
+    assert.notOk(undo.canUndo(), 'cannot undo once all changes undone');
+    assert.ok(undo.canRedo(), 'can redo once undo is called');
     assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
   });
 });

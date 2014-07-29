@@ -14,9 +14,22 @@ var UndoConstructor = function Undo(watch) {
     return new Undo(watch);
   }
 
+  // don't want to call Value constructor from within setVal
+  if (!('_raw' in this)) {
+    Value.call(this, watch);
+  }
+
+  // no value condition
+  if (typeof watch === 'undefined') {
+    this._stack = [];
+    this._index = 0;
+    return;
+  }
+
+  // Value condition
   this.assertValidValue(watch);
 
-  Value.call(this, watch);
+  this._raw = watch;
   this._stack = [watch.val()];
   this._index = 0;
   this._lastVal = void 0;
@@ -85,7 +98,9 @@ var UndoProto = {
   },
   setVal: function(watch) {
     this.assertValidValue(watch);
-    this._raw.unobserve(this._watch);
+    if (this._raw) {
+      this._raw.unobserve(this._watch);
+    }
     UndoConstructor.call(this, watch);
   }
 };
