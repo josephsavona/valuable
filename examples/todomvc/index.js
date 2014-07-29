@@ -42,8 +42,8 @@ var TodoView = React.createClass({
             );
           })}
         </ul>
-        <button type="button" onClick={history.undo.bind(history)}>Undo</button>
-        <button type="button" onClick={history.redo.bind(history)}>Redo</button>
+        {history.canUndo() ? <button type="button" onClick={history.undo.bind(history)}>Undo</button> : null}
+        {history.canRedo() ? <button type="button" onClick={history.redo.bind(history)}>Redo</button> : null}
       </div>
     );
   }
