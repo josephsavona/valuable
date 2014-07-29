@@ -254,5 +254,52 @@ describe('Map', function() {
       });
     });
   });
+
+  it('observe() has source of change as second param for set()', function() {
+    rawValues.forEach(function(val) {
+      var value = Map(),
+          observer = sinon.spy(),
+          key,
+          newKey;
+
+      value.observe(observer);
+      value.set('key', val);
+      key = value.get('key');
+      assert.equal(observer.args[0][1], key);
+      value.set('key', [val]);
+      newKey = value.get('key');
+      assert.equal(observer.args[1][1], newKey);
+    });
+  });
+
+  it('observe() has source of change as second param for get().setVal()', function() {
+    var value = Map({key: ''}),
+        observer = sinon.spy(),
+        key = value.get('key');
+
+    value.observe(observer);
+    value.get('key').setVal('diff1');
+    assert.equal(observer.args[0][1], key);
+    value.get('key').setVal('diff2');
+    assert.equal(observer.args[1][1], key);
+  });
+
+  it('observe() has source of change as second param for del()', function() {
+    var value = Map({key: ''}),
+        observer = sinon.spy(),
+        key = value.get('key');
+
+    value.observe(observer);
+    value.del('key');
+    assert.equal(observer.args[0][1], key);
+  });
+
+  it('observe() has source of change as second param for setVal()', function() {
+    var value = Map({}),
+        observer = sinon.spy();
+    value.observe(observer);
+    value.setVal({key: true});
+    assert.equal(observer.args[0][1], value);
+  });
 });
  

@@ -39,7 +39,7 @@ var ListProto = {
     var value = this.type(rawValue);
     value._parent = this;
     this._list.push(value);
-    this._updateChild(value, value.val());
+    this._updateChild(value, value.val(), value);
   },
 
   pop: function List$pop() {
@@ -52,7 +52,7 @@ var ListProto = {
     value.destroy(); 
     rawValue = raw.pop();
     this._raw = raw;
-    this._notify();
+    this._notify(value);
     return rawValue;
   },
 
@@ -62,7 +62,7 @@ var ListProto = {
     var value = this.type(rawValue);
     value._parent = this;
     this._list.unshift(value);
-    this._updateChild(value, value.val());
+    this._updateChild(value, value.val(), value);
   },
 
   shift: function List$shift() {
@@ -75,7 +75,7 @@ var ListProto = {
     value.destroy();
     rawValue = raw.shift();
     this._raw = raw;
-    this._notify();
+    this._notify(value);
     return rawValue;
   },
 
@@ -100,7 +100,7 @@ var ListProto = {
     var value = this.type(rawValue);
     this._list[ix] = value;
     this._list[ix]._parent = this;
-    this._updateChild(value, value.val());
+    this._updateChild(value, value.val(), value);
   },
 
   setVal: function List$setVal(list) {
@@ -117,7 +117,7 @@ var ListProto = {
       this._list[ix]._parent = this;
       this._raw[ix] = this._list[ix].val();
     }
-    this._notify();
+    this._notify(this);
   },
 
   val: function List$val(ix) {
@@ -160,7 +160,7 @@ var ListProto = {
     return this._raw.map(fn);
   },
 
-  _updateChild: function List$private$updateChild(child, rawValue) {
+  _updateChild: function List$private$updateChild(child, rawValue, source) {
     var ix, length, raw;
     length = this._list.length;
     raw = Array(length);
@@ -168,7 +168,7 @@ var ListProto = {
       raw[ix] = this._list[ix] === child ? rawValue : this._raw[ix];
     }
     this._raw = raw;
-    this._notify();
+    this._notify(source);
   }
 };
 

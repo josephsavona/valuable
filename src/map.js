@@ -47,7 +47,7 @@ var MapProto = {
     value = this.type(rawValue);
     this._map[key] = value;
     this._map[key]._parent = this;
-    this._updateChild(value, value.val());
+    this._updateChild(value, value.val(), value);
   },
 
   get: function Map$get(key) {
@@ -58,11 +58,12 @@ var MapProto = {
   del: function Map$del(key) {
     assert.ok(typeof key === 'string', 'Map(): key must be string');
 
-    var raw, rawValue;
+    var raw, rawValue, deleted;
     if (!(key in this._map)) {
       return;
     }
     // nested Values
+    deleted = this._map[key];
     this._map[key].destroy();
     delete this._map[key];
     // literal representation
@@ -70,7 +71,7 @@ var MapProto = {
     rawValue = raw[key];
     delete raw[key];
     this._raw = raw;
-    this._notify();
+    this._notify(deleted);
     return rawValue;
   },
 
@@ -100,7 +101,7 @@ var MapProto = {
       this._map[key]._parent = this;
       this._raw[key] = this._map[key].val();
     }
-    this._notify();
+    this._notify(this);
   },
 
   val: function Map$val(key) {
@@ -123,7 +124,7 @@ var MapProto = {
     return raw;
   },
 
-  _updateChild: function Map$private$updateChild(child, rawValue) {
+  _updateChild: function Map$private$updateChild(child, rawValue, source) {
     var key, raw;
     raw = {};
     for (key in this._map) {
@@ -132,7 +133,7 @@ var MapProto = {
       }
     }
     this._raw = raw;
-    this._notify();
+    this._notify(source);
   }
 };
 

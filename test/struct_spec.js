@@ -84,6 +84,9 @@ describe('Struct', function() {
   it('constructs instances of subclass with empty values for the defined property types', function() {
     var struct = MyStruct();
     assert.ok(struct instanceof MyStruct);
+    assert.ok(struct instanceof Struct);
+    assert.ok(struct instanceof Map);
+    assert.ok(struct instanceof Value);
     assert.ok(struct.get('map') instanceof Map);
     assert.ok(struct.get('list') instanceof List);
     assert.ok(struct.get('literal') instanceof Value);

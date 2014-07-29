@@ -83,6 +83,16 @@ describe('Value', function() {
     assert.ok(observer.calledWith(true), 'observer called only before unobserved');
   });
 
+  it('returns the original source of the change in observer', function() {
+    rawValues.forEach(function(val) {
+      var value = Value(),
+          observer = sinon.spy();
+      value.observe(observer);
+      value.setVal(val);
+      assert.equal(observer.args[0][1], value);
+    });
+  });
+
   it('always returns the current value (even if re-set() a ton)', function() {
     var value = Value();
     rawValues.forEach(function(val, ix) {

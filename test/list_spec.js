@@ -340,5 +340,64 @@ describe('List', function() {
     assert.equal(cb.args[3][0], 4);
     assert.deepEqual(mapped, [1,4,9,16]);
   });
+
+  it('observe() has source of change as second param for set()', function() {
+    rawValues.forEach(function(val) {
+      var value = List(),
+          observer = sinon.spy(),
+          key,
+          newKey;
+
+      value.observe(observer);
+      value.set(0, val);
+      key = value.at(0);
+      assert.equal(observer.args[0][1], key);
+      value.set(0, [val]);
+      newKey = value.at(0);
+      assert.equal(observer.args[1][1], newKey);
+    });
+  });
+
+  it('observe() has source of change as second param for at().setVal()', function() {
+    var value = List(['']),
+        observer = sinon.spy(),
+        key = value.at(0);
+
+    value.observe(observer);
+    value.at(0).setVal('diff1');
+    assert.equal(observer.args[0][1], key);
+    value.at(0).setVal('diff2');
+    assert.equal(observer.args[1][1], key);
+  });
+
+  it('observe() has source of change as second param for push()', function() {
+    var value = List([]),
+        observer = sinon.spy(),
+        key;
+
+    value.observe(observer);
+    value.push(true);
+    key = value.at(0);
+    assert.equal(observer.args[0][1], key);
+  });
+
+  it('observe() has source of change as second param for unshift()', function() {
+    var value = List([]),
+        observer = sinon.spy(),
+        key;
+
+    value.observe(observer);
+    value.unshift(true);
+    key = value.at(0);
+    assert.equal(observer.args[0][1], key);
+  });
+
+  it('observe() has source of change as second param for setVal()', function() {
+    var value = List([]),
+        observer = sinon.spy();
+    value.observe(observer);
+    value.setVal([true]);
+    assert.equal(observer.args[0][1], value);
+  });
 });
  

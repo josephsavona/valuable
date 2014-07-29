@@ -36,7 +36,7 @@ Value.prototype.setVal = function Value$setVal(value) {
   rawValue = (value instanceof Value) ? value.val() : value;
   this.assertValidValue(rawValue);
   this._raw = rawValue;
-  this._notify();
+  this._notify(this);
 };
 
 Value.prototype.destroy = function Value$destroy() {
@@ -47,13 +47,13 @@ Value.prototype.destroy = function Value$destroy() {
   this._handleChange = null;
 };
 
-Value.prototype._notify = function Value$private$_notify() {
+Value.prototype._notify = function Value$private$_notify(source) {
   var value = this._raw;
   if (this._parent) {
-    this._parent._updateChild(this, value);
+    this._parent._updateChild(this, value, source);
   }
   this._listeners.forEach(function(listener) {
-    listener(value);
+    listener(value, source);
   });
 };
 
