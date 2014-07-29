@@ -94,33 +94,12 @@ describe('Struct', function() {
   });
 
   it('constructs instances with the given values for defined property types', function() {
-    var map = {key: 'value'},
-        list = ['item'],
-        literal = 123,
-        decimal = 98.6,
-        bool = true,
-        str = 'hi',
-        struct;
-    struct = MyStruct({
-      map: map,
-      list: list,
-      literal: literal,
-      decimal: decimal,
-      bool: bool,
-      str: str
-    });
+    var struct = MyStruct(sample);
     assert.ok(struct instanceof MyStruct);
     assert.ok(struct.get('map') instanceof Map);
     assert.ok(struct.get('list') instanceof List);
     assert.ok(struct.get('literal') instanceof Value);
-    assert.deepEqual(struct.val(), {
-      map: map,
-      list: list,
-      literal: literal,
-      decimal: decimal,
-      bool: bool,
-      str: str
-    });
+    assert.deepEqual(struct.val(), sample);
   });
 
   it('unwraps wrapped values in setVal()', function() {
@@ -213,5 +192,19 @@ describe('Struct', function() {
     assert.deepEqual(struct.val(), emptySample);
     struct.setVal(sample);
     assert.deepEqual(struct.val(), sample);
+  });
+
+  it.skip('get() is a lense into a Struct property value', function() {
+    var struct = MyStruct(sample),
+        strLense = struct.get('str'),
+        listLense = struct.get('list');
+
+    struct.set('str', 'bye');
+    struct.set('list', ['new item']);
+
+    assert.equal(struct.get('str'), strLense);
+    assert.equal(strLense.val(), struct.val('str'));
+    assert.equal(struct.get('list'), listLense);
+    assert.equal(listLense.val(), struct.val('list'));
   });
 });
