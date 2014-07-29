@@ -217,6 +217,24 @@ if (/* mark's bday */) {
 }
 ```
 
+## `Undo`
+
+An easy way to watch a `Value` object and undo/redo changes to it.
+
+```javascript
+var list = Valuable([]);
+var history = Valuable.Undo(list);
+
+list.push(1);
+assert.deepEqual(list.val(), [1]);
+
+history.undo();
+assert.deepEqual(list.val(), []);
+
+history.redo();
+assert.deepEqual(list.val(), [1]);
+```
+
 # Inspired By
 
 Valuable is inspired by and hopes to improve upon the following libraries:
