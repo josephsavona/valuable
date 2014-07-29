@@ -32,7 +32,7 @@ var UndoConstructor = function Undo(watch) {
   this._raw = watch;
   this._stack = [watch.val()];
   this._index = 0;
-  this._lastVal = void 0;
+  this._isSetVal = false;
   this._lastSrc = void 0;
   this._max = 0;
 
@@ -51,15 +51,17 @@ var UndoProto = {
     assert.ok(this.canUndo(), 'Undo(): no entries to undo');
     // record the value that we're updating to to avoid infinite loop in _watch
     this._index--;
-    this._lastVal = this._stack[this._index];
-    this._raw.setVal(this._lastVal);
+    this._isSetVal = true;
+    this._raw.setVal(this._stack[this._index]);
+    this._notify(this._raw);
   },
   redo: function Undo$redo() {
     assert.ok(this.canRedo(), 'Undo(): no entries to redo');
     // record the value that we're updating to to avoid infinite loop in _watch
     this._index++;
-    this._lastVal = this._stack[this._index];
-    this._raw.setVal(this._lastVal);
+    this._isSetVal = true;
+    this._raw.setVal(this._stack[this._index]);
+    this._notify(this._raw);
   },
   canRedo: function Undo$canRedo() {
     return this._index < this._stack.length - 1;
@@ -77,7 +79,8 @@ var UndoProto = {
   _watch: function Undo$private$watch(val, source) {
     // test if this observe() was called by our own undo/redo's use of setVal()
     // if so, ignore to avoid recording our own change
-    if (val === this._lastVal) {
+    if (this._isSetVal) {
+      this._isSetVal = false;
       return;
     }
     // any change should clear the possible redo stack
@@ -102,6 +105,7 @@ var UndoProto = {
       this._raw.unobserve(this._watch);
     }
     UndoConstructor.call(this, watch);
+    this._notify(watch);
   }
 };
 

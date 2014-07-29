@@ -106,6 +106,60 @@ describe('Undo', function() {
     });
   });
 
+  it('can undo/redo multiple times', function() {
+    var count = 25,
+        ix,
+        value = Valueable.Decimal(0),
+        undo = Valueable.Undo(value);
+    for (ix = 1; ix <= count; ix++) {
+      value.setVal(ix);
+    }
+    for (ix = count; ix > 0; ix--) {
+      undo.undo();
+      assert.deepEqual(value.val(), ix-1);
+    }
+    for (ix = 1; ix <= count; ix++) {
+      undo.redo();
+      assert.deepEqual(value.val(), ix);
+    }
+  });
+
+  it('can undo/redo multiple times (List)', function() {
+    var count = 25,
+        ix,
+        list = Valueable.List([]),
+        undo = Valueable.Undo(list);
+    for (ix = 1; ix <= count; ix++) {
+      list.push(ix);
+    }
+    for (ix = count; ix > 0; ix--) {
+      undo.undo();
+      assert.deepEqual(list.val().length, ix-1, 'length after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
+    }
+    for (ix = 1; ix <= count; ix++) {
+      undo.redo();
+      assert.deepEqual(list.val().length, ix);
+    }
+  });
+
+  it('can undo/redo multiple times (Map)', function() {
+    var count = 25,
+        ix,
+        map = Valueable.Map({key: 0}),
+        undo = Valueable.Undo(map);
+    for (ix = 1; ix <= count; ix++) {
+      map.set('key', ix);
+    }
+    for (ix = count; ix > 0; ix--) {
+      undo.undo();
+      assert.deepEqual(map.val('key'), ix-1, 'value after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
+    }
+    for (ix = 1; ix <= count; ix++) {
+      undo.redo();
+      assert.deepEqual(map.val('key'), ix);
+    }
+  });
+
   it('can undo/redo only after setVal called', function() {
     var value = Valueable('0'),
         undo = Undo(Valueable());
