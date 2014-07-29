@@ -3,7 +3,7 @@
 valuable
 ========
 
-Provides [immutable*](#immutability) structs, maps, lists, and literal values that you can observe for changes. Use a `Valuable` object as a central source of truth and update your (React) app whenever data changes. Freely pass around wrapped data and manipulate it anywhere in your view. `Valuable` bubbles these changes up so that React can re-render top-down. 
+Provides [immutable*](#immutability) structs, maps, lists, and literal values that you can observe for changes. Use a `Valuable` object as a central source of truth and update your (React) app whenever data changes. Freely pass around wrapped data and manipulate it anywhere in your view. `Valuable` bubbles these changes up so that React can re-render top-down. See the [intro post](https://medium.com/@josephsavona/valuable-a-data-model-for-react-1b8868493bf6).
 
 ```javascript
 var value = Valuable({
