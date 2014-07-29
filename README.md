@@ -39,7 +39,7 @@ npm install --save valuable
 
 # Example - TodoMVC
 
-We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views.
+We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views. This includes a full undo/redo functionality for all changes to the list (see [Undo](#undo)).
 
 Feel free to clone `valuable` and run it:
 
@@ -56,7 +56,7 @@ Then hit `Control-C` to kill.
 
 # Immutability
 
-Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone.
+Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone. This means you get the benefit of `O(1)` checking for changes while still being able to use a more familiar mutable-style API.
 
 ```javascript
 var list = Valuable([1,2,3]);
@@ -228,9 +228,11 @@ var history = Valuable.Undo(list);
 list.push(1);
 assert.deepEqual(list.val(), [1]);
 
+history.canUndo(); // -> true
 history.undo();
 assert.deepEqual(list.val(), []);
 
+history.canRedo(); // -> true 
 history.redo();
 assert.deepEqual(list.val(), [1]);
 ```
