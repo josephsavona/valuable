@@ -10,6 +10,10 @@ var assert = require('assert'),
 var UndoConstructor = function Undo(watch) {
   var key, value, properties;
 
+  if (!(this instanceof Undo)) {
+    return new Undo(watch);
+  }
+
   this.assertValidValue(watch);
 
   Value.call(this, watch);
