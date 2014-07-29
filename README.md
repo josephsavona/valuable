@@ -52,8 +52,6 @@ npm start &
 open 'http://localhost:8080'
 ```
 
-Then hit `Control-C` to kill.
-
 # Immutability
 
 Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone. This means you get the benefit of `O(1)` checking for changes while still being able to use a more familiar mutable-style API.
