@@ -128,17 +128,20 @@ describe('Undo', function() {
     var count = 25,
         ix,
         list = Valueable.List([]),
+        observer = sinon.spy(),
         undo = Valueable.Undo(list);
+    list.observe(observer);
+
     for (ix = 1; ix <= count; ix++) {
       list.push(ix);
     }
     for (ix = count; ix > 0; ix--) {
       undo.undo();
-      assert.deepEqual(list.val().length, ix-1, 'length after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
+      assert.deepEqual(list.length, ix-1, 'length after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
     }
     for (ix = 1; ix <= count; ix++) {
       undo.redo();
-      assert.deepEqual(list.val().length, ix);
+      assert.deepEqual(list.length, ix);
     }
   });
 

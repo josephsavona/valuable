@@ -266,7 +266,7 @@ describe('Map', function() {
       value.set('key', val);
       key = value.get('key');
       assert.equal(observer.args[0][1], key);
-      value.set('key', [val]);
+      value.set('key', _.isPlainObject(val) ? {key: val} : (_.isArray(val) ? [val] : val));
       newKey = value.get('key');
       assert.equal(observer.args[1][1], newKey);
     });
@@ -300,6 +300,20 @@ describe('Map', function() {
     value.observe(observer);
     value.setVal({key: true});
     assert.equal(observer.args[0][1], value);
+  });
+
+  it('get() returns a lense into the targeted path', function() {
+    var value = Map({a: {b: {c: [1]}}}),
+        lense,
+        lense2;
+    lense = value.get('a').get('b').get('c').at(0);
+    assert.deepEqual(lense.val(), 1);
+
+    value.setVal({a: {b: {c: [2]}}});
+    lense2 = value.get('a').get('b').get('c').at(0);
+    assert.equal(lense, lense2);
+    assert.deepEqual(lense.val(), 2);
+    assert.deepEqual(lense2.val(), 2);
   });
 });
  

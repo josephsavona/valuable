@@ -31,12 +31,14 @@ Value.prototype.val = function Value$val() {
   return this._raw;
 };
 
-Value.prototype.setVal = function Value$setVal(value) {
+Value.prototype.setVal = function Value$setVal(value, skipNotify) {
   var rawValue;
   rawValue = (value instanceof Value) ? value.val() : value;
   this.assertValidValue(rawValue);
   this._raw = rawValue;
-  this._notify(this);
+  if (skipNotify !== false) {
+    this._notify(this);
+  }
 };
 
 Value.prototype.destroy = function Value$destroy() {
