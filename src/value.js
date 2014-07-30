@@ -31,9 +31,12 @@ Value.prototype.val = function Value$val() {
   return this._raw;
 };
 
+Value.prototype._defaultValue = void 0;
+
 Value.prototype.setVal = function Value$setVal(value) {
   var rawValue;
   rawValue = (value instanceof Value) ? value.val() : value;
+  rawValue = typeof rawValue !== 'undefined' ? rawValue : this._defaultValue;
   this.assertValidValue(rawValue);
   this._raw = rawValue;
   this._notify(this);

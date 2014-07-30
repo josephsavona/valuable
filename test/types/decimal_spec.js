@@ -11,6 +11,12 @@ describe('Decimal', function() {
     assert.equal(i.val(), 0);
   });
 
+  it('resets to default value for setVal(undefined)', function() {
+    var i = Decimal(1);
+    i.setVal();
+    assert.equal(i.val(), 0);
+  });
+
   it('cannot construct from non-number values', function() {
     rawValues.forEach(function(val) {
       if (_.isNumber(val) || val === null || typeof val === 'undefined') {

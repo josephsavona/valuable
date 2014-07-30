@@ -318,6 +318,19 @@ describe('List', function() {
     assert.equal(cb.args[3][0].val(), 4);
   });
 
+  it('iterates over wrapped items with each()', function() {
+    var value = List([1,2,3,4]),
+        cb = sinon.spy(function(x) { return x.val() * x.val() }),
+        mapped;
+    mapped = value.map(cb);
+    assert.equal(cb.callCount, value.length);
+    assert.equal(cb.args[0][0].val(), 1);
+    assert.equal(cb.args[1][0].val(), 2);
+    assert.equal(cb.args[2][0].val(), 3);
+    assert.equal(cb.args[3][0].val(), 4);
+    assert.deepEqual(mapped, [1,4,9,16]);
+  });
+
   it('iterates over items literal values with eachv()', function() {
     var value = List([1,2,3,4]),
         cb = sinon.spy();
@@ -329,7 +342,7 @@ describe('List', function() {
     assert.equal(cb.args[3][0], 4);
   });
 
-  it('maps the literal values with map()', function() {
+  it('maps the literal values with mapv()', function() {
     var value = List([1,2,3,4]),
         cb = sinon.spy(function(x) { return x * x; }),
         mapped = value.mapv(cb);

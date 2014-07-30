@@ -27,9 +27,8 @@ var inherits = function Valuable$$inherits(parent, constructor, proto, statics) 
     if (!(this instanceof ValueSubClass)) {
       return new ValueSubClass(rawValue);
     }
-    if (typeof rawValue !== 'undefined') {
-      this.assertValidValue(rawValue);
-    }
+    rawValue = typeof rawValue !== 'undefined' ? rawValue : this._defaultValue;
+    this.assertValidValue(rawValue);
     constructor.call(this, rawValue);
   };
   klass.prototype = Object.create(parent.prototype);

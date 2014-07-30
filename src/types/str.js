@@ -5,12 +5,10 @@ var assert = require('assert'),
 
 var StrConstructor = function Str(value) {
   Value.call(this, value);
-  if (typeof this._raw === 'undefined') {
-    this._raw = '';
-  }
 };
 
 var StrProto = {
+  _defaultValue: '',
   assertValidValue: function Str$assertValidValue(val) {
     assert.ok(typeof val === 'string', 'Str(): value must be a string');
   },

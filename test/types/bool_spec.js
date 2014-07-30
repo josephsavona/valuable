@@ -8,10 +8,16 @@ var assert = require('chai').assert,
 describe('Bool', function() {
   it('has a default value of 0', function() {
     var i = Bool();
-    assert.equal(i.val(), 0);
+    assert.equal(i.val(), false);
   });
 
-  it('cannot construct from non-number values', function() {
+  it('resets to default value for setVal(undefined)', function() {
+    var i = Bool(true);
+    i.setVal();
+    assert.equal(i.val(), false);
+  });
+
+  it('cannot construct from non-boolean values', function() {
     rawValues.forEach(function(val) {
       if (_.isBoolean(val) || val === null || typeof val === 'undefined') {
         return;
@@ -22,15 +28,14 @@ describe('Bool', function() {
     });
   });
 
-  it('constructs with the given number value', function() {
+  it('constructs with the given boolean value', function() {
     [true,false].forEach(function(val) {
       var d = Bool(val);
       assert.deepEqual(d.val(), val);
-      assert.ok(isNaN(d.val()) || typeof d.val() === 'boolean');
     });
   });
 
-  it('cannot set to a non-number value', function() {
+  it('cannot set to a non-boolean value', function() {
     rawValues.forEach(function(val) {
       if (_.isBoolean(val) || val === null || typeof val === 'undefined') {
         return;
@@ -47,7 +52,6 @@ describe('Bool', function() {
       var d = Bool();
       d.setVal(val);
       assert.deepEqual(d.val(), val);
-      assert.ok(isNaN(d.val()) || typeof d.val() === 'boolean');
     });
   });
 
@@ -56,7 +60,6 @@ describe('Bool', function() {
       var d = Bool(val);
       d.negate();
       assert.deepEqual(d.val(), !val);
-      assert.ok(isNaN(d.val()) || typeof d.val() === 'boolean');
     });
   });
 });

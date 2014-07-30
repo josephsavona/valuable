@@ -5,12 +5,10 @@ var assert = require('assert'),
 
 var Bool = function Bool(value) {
   Value.call(this, value);
-  if (typeof this._raw === 'undefined') {
-    this._raw = false;
-  }
 };
 
 var proto = {
+  _defaultValue: false,
   assertValidValue: function Bool$assertValidValue(val) {
     assert.ok(typeof val === 'boolean', 'Bool(): value must be true/false');
   },

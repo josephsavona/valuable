@@ -11,6 +11,12 @@ describe('Str', function() {
     assert.equal(i.val(), '');
   });
 
+  it('resets to default value for setVal(undefined)', function() {
+    var i = Str('hello');
+    i.setVal();
+    assert.equal(i.val(), '');
+  });
+
   it('cannot construct from non-string values', function() {
     rawValues.forEach(function(val) {
       if (_.isString(val)) {

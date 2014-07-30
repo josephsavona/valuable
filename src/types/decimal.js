@@ -5,12 +5,10 @@ var assert = require('assert'),
 
 var Decimal = function Decimal(value) {
   Value.call(this, value);
-  if (typeof this._raw === 'undefined') {
-    this._raw = 0;
-  }
 };
 
 var proto = {
+  _defaultValue: 0,
   assertValidValue: function Decimal$assertValidValue(val) {
     assert.ok(typeof val === 'number', 'Decimal(): value must be a number');
   },

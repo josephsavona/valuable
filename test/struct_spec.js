@@ -214,4 +214,19 @@ describe('Struct', function() {
     struct.setVal(sample);
     assert.deepEqual(struct.val(), sample);
   });
+
+  it('resets missing setVal() properties to default', function() {
+    var struct = MyStruct(sample),
+        key,
+        data,
+        value;
+    for (key in sample) {
+      data = {};
+      data[key] = sample[key];
+      value = _.cloneDeep(emptySample);
+      value[key] = sample[key];
+      struct.setVal(data);
+      assert.deepEqual(struct.val(), value, 'only .' + key + ' should have a value');
+    }
+  });
 });

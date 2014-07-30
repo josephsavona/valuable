@@ -112,10 +112,12 @@ var ListProto = {
     }
     this._list = [];
     this._raw = [];
-    for (ix = 0; ix < rawValue.length; ix++) {
-      this._list[ix] = this.type(rawValue[ix]);
-      this._list[ix]._parent = this;
-      this._raw[ix] = this._list[ix].val();
+    if (rawValue && rawValue.length) {
+      for (ix = 0; ix < rawValue.length; ix++) {
+        this._list[ix] = this.type(rawValue[ix]);
+        this._list[ix]._parent = this;
+        this._raw[ix] = this._list[ix].val();
+      }
     }
     this._notify(this);
   },
@@ -130,13 +132,6 @@ var ListProto = {
       raw = this._raw;
     }
 
-    // if (process.env.NODE_ENV !== 'production') {
-    //   // return a clone in dev/test to ensure that you
-    //   // cannot make your code work by directly modifying
-    //   // the returned value. in production disable
-    //   // this for speed
-    //   return _.clone(raw);
-    // }
     return raw;
   },
 
