@@ -59,7 +59,7 @@
 	.get('a').get('b').push({key: 'other value'})
 	// should only schedule one _notify for the a.b path
 
-	give every Value a reference to its root, root has a list of changes nodes. any change in the pushes the changed node onto the root's change list. any call to val() checks root and if change list has entries triggers root._flushChanges(). otherwise, queue root._flushChanges for nextTick. flushChanges works like _notify does now, except that every recursive step up the tree removes that node from the root's change list (this is so that in the example above, the first change within a.b[0] can remove the need to also update a.b a second time). root's change list should be kept sorted by depth with deepest nodes first, to reduce the need for duplicate updates
+	give every Value a reference to its root, root has a list of changed nodes. any change in the tree pushes the changed node onto the root's change list. any call to val() checks root and if change list has entries triggers root._flushChanges(). otherwise, queue root._flushChanges for nextTick. flushChanges works like _notify does now, except that every recursive step up the tree removes that node from the root's change list (this is so that in the example above, the first change within a.b[0] can remove the need to also update a.b a second time). root's change list should be kept sorted by depth with deepest nodes first, to reduce the need for duplicate updates
 
 
 - consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
