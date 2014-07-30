@@ -205,4 +205,39 @@ describe('Undo', function() {
     assert.ok(undo.canRedo(), 'can redo once undo is called');
     assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
   });
+
+  it('cannot setMax() to negative or non-number', function() {
+    var undo = Undo();
+    [-1, false, '', null, undefined, [], {}].forEach(function(val) {
+      assert.throws(function() {
+        undo.setMax(val);
+      });
+    });
+  });
+
+  it('limits the number of undo items', function() {
+    var value = Valueable(0),
+        undo = Undo(value);
+    undo.setMax(1);
+    value.setVal(1);
+    value.setVal(2);
+    assert.ok(undo.canUndo(), 'can undo once');
+    undo.undo();
+    assert.deepEqual(value.val(), 1, 'undo() works normally');
+    assert.notOk(undo.canUndo(), 'undo limited to 1');
+    undo.redo();
+    assert.deepEqual(value.val(), 2, 'redo() works normally');
+    assert.ok(undo.canUndo());
+  });
+
+  it('unobserves its value when destroy()-ed', function() {
+    var value = Valueable(0),
+        undo = Undo(value);
+    assert.equal(value._listeners.length, 1, 'has one listener (the Undo)');
+    undo.destroy();
+    assert.doesNotThrow(function() {
+      value.setVal(1);
+    });
+    assert.equal(value._listeners.length, 0, 'has no listeners');
+  });
 });

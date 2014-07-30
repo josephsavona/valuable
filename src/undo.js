@@ -93,8 +93,8 @@ var UndoProto = {
     this._compact();
   },
   _compact: function Undo$private$compact() {
-    if (this._max === 0 || this._stack.length <= this._max) { return; }
-    while (this._stack.length > this._max) {
+    if (this._max === 0 || this._stack.length <= this._max + 1) { return; }
+    while (this._stack.length > this._max + 1) {
       this._stack.shift();
       this._index--;
     }
