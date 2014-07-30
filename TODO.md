@@ -52,6 +52,16 @@
 	- Bool
 	- Str
 
+- batch updates - simple - add API for setting multiple map/struct keys at once
+
+- batch updates - complex - asynchronous _notify via nextTick, but any .val() calls force a synchronous _notify and clear the queued async one. multiple _notifies along the same path should be skipped:
+	.get('a').get('b').at(0).set('key', 'value')
+	.get('a').get('b').push({key: 'other value'})
+	// should only schedule one _notify for the a.b path
+
+	give every Value a reference to its root, root has a list of changes nodes. any change in the pushes the changed node onto the root's change list. any call to val() checks root and if change list has entries triggers root._flushChanges(). otherwise, queue root._flushChanges for nextTick. flushChanges works like _notify does now, except that every recursive step up the tree removes that node from the root's change list (this is so that in the example above, the first change within a.b[0] can remove the need to also update a.b a second time). root's change list should be kept sorted by depth with deepest nodes first, to reduce the need for duplicate updates
+
+
 - consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
 
 - more array operations and better accessors, eg slice(), map (map and mapv), filter (filter and filterv), negative indexing, range indexing, etc
