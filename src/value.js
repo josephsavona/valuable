@@ -57,8 +57,13 @@ Value.prototype.destroy = function Value$destroy() {
   this._handleChange = null;
 };
 
-Value.prototype._sync = function Value$private$sync() {
-  this._root._runUpdates();
+Value.prototype._setAncestors = function Value$private$setAncestors(parent, root) {
+  this._parent = parent;
+  this._root = root;
+};
+
+Value.prototype._sync = function Value$private$sync(runObservers) {
+  this._root._runUpdates(runObservers);
 };
 
 Value.prototype._notify = function Value$private$notify(source) {
@@ -81,7 +86,7 @@ Value.prototype._hasUpdates = function Value$private$hasUpdates() {
   return this._root._scheduledUpdates.length > 0;
 };
 
-Value.prototype._runUpdates = function Value$private$runUpdates() {
+Value.prototype._runUpdates = function Value$private$runUpdates(runObservers) {
   var value, ix, length, raw;
   if (!this._scheduledUpdates || !this._scheduledUpdates.length) {
     return;
@@ -93,15 +98,17 @@ Value.prototype._runUpdates = function Value$private$runUpdates() {
       continue;
     }
     if (value._parent) {
-      value._parent._updateChild(value, value);
+      value._parent._updateChild(value);
     }
     value._hasChange = false;
   }
   this._scheduledUpdates = [];
   raw = this._raw;
-  this._listeners.forEach(function(listener) {
-    listener(raw);
-  });
+  if (runObservers !== false) {
+    this._listeners.forEach(function(listener) {
+      listener(raw);
+    });
+  }
 };
 
 Value.prototype.handleChange = function Value$handleChange() {

@@ -24,8 +24,7 @@ var StructConstructor = function Struct(map) {
     }
     value = properties[key](map[key]);
     this._map[key] = value;
-    this._map[key]._parent = this;
-    this._map[key]._root = this._root;
+    value._setAncestors(this, this._root);
     this._raw[key] = value.val();
   }
 };
@@ -54,7 +53,7 @@ var StructProto = {
         this._map[key].setVal(void 0);
       }
     }
-    this._notify();
+    this._notify(this);
   }
 };
 

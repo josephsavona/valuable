@@ -20,8 +20,7 @@ var ListConstructor = function List(list) {
   for (ix = 0; ix < list.length; ix++) {
     value = this.type(list[ix]);
     this._list[ix] = value;
-    this._list[ix]._parent = this;
-    this._list[ix]._root = this._root;
+    this._list[ix]._setAncestors(this, this._root);
     this._raw[ix] = value.val();
   }
 }
@@ -38,13 +37,13 @@ var ListProto = {
     assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
 
     var value = this.type(rawValue);
-    value._parent = this;
-    value._root = this._root;
+    value._setAncestors(this, this._root);
     this._list.push(value);
     this._notify(value);
   },
 
   pop: function List$pop() {
+    this._sync(false);
     var value = this._list.pop(),
         raw = _.clone(this._raw),
         rawValue;
@@ -62,13 +61,13 @@ var ListProto = {
     assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
     
     var value = this.type(rawValue);
-    value._parent = this;
-    value._root = this._root;
+    value._setAncestors(this, this._root);
     this._list.unshift(value);
     this._notify(value);
   },
 
   shift: function List$shift() {
+    this._sync(false);
     var value = this._list.shift(),
         raw = _.clone(this._raw),
         rawValue;
@@ -102,8 +101,7 @@ var ListProto = {
     }
     var value = this.type(rawValue);
     this._list[ix] = value;
-    this._list[ix]._parent = this;
-    this._list[ix]._root = this._root;
+    value._setAncestors(this, this._root);
     this._notify(value);
   },
 
@@ -119,8 +117,7 @@ var ListProto = {
     if (rawValue && rawValue.length) {
       for (ix = 0; ix < rawValue.length; ix++) {
         this._list[ix] = this.type(rawValue[ix]);
-        this._list[ix]._parent = this;
-        this._list[ix]._root = this._root;
+        this._list[ix]._setAncestors(this, this._root);
         this._raw[ix] = this._list[ix].val();
       }
     }
@@ -163,7 +160,14 @@ var ListProto = {
     return this._raw.map(fn);
   },
 
-  _updateChild: function List$private$updateChild(child, source) {
+  _setAncestors: function List$private$setAncestors(parent, root) {
+    Value.prototype._setAncestors.call(this, parent, root);
+    for (var ix = 0; ix < this._list.length; ix++) {
+      this._list[ix]._setAncestors(this, root);
+    }
+  },
+
+  _updateChild: function List$private$updateChild(child) {
     var ix, length, raw;
     length = this._list.length;
     raw = Array(length);
@@ -172,7 +176,7 @@ var ListProto = {
     }
     this._raw = raw;
     if (this._parent) {
-      this._parent.updateChild(this, source);
+      this._parent._updateChild(this);
     }
   }
 };

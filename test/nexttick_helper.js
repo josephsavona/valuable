@@ -18,5 +18,8 @@ module.exports = {
   },
   clearQueue: function() {
     queue = [];
+  },
+  count: function() {
+    return queue.length;
   }
 };

@@ -11,7 +11,7 @@ var assert = require('chai').assert,
     Undo = require('../src/undo'),
     rawValues = require('./mock_values');
 
-describe('Undo', function() {
+describe.skip('Undo', function() {
   it('rejects anything other than a Value instance', function() {
     rawValues.forEach(function(val) {
       assert.throws(function() {

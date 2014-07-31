@@ -23,8 +23,7 @@ var MapConstructor = function Map(map) {
     }
     value = this.type(map[key]);
     this._map[key] = value;
-    this._map[key]._parent = this;
-    this._map[key]._root = this._root;
+    value._setAncestors(this, this._root);
     this._raw[key] = value.val();
   }
 };
@@ -47,8 +46,7 @@ var MapProto = {
     }
     value = this.type(rawValue);
     this._map[key] = value;
-    this._map[key]._parent = this;
-    this._map[key]._root = this._root;
+    value._setAncestors(this, this._root);
     this._notify(value);
   },
 
@@ -64,6 +62,7 @@ var MapProto = {
     if (!(key in this._map)) {
       return;
     }
+    this._sync(false);
     // nested Values
     deleted = this._map[key];
     this._map[key].destroy();
@@ -101,8 +100,7 @@ var MapProto = {
           continue;
         }
         this._map[key] = this.type(rawValue[key]);
-        this._map[key]._parent = this;
-        this._map[key]._root = this._root;
+        this._map[key]._setAncestors(this, this._root);
         this._raw[key] = this._map[key].val();
       }
     }
@@ -123,7 +121,16 @@ var MapProto = {
     return raw;
   },
 
-  _updateChild: function Map$private$updateChild(child, source) {
+  _setAncestors: function List$private$setAncestors(parent, root) {
+    Value.prototype._setAncestors.call(this, parent, root);
+    for (var key in this._map) {
+      if (this._map.hasOwnProperty(key)) {
+        this._map[key]._setAncestors(this, root);
+      }
+    }
+  },
+
+  _updateChild: function Map$private$updateChild(child) {
     var key, raw;
     raw = {};
     for (key in this._map) {
@@ -133,7 +140,7 @@ var MapProto = {
     }
     this._raw = raw;
     if (this._parent) {
-      this._parent._updateChild(this, source);
+      this._parent._updateChild(this);
     }
   }
 };
