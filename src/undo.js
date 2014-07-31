@@ -52,7 +52,6 @@ var UndoProto = {
     this._index--;
     this._isSetVal = true;
     this._raw.setVal(this._stack[this._index]);
-    this._notify(this._raw);
   },
   redo: function Undo$redo() {
     assert.ok(this.canRedo(), 'Undo(): no entries to redo');
@@ -60,7 +59,6 @@ var UndoProto = {
     this._index++;
     this._isSetVal = true;
     this._raw.setVal(this._stack[this._index]);
-    this._notify(this._raw);
   },
   canRedo: function Undo$canRedo() {
     return this._index < this._stack.length - 1;
@@ -101,7 +99,6 @@ var UndoProto = {
       this._raw.unobserve(this._watch);
     }
     UndoConstructor.call(this, watch);
-    this._notify(watch);
   }
 };
 

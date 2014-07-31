@@ -1,21 +1,11 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    nextTickHelper = require('./nexttick_helper'),
+    helpers = require('./helpers'),
     Value = require('../src/value'),
     rawValues = require('./mock_values');
 
 describe('Value', function() {
-  // need to ensure that any Object.prototype hacking
-  // will not interfere (also helps ensure 100% test coverage)
-  beforeEach(function() {
-    Object.prototype.prototypeKey = 'prototypeKey';
-    nextTickHelper.attach();
-    nextTickHelper.clearQueue();
-  });
-  afterEach(function() {
-    delete Object.prototype.prototypeKey;
-    nextTickHelper.detach();
-  });
+  helpers.init();
 
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
@@ -54,7 +44,7 @@ describe('Value', function() {
           observer = sinon.spy();
       value.observe(observer);
       change({target: {value: val}});
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer notified');
       assert.deepEqual(value.val(), val, 'value is updated');
     });
@@ -81,7 +71,7 @@ describe('Value', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.setVal(val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called when value set()');
       assert.ok(observer.calledWith, val, 'observer called with the new value');
     });
@@ -92,10 +82,10 @@ describe('Value', function() {
         observer = sinon.spy();
     value.observe(observer);
     value.setVal(true);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     value.unobserve(observer);
     value.setVal(false);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(observer.calledOnce, 'observer called only once');
     assert.ok(observer.calledWith(true), 'observer called only before unobserved');
   });

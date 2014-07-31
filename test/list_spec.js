@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    nextTickHelper = require('./nexttick_helper'),
     _ = require('lodash'),
+    helpers = require('./helpers'),
     Valueable = require('..'),
     List = require('../src/list'),
     Value = require('../src/value'),
@@ -11,17 +11,7 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('List', function() {
-  // need to ensure that any Object.prototype hacking
-  // will not interfere (also helps ensure 100% test coverage)
-  beforeEach(function() {
-    // Object.prototype.prototypeKey = 'prototypeKey';
-    nextTickHelper.attach();
-    nextTickHelper.clearQueue();
-  });
-  afterEach(function() {
-    // delete Object.prototype.prototypeKey;
-    nextTickHelper.detach();
-  });
+  helpers.init();
 
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
@@ -124,7 +114,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set(0, val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -136,7 +126,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.at(0).setVal(val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -152,7 +142,7 @@ describe('List', function() {
       shifted = value.shift();
       assert.equal(observer.callCount, 0, 'observer not called');
 
-      nextTickHelper.runAll();
+      helpers.runOneTick(2);
       assert.ok(observer.calledOnce, 'observer after shift');
       assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(value.val(), []);
@@ -170,7 +160,7 @@ describe('List', function() {
       popped = value.pop();
       assert.equal(observer.callCount, 0, 'observer not called');
 
-      nextTickHelper.runAll();
+      helpers.runOneTick(2);
       assert.ok(observer.calledOnce, 'observer after pop');
       assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(popped, val, 'pop() returns the raw value');
@@ -266,7 +256,7 @@ describe('List', function() {
     // nesting set test
     value.observe(observer);
     value.at(1).at(1).setVal(false);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.equal(observer.callCount, 1, 'observer called once for grandchild value change');
     list[1][1] = false;
     assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 

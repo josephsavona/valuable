@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    nextTickHelper = require('./nexttick_helper'),
     _ = require('lodash'),
+    helpers = require('./helpers'),
     Valueable = require('..'),
     Map = require('../src/map'),
     Value = require('../src/value'),
@@ -12,17 +12,7 @@ var assert = require('chai').assert,
 
 
 describe('Map', function() {
-  // need to ensure that any Object.prototype hacking
-  // will not interfere (also helps ensure 100% test coverage)
-  beforeEach(function() {
-    Object.prototype.prototypeKey = 'prototypeKey';
-    nextTickHelper.attach();
-    nextTickHelper.clearQueue();
-  });
-  afterEach(function() {
-    delete Object.prototype.prototypeKey;
-    nextTickHelper.detach();
-  });
+  helpers.init();
 
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
@@ -86,7 +76,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(value.val('key'), val);
     });
   });
@@ -95,7 +85,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(value.get('key') instanceof Value, 'wraps values in Value');
       assert.deepEqual(value.get('key').val(), val, 'wrapped value has the set value');
     })
@@ -107,7 +97,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set('key', val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -119,7 +109,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.get('key').setVal(val);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -133,7 +123,7 @@ describe('Map', function() {
       value.observe(observer);
       value.set('key', val);
       deleted = value.del('key');
-      nextTickHelper.runAll();
+      helpers.runOneTick(2);
       assert.ok(observer.calledOnce, 'observer called only once');
       assert.deepEqual(observer.args[0][0], {});
       assert.deepEqual(deleted, val, 'del() returns the raw value of the key');
@@ -199,7 +189,7 @@ describe('Map', function() {
 
     value.observe(observer);
     value.get('nested').get('key').setVal(false);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     map.nested.key = false;
     assert.deepEqual(observer.args[0][0], map, 'new value is as expected');

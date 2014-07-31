@@ -175,6 +175,7 @@ var ListProto = {
       raw[ix] = this._list[ix]._raw;
     }
     this._raw = raw;
+    this._hasChange = false; // updates from children remove the need to update self
     if (this._parent) {
       this._parent._updateChild(this);
     }

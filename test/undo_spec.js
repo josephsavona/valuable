@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
-    nextTickHelper = require('./nexttick_helper'),
     _ = require('lodash'),
+    helpers = require('./helpers'),
     Valueable = require('..'),
     List = require('../src/list'),
     Map = require('../src/map'),
@@ -13,17 +13,7 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('Undo', function() {
-  // need to ensure that any Object.prototype hacking
-  // will not interfere (also helps ensure 100% test coverage)
-  beforeEach(function() {
-    Object.prototype.prototypeKey = 'prototypeKey';
-    nextTickHelper.attach();
-    nextTickHelper.clearQueue();
-  });
-  afterEach(function() {
-    delete Object.prototype.prototypeKey;
-    nextTickHelper.detach();
-  });
+  helpers.init();
 
   it('rejects anything other than a Value instance', function() {
     rawValues.forEach(function(val) {
@@ -60,7 +50,7 @@ describe('Undo', function() {
         undo = Undo(value);
     // 0 -> (1)
     value.setVal('1');
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo());
     assert.notOk(undo.canRedo());
 
@@ -82,32 +72,32 @@ describe('Undo', function() {
         undo = Undo(value);
     // 0 -> (1)
     value.setVal('1');
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo 0->(1)');
     assert.notOk(undo.canRedo(), 'cannot redo 0->(1)');
 
     // (0) -> 1
     undo.undo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo (0)->1');
     assert.ok(undo.canRedo(), 'can redo (0)->1');
     
     // 0 -> (1b) -- removes previous '1'
     value.setVal('1b');
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo 0->(1b) after setVal');
     assert.notOk(undo.canRedo(), 'cannot redo 0->(1b) after setVal');
     
     // (0) -> 1b
     undo.undo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo (0)->1b');
     assert.ok(undo.canRedo(), 'can redo (0)->1b');
     assert.deepEqual(value.val(), '0');
     
     // 0 -> (1b)
     undo.redo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo 0->(1b) after redo');
     assert.notOk(undo.canRedo(), 'cannot redo 0->(1b) after redo');
     assert.deepEqual(value.val(), '1b');
@@ -132,16 +122,16 @@ describe('Undo', function() {
         undo = Valueable.Undo(value);
     for (ix = 1; ix <= count; ix++) {
       value.setVal(ix);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
     }
     for (ix = count; ix > 0; ix--) {
       undo.undo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(value.val(), ix-1);
     }
     for (ix = 1; ix <= count; ix++) {
       undo.redo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(value.val(), ix);
     }
   });
@@ -153,16 +143,16 @@ describe('Undo', function() {
         undo = Valueable.Undo(list);
     for (ix = 1; ix <= count; ix++) {
       list.push(ix);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
     }
     for (ix = count; ix > 0; ix--) {
       undo.undo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(list.val().length, ix-1, 'length after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
     }
     for (ix = 1; ix <= count; ix++) {
       undo.redo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(list.val().length, ix);
     }
   });
@@ -174,16 +164,16 @@ describe('Undo', function() {
         undo = Valueable.Undo(map);
     for (ix = 1; ix <= count; ix++) {
       map.set('key', ix);
-      nextTickHelper.runAll();
+      helpers.runOneTick();
     }
     for (ix = count; ix > 0; ix--) {
       undo.undo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(map.val('key'), ix-1, 'value after ' + ((count - ix) + 1) + ' iterations (' + ix + ')');
     }
     for (ix = 1; ix <= count; ix++) {
       undo.redo();
-      nextTickHelper.runAll();
+      helpers.runOneTick();
       assert.deepEqual(map.val('key'), ix);
     }
   });
@@ -196,19 +186,19 @@ describe('Undo', function() {
     // (1)
     // start watching w Undo
     undo.setVal(value);
-      nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo');
     assert.notOk(undo.canRedo(), 'cannot redo');
 
     // 1 -> (2)
     value.setVal('2');
-      nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo once new vaue is set');
     assert.notOk(undo.canRedo(), 'cannot redo until after an undo');
 
     // (1) -> 2
     undo.undo();
-      nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo once all changes undone');
     assert.ok(undo.canRedo(), 'can redo once undo is called');
     assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
@@ -222,19 +212,19 @@ describe('Undo', function() {
     // (1)
     // start watching w Undo
     undo.setVal(value);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo');
     assert.notOk(undo.canRedo(), 'cannot redo');
 
     // 1 -> (2)
     value.setVal('2');
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo once new vaue is set');
     assert.notOk(undo.canRedo(), 'cannot redo until after an undo');
 
     // (1) -> 2
     undo.undo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.notOk(undo.canUndo(), 'cannot undo once all changes undone');
     assert.ok(undo.canRedo(), 'can redo once undo is called');
     assert.deepEqual(value.val(), '1', 'cannot get back to the "0" value set before watched');
@@ -254,16 +244,16 @@ describe('Undo', function() {
         undo = Undo(value);
     undo.setMax(1);
     value.setVal(1);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     value.setVal(2);
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.ok(undo.canUndo(), 'can undo once');
     undo.undo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.deepEqual(value.val(), 1, 'undo() works normally');
     assert.notOk(undo.canUndo(), 'undo limited to 1');
     undo.redo();
-    nextTickHelper.runAll();
+    helpers.runOneTick();
     assert.deepEqual(value.val(), 2, 'redo() works normally');
     assert.ok(undo.canUndo());
   });
