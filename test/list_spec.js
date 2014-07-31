@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    nextTickHelper = require('./nexttick_helper'),
     _ = require('lodash'),
     Valueable = require('..'),
     List = require('../src/list'),
@@ -10,6 +11,18 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('List', function() {
+  // need to ensure that any Object.prototype hacking
+  // will not interfere (also helps ensure 100% test coverage)
+  beforeEach(function() {
+    // Object.prototype.prototypeKey = 'prototypeKey';
+    nextTickHelper.attach();
+    nextTickHelper.clearQueue();
+  });
+  afterEach(function() {
+    // delete Object.prototype.prototypeKey;
+    nextTickHelper.detach();
+  });
+
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
       var value = List();
@@ -111,6 +124,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set(0, val);
+      nextTickHelper.runAll();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -122,6 +136,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.at(0).setVal(val);
+      nextTickHelper.runAll();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -135,9 +150,9 @@ describe('List', function() {
       value.observe(observer);
       value.set(0, val);
       shifted = value.shift();
-      assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], [val]);
-      assert.deepEqual(observer.args[1][0], []);
+      nextTickHelper.runAll();
+      assert.ok(observer.calledOnce, 'observer called only once');
+      assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(shifted, val, 'shift() returns the raw value');
     });
   });
@@ -150,7 +165,8 @@ describe('List', function() {
       value.observe(observer);
       value.set(0, val);
       popped = value.pop();
-      assert.ok(observer.calledTwice, 'observer called once per modifiction');
+      nextTickHelper.runAll();
+      assert.ok(observer.calledOnce, 'observer called only once');
       assert.deepEqual(observer.args[0][0], [val]);
       assert.deepEqual(observer.args[1][0], []);
       assert.deepEqual(popped, val, 'pop() returns the raw value');

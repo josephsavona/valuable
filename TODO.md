@@ -55,6 +55,7 @@
 - batch updates - simple - add API for setting multiple map/struct keys at once
 
 - batch updates - complex - asynchronous _notify via nextTick, but any .val() calls force a synchronous _notify and clear the queued async one. multiple _notifies along the same path should be skipped:
+	.get('a').get('b').at(0).get('k').setVal('v')
 	.get('a').get('b').at(0).set('key', 'value')
 	.get('a').get('b').push({key: 'other value'})
 	// should only schedule one _notify for the a.b path

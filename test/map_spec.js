@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    nextTickHelper = require('./nexttick_helper'),
     _ = require('lodash'),
     Valueable = require('..'),
     Map = require('../src/map'),
@@ -15,9 +16,12 @@ describe('Map', function() {
   // will not interfere (also helps ensure 100% test coverage)
   beforeEach(function() {
     Object.prototype.prototypeKey = 'prototypeKey';
+    nextTickHelper.attach();
+    nextTickHelper.clearQueue();
   });
   afterEach(function() {
     delete Object.prototype.prototypeKey;
+    nextTickHelper.detach();
   });
 
   it('can be observe()-ed with a function callback', function() {
@@ -82,6 +86,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
+      nextTickHelper.runAll();
       assert.deepEqual(value.val('key'), val);
     });
   });
@@ -90,6 +95,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
+      nextTickHelper.runAll();
       assert.ok(value.get('key') instanceof Value, 'wraps values in Value');
       assert.deepEqual(value.get('key').val(), val, 'wrapped value has the set value');
     })
@@ -101,6 +107,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set('key', val);
+      nextTickHelper.runAll();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -112,6 +119,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.get('key').setVal(val);
+      nextTickHelper.runAll();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -125,6 +133,7 @@ describe('Map', function() {
       value.observe(observer);
       value.set('key', val);
       deleted = value.del('key');
+      nextTickHelper.runAll();
       assert.ok(observer.calledTwice, 'observer called once per modifiction');
       assert.deepEqual(observer.args[0][0], {key: val});
       assert.deepEqual(observer.args[1][0], {});
