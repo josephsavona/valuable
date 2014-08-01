@@ -66,8 +66,8 @@ Store.prototype.commit = function() {
       ix;
   for (ix = 0; ix < args.length; ix++) {
     // execute the batched updates on the given lens
-    for (var cx = 0; cx < args[ix].length; cx++) {
-      console.log('commit', args[ix][cx]);
+    for (var cx = 0; cx < args[ix]._changes.length; cx++) {
+      console.log('commit', args[ix]._changes[cx]);
     }
   };
 };
