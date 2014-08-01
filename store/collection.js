@@ -15,8 +15,17 @@ var CollectionBase = function Collection(list, parent) {
   this._changes = [];
 };
 
-CollectionBase.prototype.filter = function Collection$filter(fn) {
-  this._list = this._list.filter(fn);
+Object.defineProperty(CollectionBase.prototype, 'length', {
+  get: function() {
+    return this._list.length;
+  },
+  enumerable: true,
+  configurable: false
+});
+
+CollectionBase.prototype.query = function Collection$filter(fn) {
+  var results = fn(this._list);
+  return new this.constructor(Immutable.Vector.from(results), this._parent);
 };
 
 CollectionBase.prototype.get = function Collection$get(ix) {

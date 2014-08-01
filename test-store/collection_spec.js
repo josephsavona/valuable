@@ -41,4 +41,29 @@ describe('Model', function() {
     var c = new MyCollection([sample]);
     assert.deepEqual(c.get(0).val(), sample);
   });
+
+  it('can filter a collection', function() {
+    var items = [];
+    for (var ix = 0; ix < 100; ix++) {
+      items.push({
+        decimal: ix,
+        bool: ix % 2 === 0,
+        str: 'name' + ix
+      });
+    }
+    var c = new MyCollection(items);
+    var item35 = c.get(35);
+    var results = c.query(function(items) {
+      return items.filter(function(item) {
+        return item.decimal.val === 35;
+      });
+    });
+    assert.equal(results.get(0).raw(), item35.raw());
+    assert.equal(results.get(0).decimal.val, 35);
+    assert.equal(c.length, 100);
+  });
+
+  it('can create a chained filter of a collection', function() {
+
+  });
 });
