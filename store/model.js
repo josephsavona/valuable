@@ -6,11 +6,12 @@ var _ = require('lodash'),
     Decimal = require('./decimal'),
     Str = require('./str');
 
-var ModelBase = function Model(map, parent) {
+var ModelBase = function Model(map, path) {
   if (!(map instanceof Immutable.Map)) {
     map = this.constructor._convertMap(map);
   }
-  this._parent = parent;
+  this._parent = null;
+  this._path = path;
   this._map = map;
   this._props = {};
 };
@@ -39,8 +40,8 @@ ModelBase.prototype.raw = function Map$raw() {
 };
 
 ModelBase.define = function Model$$define(properties) {
-  var klass = function Model(parent, map) {
-    ModelBase.call(this, parent, map);
+  var klass = function Model(map, path) {
+    ModelBase.call(this, map, path);
   }
   klass.prototype = Object.create(ModelBase.prototype);
   klass.prototype.constructor = klass;

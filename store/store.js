@@ -49,11 +49,11 @@ var Store = function Store(definition) {
     definition[key]['id'] = Model.Str;
     model = Model.define(definition[key]);
     this._models = this._models.set(key, model);
-    this._store = this._store.set(key, new (Collection.define(model))([], this));
+    this._store = this._store.set(key, new (Collection.define(model))([], [key]));
 
     Object.defineProperty(this, key, {
       get: function() {
-        return this._store.get(key);
+        return this._store.get(key).editable();
       },
       enumerable: false,
       configurable: false
@@ -63,13 +63,27 @@ var Store = function Store(definition) {
 
 Store.prototype.commit = function() {
   var args = Array.prototype.slice.call(arguments),
-      ix;
-  for (ix = 0; ix < args.length; ix++) {
-    // execute the batched updates on the given lens
-    for (var cx = 0; cx < args[ix]._changes.length; cx++) {
-      console.log('commit', args[ix]._changes[cx]);
-    }
-  };
+      store = this._store;
+
+  args.forEach(function(changed) {
+    var collection = store.get(changed._path[0]),
+        list = collection._list.asMutable();
+    changed._changes.forEach(function(change) {
+      var target = change.target,
+          path = target._path,
+          index = list.findIndex(function(x) { return x.id.val === target.id.val });
+      path.pop(); // remove the last ID reference
+      if (change.type === 'add' && index < 0) {
+        list = list.push(target);
+      } else if (change.type === 'remove') {
+        list = Immutable.Vector.from(list.splice(index, 1));
+      } else if (change.type === 'update') {
+        list = Immutable.Vector.from(list.splice(index, 1, target));
+      }
+    });
+    collection._list = list.asImmutable();
+    changed._changes = [];
+  });
 };
 
 module.exports = Store;
