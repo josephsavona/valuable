@@ -33,9 +33,12 @@ value.get('name').val() // => '4 numbers'
 npm install --save valuable
 ```
 
+Via browserify/webpack:
 ```javascript
-var Valuable = require('valuable'); // use browserify/webpack
+var Valuable = require('valuable');
 ```
+
+Or grab `dist/valuable.js` and use `window.Valuable`.
 
 `valuable` is new but ready to try:
 - Extensively tested, stable API
