@@ -27,3 +27,5 @@ node_modules
 # examples files
 bower_components
 dist.js
+
+dist/valuable-debug.js
