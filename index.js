@@ -7,7 +7,7 @@ var Valueable = require('./src/valueable'),
     Decimal = require('./src/types/decimal'),
     Bool = require('./src/types/bool'),
     Str = require('./src/types/str'),
-    store = require('./src/store'),
+    store = require('./store/store'),
     _ = require('lodash');
 
 Valueable.register(_.isArray, List, 'List');

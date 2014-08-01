@@ -2,7 +2,7 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
     Valueable = require('..'),
-    rawValues = require('./mock_values');
+    rawValues = require('../test/mock_values');
 
 describe('Store() constructor', function() {
   it('cannot create a store with an invalid definition', function() {
@@ -25,7 +25,7 @@ describe('Store() constructor', function() {
   });
 });
 
-describe.only('Store#execute()', function() {
+describe('Store#execute()', function() {
   var app;
   beforeEach(function() {
     app = Valueable.store({
