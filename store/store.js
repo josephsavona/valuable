@@ -79,7 +79,7 @@ Store.prototype.commit = function() {
       if (change.type === 'add' && index < 0) {
         list = list.push(target);
       } else if (change.type === 'remove') {
-        list = Immutable.Vector.from(list.splice(index, 1));
+        list = Immutable.Vector.from(list.filter(function(x, index) { return index !== index; }));
       } else if (change.type === 'update') {
         list = Immutable.Vector.from(list.splice(index, 1, target));
       }
