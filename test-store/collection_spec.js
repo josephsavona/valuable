@@ -64,6 +64,25 @@ describe('Model', function() {
   });
 
   it('can create a chained filter of a collection', function() {
-
+    var items = [];
+    for (var ix = 0; ix < 100; ix++) {
+      items.push({
+        decimal: ix,
+        bool: ix % 2 === 0,
+        str: 'name' + ix
+      });
+    }
+    var c = new MyCollection(items);
+    var results = c.query(function(items) {
+      return items.filter(function(item) {
+        return item.decimal.val > 35 && item.decimal.val <= 50;
+      })
+      .filter(function(item) {
+        return item.bool.val; // true if even
+      })
+      .first()
+    });
+    assert.equal(results.length, 1);
+    assert.equal(results.get(0).decimal.val, 36);
   });
 });
