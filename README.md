@@ -11,13 +11,14 @@ var value = Valuable({
   name: 'numbers'
 });
 value.observe(function(val) {
-	// val after .set('name', '4 numbers):
-	{ items: [1,2,3], name: '4 numbers' }
-	// val after .get('items').push(4)
-	{ items: [1,2,3,4], name: '4 numbers' }
+  // val: combined results of updates:
+  { items: [1,2,3,4], name: '4 numbers' }
 });
-value.set('name', '4 numbers') // => notifies observe() function above
-value.get('items').push(4) // => notifies observe() function above
+// the following modifications are batched
+// and observe() callbacks are called only once per event loop cycle
+// via process.nextTick()
+value.set('name', '4 numbers') 
+value.get('items').push(4)
 
 // get the literal value:
 value.val() // => { items: [1,2,3,4], name: '4 numbers'}
@@ -106,7 +107,7 @@ var mixed = Valuable([
 
 - `value.val()` - get the literal value that was last assigned
 - `value.setVal(literal)` - set the value to `literal` (notifies observers).
-- `value.observe(fn)` - add `fn` to list of observers for changes
+- `value.observe(fn)` - add `fn` to list of observers for changes. will be called at once 1 per tick
 - `value.unobserve(fn)` - remove `fn` from the list of observers
 - `value.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
 - `value.handleChange()` - returns a function that can be passed as the `onChange={}` prop in a React component or to handle any other normalized event value. the returned callback function is created only once and then cached, so repeated calls will get the original cached callback handler.
