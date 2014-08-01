@@ -32,8 +32,10 @@
   },
   "homepage": "https://github.com/josephsavona/valuable",
   "dependencies": {
+    "immutable": "^2.0.3",
     "lodash": "~2.4.1",
-    "moment": "^2.7.0"
+    "moment": "^2.7.0",
+    "node-uuid": "^1.4.1"
   },
   "devDependencies": {
     "backbone": "^1.1.2",

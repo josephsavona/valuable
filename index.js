@@ -7,6 +7,7 @@ var Valueable = require('./src/valueable'),
     Decimal = require('./src/types/decimal'),
     Bool = require('./src/types/bool'),
     Str = require('./src/types/str'),
+    store = require('./src/store'),
     _ = require('lodash');
 
 Valueable.register(_.isArray, List, 'List');
@@ -25,5 +26,8 @@ Valueable.Struct = Struct;
 Valueable.Decimal = Decimal;
 Valueable.Bool = Bool;
 Valueable.Str = Str;
+
+// data store
+Valueable.store = store;
 
 module.exports = Valueable;
