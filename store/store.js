@@ -81,7 +81,7 @@ Store.prototype.commit = function() {
       } else if (change.type === 'remove') {
         list = Immutable.Vector.from(list.filter(function(x, index) { return index !== index; }));
       } else if (change.type === 'update') {
-        list = Immutable.Vector.from(list.splice(index, 1, target));
+        list = list.set(index, target);
       }
     });
     this._store = this._store.set(changed._path[0], list.asImmutable());

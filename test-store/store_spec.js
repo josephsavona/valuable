@@ -50,20 +50,30 @@ describe('Store() can add an item', function() {
     assert.equal(app.users.length, 1);
     assert.equal(app.users.get(0).name.val, 'dude');
 
-    // having an issue with Vector.splice(), on hold...
-    // user = app.users.get(0);
-    // user.age.inc();
-    // app.commit(users);
-    // assert.equal(app.users.length, 1);
-    // console.dir(app.users);
-    // assert.equal(app.users.get(0).age.val, 22);
-
     users.remove(user);
     app.commit(users);
     assert.equal(app.users.length, 0);
   });
 
-  it('can update existing items in the store via commit()');
+  it('can update existing items in the store via commit()', function() {
+    var dude = {
+      name: 'dude',
+      age: 21
+    };
+    var users = app.users;
+    var user = users.factory(dude);
+    users.add(user);
+    app.commit(users);
+    assert.equal(app.users.length, 1);
+    assert.equal(app.users.get(0).name.val, 'dude');
+
+    // having an issue with Vector.splice(), on hold...
+    user = app.users.get(0);
+    user.age.inc();
+    app.commit(users);
+    assert.equal(app.users.length, 1);
+    assert.equal(app.users.get(0).age.val, 22);
+  });
 
   it('can find added items', function() {
     var dude = {
