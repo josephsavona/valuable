@@ -34,6 +34,7 @@ CollectionBase.prototype.get = function Collection$get(ix) {
 
 CollectionBase.prototype.factory = function Collection$factory(map) {
   assert.ok(!map || _.isPlainObject(map), 'Collection(): factory accepts an optional object of property values');
+  map['id'] = uuid.v4();
   return new this.model(map, this);
 };
 
@@ -57,7 +58,9 @@ CollectionBase.prototype.remove = function Collection$remove(model) {
 };
 
 CollectionBase.prototype._update = function Collection$private$update(model) {
-
+  this._changes.push({
+    update: model
+  });
 };
 
 CollectionBase.prototype.val = function Collection$val() {

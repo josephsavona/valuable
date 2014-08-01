@@ -1,37 +1,39 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Valueable = require('..'),
+    Store = require('../store/store'),
+    Model = require('../store/model'),
+    Collection = require('../store/collection'),
     rawValues = require('../test/mock_values');
 
 describe('Store() constructor', function() {
   it('cannot create a store with an invalid definition', function() {
     rawValues.forEach(function(val) {
       assert.throws(function() {
-        Valueable.store(val);
+        new Store(val);
       });
     });
   });
 
   it('can create a store', function() {
     assert.doesNotThrow(function() {
-      var app = Valueable.store({
+      var app = new Store({
         user: {
-          name: Valueable.Str,
-          age: Valueable.Decimal
+          name: Model.Str,
+          age: Model.Decimal
         }
       });
     }, 'can create a store');
   });
 });
 
-describe('Store#execute()', function() {
+describe('Store() can add an item', function() {
   var app;
   beforeEach(function() {
-    app = Valueable.store({
+    app = new Store({
       users: {
-        name: Valueable.Str,
-        age: Valueable.Decimal
+        name: Model.Str,
+        age: Model.Decimal
       }
     });
   });
@@ -41,10 +43,10 @@ describe('Store#execute()', function() {
       name: 'dude',
       age: 21
     };
-    app.execute(function() {
-      var user = this.users.factory(dude);
-      this.commit(this.users.add(user));
-    });
+    var users = app.users;
+    var user = users.factory(dude);
+    users.add(user);
+    app.commit(users);
     assert.equal(app.users.length, 1);
   });
 });

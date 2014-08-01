@@ -17,6 +17,9 @@ var ModelBase = function Model(map, parent) {
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
   this._map = this._map.set(key, value);
+  if (this._parent) {
+    this._parent._update(this);
+  }
 };
 
 ModelBase.prototype._get = function Model$private$get(key) {
