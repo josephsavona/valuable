@@ -41,19 +41,23 @@ var Store = function Store(definition) {
   });
 
   this._models = Immutable.Map();
+  this._collections = Immutable.Map();
   this._store = Immutable.Map();
   this._listeners = [];
 
-  var key, model;
+  var key, model, collection;
   for (key in definition) {
     definition[key]['id'] = Model.Str;
     model = Model.define(definition[key]);
+    collection = Collection.define(model);
     this._models = this._models.set(key, model);
-    this._store = this._store.set(key, new (Collection.define(model))([], [key]));
+    this._collections = this._collections.set(key, collection);
+    this._store = this._store.set(key, Immutable.Vector());
 
     Object.defineProperty(this, key, {
       get: function() {
-        return this._store.get(key).editable();
+        var collection = this._collections.get(key);
+        return new collection(this._store.get(key), [key]);
       },
       enumerable: false,
       configurable: false
@@ -62,12 +66,11 @@ var Store = function Store(definition) {
 };
 
 Store.prototype.commit = function() {
-  var args = Array.prototype.slice.call(arguments),
-      store = this._store;
+  var args = Array.prototype.slice.call(arguments);
 
   args.forEach(function(changed) {
-    var collection = store.get(changed._path[0]),
-        list = collection._list.asMutable();
+    var list = this._store.get(changed._path[0]).asMutable();
+
     changed._changes.forEach(function(change) {
       var target = change.target,
           path = target._path,
@@ -81,9 +84,9 @@ Store.prototype.commit = function() {
         list = Immutable.Vector.from(list.splice(index, 1, target));
       }
     });
-    collection._list = list.asImmutable();
+    this._store = this._store.set(changed._path[0], list.asImmutable());
     changed._changes = [];
-  });
+  }.bind(this));
 };
 
 module.exports = Store;
