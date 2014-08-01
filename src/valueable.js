@@ -1,5 +1,4 @@
 var _ = require('lodash'),
-    assert = require('assert'),
     Value = require('./value'),
     inherits = require('./inherits'),
     matchers = [];
@@ -15,7 +14,13 @@ var Valueable = function Valueable(value) {
       return new matchers[ix].klass(value);
     }
   }
-  assert.ok(false, 'Valueable(): type not supported');
+  throw new Error('Valueable(): type not supported');
+};
+
+Valueable.__reset__ = function Valueable$private$reset(m) {
+  var tmp = matchers;
+  matchers = m;
+  return tmp;
 };
 
 Valueable.register = function Valueable$register(test, klass, name) {
