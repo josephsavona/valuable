@@ -20,7 +20,7 @@ var ListConstructor = function List(list) {
   for (ix = 0; ix < list.length; ix++) {
     value = this.type(list[ix]);
     this._list[ix] = value;
-    this._list[ix]._setAncestors(this, this._root);
+    this._list[ix]._parent = this;
     this._raw[ix] = value.val();
   }
 }
@@ -37,13 +37,12 @@ var ListProto = {
     assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
 
     var value = this.type(rawValue);
-    value._setAncestors(this, this._root);
+    value._parent = this;
     this._list.push(value);
-    this._notify(value);
+    this._updateChild(value, value.val(), value);
   },
 
   pop: function List$pop() {
-    this._sync(false);
     var value = this._list.pop(),
         raw = _.clone(this._raw),
         rawValue;
@@ -61,13 +60,12 @@ var ListProto = {
     assert.ok(typeof rawValue !== 'undefined', 'List(): value must be defined');
     
     var value = this.type(rawValue);
-    value._setAncestors(this, this._root);
+    value._parent = this;
     this._list.unshift(value);
-    this._notify(value);
+    this._updateChild(value, value.val(), value);
   },
 
   shift: function List$shift() {
-    this._sync(false);
     var value = this._list.shift(),
         raw = _.clone(this._raw),
         rawValue;
@@ -101,8 +99,8 @@ var ListProto = {
     }
     var value = this.type(rawValue);
     this._list[ix] = value;
-    value._setAncestors(this, this._root);
-    this._notify(value);
+    this._list[ix]._parent = this;
+    this._updateChild(value, value.val(), value);
   },
 
   setVal: function List$setVal(list) {
@@ -117,7 +115,7 @@ var ListProto = {
     if (rawValue && rawValue.length) {
       for (ix = 0; ix < rawValue.length; ix++) {
         this._list[ix] = this.type(rawValue[ix]);
-        this._list[ix]._setAncestors(this, this._root);
+        this._list[ix]._parent = this;
         this._raw[ix] = this._list[ix].val();
       }
     }
@@ -126,7 +124,6 @@ var ListProto = {
 
   val: function List$val(ix) {
     assert.ok(ix === undefined || (typeof ix === 'number' && ix >= 0), 'List(): index must be undefined or a positive integer');
-    this._sync();
 
     var raw;
     if (typeof ix !== 'undefined') {
@@ -145,7 +142,6 @@ var ListProto = {
 
   eachv: function List$eachv(fn) {
     assert.equal(typeof fn, 'function', 'List(): must provide function');
-    this._sync();
     return this._raw.forEach(fn);
   },
 
@@ -156,29 +152,18 @@ var ListProto = {
 
   mapv: function List$mapv(fn) {
     assert.equal(typeof fn, 'function', 'List(): must provide function');
-    this._sync();
     return this._raw.map(fn);
   },
 
-  _setAncestors: function List$private$setAncestors(parent, root) {
-    Value.prototype._setAncestors.call(this, parent, root);
-    for (var ix = 0; ix < this._list.length; ix++) {
-      this._list[ix]._setAncestors(this, root);
-    }
-  },
-
-  _updateChild: function List$private$updateChild(child) {
+  _updateChild: function List$private$updateChild(child, rawValue, source) {
     var ix, length, raw;
     length = this._list.length;
     raw = Array(length);
     for (ix = 0; ix < length; ix++) {
-      raw[ix] = this._list[ix]._raw;
+      raw[ix] = this._list[ix] === child ? rawValue : this._raw[ix];
     }
     this._raw = raw;
-    this._hasChange = false; // updates from children remove the need to update self
-    if (this._parent) {
-      this._parent._updateChild(this);
-    }
+    this._notify(source);
   }
 };
 
@@ -188,7 +173,6 @@ var List = inherits(Value, ListConstructor, ListProto, {});
 Object.defineProperties(List.prototype, {
   length: {
     get: function List$length() {
-      this._sync();
       return this._raw.length;
     },
     enumerable: false,

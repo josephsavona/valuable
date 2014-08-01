@@ -142,7 +142,7 @@ describe('List', function() {
       shifted = value.shift();
       assert.equal(observer.callCount, 0, 'observer not called');
 
-      helpers.runOneTick(2);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer after shift');
       assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(value.val(), []);
@@ -160,7 +160,7 @@ describe('List', function() {
       popped = value.pop();
       assert.equal(observer.callCount, 0, 'observer not called');
 
-      helpers.runOneTick(2);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer after pop');
       assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(popped, val, 'pop() returns the raw value');
@@ -289,7 +289,6 @@ describe('List', function() {
   it('can be inherited', function() {
     var DecimalList = List.inherits(Decimal, {
       sum: function DecimalList$sum() {
-        this._sync();
         return this._raw.reduce(function(sum, item) {
           return sum + item;
         }, 0);

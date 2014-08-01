@@ -123,7 +123,7 @@ describe('Map', function() {
       value.observe(observer);
       value.set('key', val);
       deleted = value.del('key');
-      helpers.runOneTick(2);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called only once');
       assert.deepEqual(observer.args[0][0], {});
       assert.deepEqual(deleted, val, 'del() returns the raw value of the key');
@@ -222,7 +222,6 @@ describe('Map', function() {
     var DecimalMap = Map.inherits(Decimal, {
       sum: function DecimalMap$sum() {
         var sum = 0;
-        this._sync();
         for (key in this._raw) {
           if (this._raw.hasOwnProperty(key)) {
             sum += this._raw[key];

@@ -23,7 +23,7 @@ var MapConstructor = function Map(map) {
     }
     value = this.type(map[key]);
     this._map[key] = value;
-    value._setAncestors(this, this._root);
+    this._map[key]._parent = this;
     this._raw[key] = value.val();
   }
 };
@@ -46,8 +46,8 @@ var MapProto = {
     }
     value = this.type(rawValue);
     this._map[key] = value;
-    value._setAncestors(this, this._root);
-    this._notify(value);
+    this._map[key]._parent = this;
+    this._updateChild(value, value.val(), value);
   },
 
   get: function Map$get(key) {
@@ -62,7 +62,6 @@ var MapProto = {
     if (!(key in this._map)) {
       return;
     }
-    this._sync(false);
     // nested Values
     deleted = this._map[key];
     this._map[key].destroy();
@@ -100,7 +99,7 @@ var MapProto = {
           continue;
         }
         this._map[key] = this.type(rawValue[key]);
-        this._map[key]._setAncestors(this, this._root);
+        this._map[key]._parent = this;
         this._raw[key] = this._map[key].val();
       }
     }
@@ -109,7 +108,6 @@ var MapProto = {
 
   val: function Map$val(key) {
     assert.ok(key === undefined || typeof key === 'string', 'Map(): key must be undefined or string');
-    this._sync();
 
     var raw;
     if (key) {
@@ -121,28 +119,16 @@ var MapProto = {
     return raw;
   },
 
-  _setAncestors: function List$private$setAncestors(parent, root) {
-    Value.prototype._setAncestors.call(this, parent, root);
-    for (var key in this._map) {
-      if (this._map.hasOwnProperty(key)) {
-        this._map[key]._setAncestors(this, root);
-      }
-    }
-  },
-
-  _updateChild: function Map$private$updateChild(child) {
+  _updateChild: function Map$private$updateChild(child, rawValue, source) {
     var key, raw;
     raw = {};
     for (key in this._map) {
       if (this._map.hasOwnProperty(key)) {
-        raw[key] = this._map[key]._raw;
+        raw[key] = this._map[key] === child ? rawValue : this._raw[key];
       }
     }
     this._raw = raw;
-    this._hasChange = false; // updates from children remove the need to update self
-    if (this._parent) {
-      this._parent._updateChild(this);
-    }
+    this._notify(source);
   }
 };
 

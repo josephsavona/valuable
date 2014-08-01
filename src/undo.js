@@ -33,6 +33,7 @@ var UndoConstructor = function Undo(watch) {
   this._stack = [watch.val()];
   this._index = 0;
   this._isSetVal = false;
+  this._lastSrc = void 0;
   this._max = 0;
 
   this._watch = this._watch.bind(this);
@@ -52,6 +53,7 @@ var UndoProto = {
     this._index--;
     this._isSetVal = true;
     this._raw.setVal(this._stack[this._index]);
+    this._notify(this._raw);
   },
   redo: function Undo$redo() {
     assert.ok(this.canRedo(), 'Undo(): no entries to redo');
@@ -59,6 +61,7 @@ var UndoProto = {
     this._index++;
     this._isSetVal = true;
     this._raw.setVal(this._stack[this._index]);
+    this._notify(this._raw);
   },
   canRedo: function Undo$canRedo() {
     return this._index < this._stack.length - 1;
@@ -73,15 +76,19 @@ var UndoProto = {
     this._max = Math.floor(max);
     this._compact();
   },
-  _watch: function Undo$private$watch(val) {
-    // test if this observe() was called by our own undo/redo's use of setVal()
-    // if so, ignore to avoid recording our own change
-    if (this._isSetVal) {
+  _watch: function Undo$private$watch(val, source) {
+    // can skip updating under either of two conditions:
+    // - observe() was called by our own undo/redo's use of setVal()
+    // - the new value is identical to the current one
+    if (this._isSetVal || val === this._stack[this._index]) {
       this._isSetVal = false;
       return;
     }
     // any change should clear the possible redo stack
     this._stack = this._stack.slice(0, this._index + 1);
+    // complex types always record changes
+    // changes to a different literal type also record
+    this._lastSrc = source;
     this._stack.push(val);
     this._index++;  
     this._compact();
@@ -99,6 +106,7 @@ var UndoProto = {
       this._raw.unobserve(this._watch);
     }
     UndoConstructor.call(this, watch);
+    this._notify(watch);
   }
 };
 

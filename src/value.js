@@ -9,8 +9,6 @@ var Value = function Value(value) {
   this._raw = value;
   this._listeners = [];
   this._parent = null;
-  this._hasChange = false;
-  this._root = this;
 };
 
 Value.assertValidValue = Value.prototype.assertValidValue = function Value$assertValidValue(input) {
@@ -30,7 +28,6 @@ Value.prototype.unobserve = function Value$unobserve(fn) {
 };
 
 Value.prototype.val = function Value$val() {
-  this._sync();
   return this._raw;
 };
 
@@ -49,66 +46,36 @@ Value.prototype.destroy = function Value$destroy() {
   this._raw = null;
   this._listeners = null;
   this._parent = null;
-  this._root = null;
-  this._hasChange = null;
   this._child = null;
-  this._scheduledUpdates = null;
-  this._runUpdatesBound = null;
   this._handleChange = null;
+};
+
+Value.prototype._notify = function Value$private$_notify(source) {
+  var value = this._raw;
+  if (this._parent) {
+    this._parent._updateChild(this, value, source);
+    return;
+  }
+
+  this._runObserversBound = this._runObserversBound || this._runObservers.bind(this);
+  this._queuedUpdates = this._queuedUpdates || [];
+  this._queuedUpdates.push(source);
+  if (this._queuedUpdates.length === 1) {
+    process.nextTick(this._runObserversBound);
+  }
+};
+
+Value.prototype._runObservers = function Value$private$runObservers() {
+  var value = this._raw;
+  this._listeners.forEach(function(listener) {
+    listener(value);
+  });
+  this._queuedUpdates = [];
 };
 
 Value.prototype._setAncestors = function Value$private$setAncestors(parent, root) {
   this._parent = parent;
   this._root = root;
-};
-
-Value.prototype._sync = function Value$private$sync(runObservers) {
-  this._root._runUpdates(runObservers);
-};
-
-Value.prototype._notify = function Value$private$notify(source) {
-  source._hasChange = true;
-  this._root._scheduleUpdate(source);
-};
-
-Value.prototype._scheduleUpdate = function Value$private$scheduleUpdate(source) {
-  this._scheduledUpdates = this._scheduledUpdates || [];
-  this._runUpdatesBound = this._runUpdatesBound || this._runUpdates.bind(this);
-
-  this._scheduledUpdates.push(source);
-  // schedule if this was the first change
-  if (this._scheduledUpdates.length === 1) {
-    process.nextTick(this._runUpdatesBound);
-  }
-};
-
-Value.prototype._hasUpdates = function Value$private$hasUpdates() {
-  return this._root._scheduledUpdates.length > 0;
-};
-
-Value.prototype._runUpdates = function Value$private$runUpdates(runObservers) {
-  var value, ix, length, raw;
-  if (!this._scheduledUpdates || !this._scheduledUpdates.length) {
-    return;
-  }
-  length = this._scheduledUpdates.length;
-  for (ix = 0; ix < length; ix++) {
-    value = this._scheduledUpdates[ix];
-    if (!value._hasChange || value._root !== this) {
-      continue;
-    }
-    if (value._parent) {
-      value._parent._updateChild(value);
-    }
-    value._hasChange = false;
-  }
-  this._scheduledUpdates = [];
-  raw = this._raw;
-  if (runObservers !== false) {
-    this._listeners.forEach(function(listener) {
-      listener(raw);
-    });
-  }
 };
 
 Value.prototype.handleChange = function Value$handleChange() {
