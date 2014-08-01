@@ -54,6 +54,8 @@ Value.prototype._notify = function Value$private$_notify(source) {
   var value = this._raw;
   if (this._parent) {
     this._parent._updateChild(this, value, source);
+  }
+  if (!this._listeners.length) {
     return;
   }
 
@@ -71,11 +73,6 @@ Value.prototype._runObservers = function Value$private$runObservers() {
     listener(value);
   });
   this._queuedUpdates = [];
-};
-
-Value.prototype._setAncestors = function Value$private$setAncestors(parent, root) {
-  this._parent = parent;
-  this._root = root;
 };
 
 Value.prototype.handleChange = function Value$handleChange() {
