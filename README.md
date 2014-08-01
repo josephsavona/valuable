@@ -155,7 +155,7 @@ Creates a custom `Map` class that only accepts values of the given `Klass`, whic
 
 ```javascript
 // define custom map class
-var IntMap = Valuable.Map.of(Valuable.Int);
+var IntMap = Valuable.Map.of(Valuable.Decimal);
 // create map instance
 var map = IntMap([]);
 map.set('age', 21); // ok
@@ -186,7 +186,7 @@ Creates a custom `List` class that only accepts values of the given `Klass`, whi
 
 ```javascript
 // define custom list class
-var IntList = Valuable.List.of(Valuable.Int);
+var IntList = Valuable.List.of(Valuable.Decimal);
 // create list instance
 var ints = IntList([]);
 ints.push(1); // ok
