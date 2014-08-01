@@ -6,22 +6,13 @@ var _ = require('lodash'),
     Decimal = require('./decimal'),
     Str = require('./str');
 
-var ModelBase = function Model(map) {
-  this._map = Immutable.Map();
-  this._props = {};
-
-  map = map || {};
-  for (var key in this.properties) {
-    if (!this.properties.hasOwnProperty(key)) {
-      continue;
-    }
-    if (typeof map[key] !== 'undefined') {
-      assert.ok(this.properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
-      this._map = this._map.set(key, map[key]);
-    } else {
-      this._map = this._map.set(key, this.properties[key].defaultValue);
-    }
+var ModelBase = function Model(map, parent) {
+  if (!(map instanceof Immutable.Map)) {
+    map = this.constructor._convertMap(map);
   }
+  this._parent = parent;
+  this._map = map;
+  this._props = {};
 };
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
@@ -33,7 +24,11 @@ ModelBase.prototype._get = function Model$private$get(key) {
 };
 
 ModelBase.prototype.val = function Model$val() {
-  return this._map.toJSON();
+  return this._map.toJS();
+};
+
+ModelBase.prototype.toJS = function Model$toJSON() {
+  return this._map.toJS();
 };
 
 ModelBase.prototype.raw = function Map$raw() {
@@ -41,8 +36,8 @@ ModelBase.prototype.raw = function Map$raw() {
 };
 
 ModelBase.define = function Model$$define(properties) {
-  var klass = function Model(map) {
-    ModelBase.call(this, map);
+  var klass = function Model(parent, map) {
+    ModelBase.call(this, parent, map);
   }
   klass.prototype = Object.create(ModelBase.prototype);
   klass.prototype.constructor = klass;
@@ -57,6 +52,23 @@ ModelBase.define = function Model$$define(properties) {
       configurable: false
     });
   });
+
+  klass._convertMap = function Model$private$convertMap(map) {
+    var props = {};
+    map = map || {};
+    for (var key in properties) {
+      if (!properties.hasOwnProperty(key)) {
+        continue;
+      }
+      if (typeof map[key] !== 'undefined') {
+        assert.ok(properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+        props[key] = map[key];
+      } else {
+        props[key] = properties[key].defaultValue;
+      }
+    }
+    return Immutable.Map(props);
+  };
   return klass;
 };
 
