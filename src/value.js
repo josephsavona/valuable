@@ -54,10 +54,28 @@ Value.prototype._notify = function Value$private$_notify(source) {
   var value = this._raw;
   if (this._parent) {
     this._parent._updateChild(this, value, source);
+    return;
   }
+
+  this._runObserversBound = this._runObserversBound || this._runObservers.bind(this);
+  this._queuedUpdates = this._queuedUpdates || [];
+  this._queuedUpdates.push(source);
+  if (this._queuedUpdates.length === 1) {
+    process.nextTick(this._runObserversBound);
+  }
+};
+
+Value.prototype._runObservers = function Value$private$runObservers() {
+  var value = this._raw;
   this._listeners.forEach(function(listener) {
-    listener(value, source);
+    listener(value);
   });
+  this._queuedUpdates = [];
+};
+
+Value.prototype._setAncestors = function Value$private$setAncestors(parent, root) {
+  this._parent = parent;
+  this._root = root;
 };
 
 Value.prototype.handleChange = function Value$handleChange() {

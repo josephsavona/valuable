@@ -77,9 +77,10 @@ var UndoProto = {
     this._compact();
   },
   _watch: function Undo$private$watch(val, source) {
-    // test if this observe() was called by our own undo/redo's use of setVal()
-    // if so, ignore to avoid recording our own change
-    if (this._isSetVal) {
+    // can skip updating under either of two conditions:
+    // - observe() was called by our own undo/redo's use of setVal()
+    // - the new value is identical to the current one
+    if (this._isSetVal || val === this._stack[this._index]) {
       this._isSetVal = false;
       return;
     }

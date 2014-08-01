@@ -1,6 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
+    helpers = require('./helpers'),
     Valueable = require('..'),
     Map = require('../src/map'),
     Value = require('../src/value'),
@@ -11,14 +12,7 @@ var assert = require('chai').assert,
 
 
 describe('Map', function() {
-  // need to ensure that any Object.prototype hacking
-  // will not interfere (also helps ensure 100% test coverage)
-  beforeEach(function() {
-    Object.prototype.prototypeKey = 'prototypeKey';
-  });
-  afterEach(function() {
-    delete Object.prototype.prototypeKey;
-  });
+  helpers.init();
 
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
@@ -82,6 +76,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
+      helpers.runOneTick();
       assert.deepEqual(value.val('key'), val);
     });
   });
@@ -90,6 +85,7 @@ describe('Map', function() {
     rawValues.forEach(function(val) {
       var value = Map();
       value.set('key', val);
+      helpers.runOneTick();
       assert.ok(value.get('key') instanceof Value, 'wraps values in Value');
       assert.deepEqual(value.get('key').val(), val, 'wrapped value has the set value');
     })
@@ -101,6 +97,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set('key', val);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -112,6 +109,7 @@ describe('Map', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.get('key').setVal(val);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], {key: val});
     });
@@ -125,9 +123,9 @@ describe('Map', function() {
       value.observe(observer);
       value.set('key', val);
       deleted = value.del('key');
-      assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], {key: val});
-      assert.deepEqual(observer.args[1][0], {});
+      helpers.runOneTick();
+      assert.ok(observer.calledOnce, 'observer called only once');
+      assert.deepEqual(observer.args[0][0], {});
       assert.deepEqual(deleted, val, 'del() returns the raw value of the key');
     });
   });
@@ -191,6 +189,7 @@ describe('Map', function() {
 
     value.observe(observer);
     value.get('nested').get('key').setVal(false);
+    helpers.runOneTick();
     assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
     map.nested.key = false;
     assert.deepEqual(observer.args[0][0], map, 'new value is as expected');
@@ -253,53 +252,6 @@ describe('Map', function() {
         Map.of(klass);
       });
     });
-  });
-
-  it('observe() has source of change as second param for set()', function() {
-    rawValues.forEach(function(val) {
-      var value = Map(),
-          observer = sinon.spy(),
-          key,
-          newKey;
-
-      value.observe(observer);
-      value.set('key', val);
-      key = value.get('key');
-      assert.equal(observer.args[0][1], key);
-      value.set('key', [val]);
-      newKey = value.get('key');
-      assert.equal(observer.args[1][1], newKey);
-    });
-  });
-
-  it('observe() has source of change as second param for get().setVal()', function() {
-    var value = Map({key: ''}),
-        observer = sinon.spy(),
-        key = value.get('key');
-
-    value.observe(observer);
-    value.get('key').setVal('diff1');
-    assert.equal(observer.args[0][1], key);
-    value.get('key').setVal('diff2');
-    assert.equal(observer.args[1][1], key);
-  });
-
-  it('observe() has source of change as second param for del()', function() {
-    var value = Map({key: ''}),
-        observer = sinon.spy(),
-        key = value.get('key');
-
-    value.observe(observer);
-    value.del('key');
-    assert.equal(observer.args[0][1], key);
-  });
-
-  it('observe() has source of change as second param for setVal()', function() {
-    var value = Map({}),
-        observer = sinon.spy();
-    value.observe(observer);
-    value.setVal({key: true});
-    assert.equal(observer.args[0][1], value);
   });
 });
  

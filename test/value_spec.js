@@ -1,9 +1,12 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
+    helpers = require('./helpers'),
     Value = require('../src/value'),
     rawValues = require('./mock_values');
 
 describe('Value', function() {
+  helpers.init();
+
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
       var value = Value();
@@ -41,6 +44,7 @@ describe('Value', function() {
           observer = sinon.spy();
       value.observe(observer);
       change({target: {value: val}});
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer notified');
       assert.deepEqual(value.val(), val, 'value is updated');
     });
@@ -67,6 +71,7 @@ describe('Value', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.setVal(val);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called when value set()');
       assert.ok(observer.calledWith, val, 'observer called with the new value');
     });
@@ -77,20 +82,12 @@ describe('Value', function() {
         observer = sinon.spy();
     value.observe(observer);
     value.setVal(true);
+    helpers.runOneTick();
     value.unobserve(observer);
     value.setVal(false);
+    helpers.runOneTick();
     assert.ok(observer.calledOnce, 'observer called only once');
     assert.ok(observer.calledWith(true), 'observer called only before unobserved');
-  });
-
-  it('returns the original source of the change in observer', function() {
-    rawValues.forEach(function(val) {
-      var value = Value(),
-          observer = sinon.spy();
-      value.observe(observer);
-      value.setVal(val);
-      assert.equal(observer.args[0][1], value);
-    });
   });
 
   it('always returns the current value (even if re-set() a ton)', function() {

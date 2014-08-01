@@ -1,6 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
+    helpers = require('./helpers'),
     Valueable = require('..'),
     List = require('../src/list'),
     Value = require('../src/value'),
@@ -10,6 +11,8 @@ var assert = require('chai').assert,
     rawValues = require('./mock_values');
 
 describe('List', function() {
+  helpers.init();
+
   it('can be observe()-ed with a function callback', function() {
     assert.doesNotThrow(function() {
       var value = List();
@@ -111,6 +114,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.set(0, val);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -122,6 +126,7 @@ describe('List', function() {
           observer = sinon.spy();
       value.observe(observer);
       value.at(0).setVal(val);
+      helpers.runOneTick();
       assert.ok(observer.calledOnce, 'observer called');
       assert.deepEqual(observer.args[0][0], [val]);
     });
@@ -135,9 +140,12 @@ describe('List', function() {
       value.observe(observer);
       value.set(0, val);
       shifted = value.shift();
-      assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], [val]);
-      assert.deepEqual(observer.args[1][0], []);
+      assert.equal(observer.callCount, 0, 'observer not called');
+
+      helpers.runOneTick();
+      assert.ok(observer.calledOnce, 'observer after shift');
+      assert.deepEqual(observer.args[0][0], []);
+      assert.deepEqual(value.val(), []);
       assert.deepEqual(shifted, val, 'shift() returns the raw value');
     });
   });
@@ -150,9 +158,11 @@ describe('List', function() {
       value.observe(observer);
       value.set(0, val);
       popped = value.pop();
-      assert.ok(observer.calledTwice, 'observer called once per modifiction');
-      assert.deepEqual(observer.args[0][0], [val]);
-      assert.deepEqual(observer.args[1][0], []);
+      assert.equal(observer.callCount, 0, 'observer not called');
+
+      helpers.runOneTick();
+      assert.ok(observer.calledOnce, 'observer after pop');
+      assert.deepEqual(observer.args[0][0], []);
       assert.deepEqual(popped, val, 'pop() returns the raw value');
     });
   });
@@ -246,7 +256,8 @@ describe('List', function() {
     // nesting set test
     value.observe(observer);
     value.at(1).at(1).setVal(false);
-    assert.ok(observer.calledOnce, 'observer called once for grandchild value change');
+    helpers.runOneTick();
+    assert.equal(observer.callCount, 1, 'observer called once for grandchild value change');
     list[1][1] = false;
     assert.deepEqual(observer.args[0][0], list, 'new value is as expected'); 
   });
@@ -352,65 +363,6 @@ describe('List', function() {
     assert.equal(cb.args[2][0], 3);
     assert.equal(cb.args[3][0], 4);
     assert.deepEqual(mapped, [1,4,9,16]);
-  });
-
-  it('observe() has source of change as second param for set()', function() {
-    rawValues.forEach(function(val) {
-      var value = List(),
-          observer = sinon.spy(),
-          key,
-          newKey;
-
-      value.observe(observer);
-      value.set(0, val);
-      key = value.at(0);
-      assert.equal(observer.args[0][1], key);
-      value.set(0, [val]);
-      newKey = value.at(0);
-      assert.equal(observer.args[1][1], newKey);
-    });
-  });
-
-  it('observe() has source of change as second param for at().setVal()', function() {
-    var value = List(['']),
-        observer = sinon.spy(),
-        key = value.at(0);
-
-    value.observe(observer);
-    value.at(0).setVal('diff1');
-    assert.equal(observer.args[0][1], key);
-    value.at(0).setVal('diff2');
-    assert.equal(observer.args[1][1], key);
-  });
-
-  it('observe() has source of change as second param for push()', function() {
-    var value = List([]),
-        observer = sinon.spy(),
-        key;
-
-    value.observe(observer);
-    value.push(true);
-    key = value.at(0);
-    assert.equal(observer.args[0][1], key);
-  });
-
-  it('observe() has source of change as second param for unshift()', function() {
-    var value = List([]),
-        observer = sinon.spy(),
-        key;
-
-    value.observe(observer);
-    value.unshift(true);
-    key = value.at(0);
-    assert.equal(observer.args[0][1], key);
-  });
-
-  it('observe() has source of change as second param for setVal()', function() {
-    var value = List([]),
-        observer = sinon.spy();
-    value.observe(observer);
-    value.setVal([true]);
-    assert.equal(observer.args[0][1], value);
   });
 });
  
