@@ -79,12 +79,12 @@ Store.prototype.commit = function() {
       if (change.type === 'add' && index < 0) {
         list = list.push(target);
       } else if (change.type === 'remove') {
-        list = Immutable.Vector.from(list.filter(function(x, index) { return index !== index; }));
+        list = list.delete(index);
       } else if (change.type === 'update') {
         list = list.set(index, target);
       }
     });
-    this._store = this._store.set(changed._path[0], list.asImmutable());
+    this._store = this._store.set(changed._path[0], Immutable.Vector.from(list.filter(function(x) { return ~x})));
     changed._changes = [];
   }.bind(this));
 };

@@ -36,6 +36,14 @@ CollectionBase.prototype.get = function Collection$get(ix) {
   return this._list.get(ix);
 };
 
+CollectionBase.prototype.forEach = function Collection$forEach(fn) {
+  return this._list.forEach(fn);
+};
+
+CollectionBase.prototype.map = function Collection$map(fn) {
+  return this._list.map(fn);
+};
+
 CollectionBase.prototype.factory = function Collection$factory(map) {
   assert.ok(!map || _.isPlainObject(map), 'Collection(): factory accepts an optional object of property values');
   map['id'] = uuid.v4();

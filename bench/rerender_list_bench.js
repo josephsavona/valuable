@@ -7,6 +7,7 @@ var _ = require('lodash');
 
 var backbone = require('./backbone_samples');
 var valuable = require('./valuable_samples');
+var store = require('./store_samples');
 
 var initializeState = [];
 var length = 50;
@@ -19,6 +20,7 @@ for (var ix = 0; ix < length; ix++) {
 }
 var initialStateBackbone = _.cloneDeep(initializeState);
 var initialStateValuable = _.cloneDeep(initializeState);
+var initialStateStore = _.cloneDeep(initializeState);
 
 new Benchmark.Suite('List Rendering with Update')
 .add('Backbone', {
@@ -45,13 +47,20 @@ new Benchmark.Suite('List Rendering with Update')
   // teardown: helpers.teardownDom,
   // minSamples: 20
 })
+.add('Store', {
+  fn: function() {
+    var models = store.app.models;
+    initialStateStore.forEach(function(m) { models.add(store.app.models.factory(m))});
+    store.app.commit(models);
+    var m = store.app.models.get(updateIndex);
+    m.label.val = 'changed';
+    return store.app.models.val()[updateIndex].label;
+  }
+})
 .on('error', function(err) {
   console.log('ERROR');
   console.log(err.target.error.stack);
 })
-// .on('cycle', function(event) {
-//   console.log(String(event.target));
-// })
 .on('complete', function() {
   console.log(this.name);
   this.filter('successful').forEach(function(benchmark) {
