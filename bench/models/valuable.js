@@ -1,4 +1,4 @@
-var Valuable = require('../index'),
+var Valuable = require('../../index'),
     React = require('react');
 
 var Model = module.exports.Model = Valuable.Struct.schema({

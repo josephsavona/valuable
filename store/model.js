@@ -45,7 +45,7 @@ ModelBase.prototype.set = function Model$set(map) {
   var clone = _.clone(this._map);
   for (key in map) {
     if (this.properties.hasOwnProperty(key)) {
-      asset.ok(this.properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+      assert.ok(this.properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
       clone[key] = map[key];
     }
   }
