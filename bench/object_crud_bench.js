@@ -1,4 +1,5 @@
 var Valuable = require('../index'),
+    Model = require('../store/model'),
     Backbone = require('backbone'),
     Benchmark = require('benchmark');
 
@@ -10,6 +11,10 @@ var BModel = Backbone.Model.extend({
 
 var VModel = Valuable.Struct.schema({
   key: Valuable.Str
+});
+
+var SModel = Model.define({
+  key: Model.Str
 });
 
 new Benchmark.Suite('Object Create-Modify-Read')
@@ -36,6 +41,13 @@ new Benchmark.Suite('Object Create-Modify-Read')
     return o.val('key');
   },
   // minSamples: minSamples
+})
+.add('Store', {
+  fn: function() {
+    var o = new SModel({});
+    o.key.val = 'value';
+    return o.key.val;
+  }
 })
 .on('complete', function() {
   console.log(this.name);
