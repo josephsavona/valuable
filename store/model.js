@@ -6,20 +6,20 @@ var _ = require('lodash'),
     Decimal = require('./decimal'),
     Str = require('./str');
 
-var ModelBase = function Model(raw, path) {
-  var map = {},
+var ModelBase = function Model(attributes, path) {
+  var key,
+      map = {},
       properties = this.properties;
-  raw = raw || {};
-  // if (raw instanceof Immutable.Map) {
-  //   raw = raw.toJS();
-  // }
-  for (var key in properties) {
+
+  assert.ok(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
+  attributes = attributes || {};
+  for (key in properties) {
     if (!properties.hasOwnProperty(key)) {
       continue;
     }
-    if (typeof raw[key] !== 'undefined') {
-      assert.ok(properties[key].isValidValue(raw[key]), 'Model(): invalid value for property ' + key);
-      map[key] = raw[key];
+    if (typeof attributes[key] !== 'undefined') {
+      assert.ok(properties[key].isValidValue(attributes[key]), 'Model(): invalid value for property ' + key);
+      map[key] = attributes[key];
     } else {
       map[key] = properties[key].defaultValue;
     }
@@ -28,7 +28,6 @@ var ModelBase = function Model(raw, path) {
   this._parent = null;
   this._path = path;
   this._props = {};
-  
   this._map = map;
 };
 
@@ -56,7 +55,10 @@ ModelBase.prototype.set = function Model$set(map) {
   }
 };
 
-ModelBase.prototype.val = function Model$val() {
+ModelBase.prototype.val = function Model$val(key) {
+  if (typeof key !== 'undefined') {
+    return this._map[key];
+  }
   return this._map;
 };
 
@@ -86,22 +88,6 @@ ModelBase.define = function Model$$define(properties) {
     });
   });
 
-  klass._convertMap = function Model$private$convertMap(map) {
-    var props = {};
-    map = map || {};
-    for (var key in properties) {
-      if (!properties.hasOwnProperty(key)) {
-        continue;
-      }
-      if (typeof map[key] !== 'undefined') {
-        assert.ok(properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
-        props[key] = map[key];
-      } else {
-        props[key] = properties[key].defaultValue;
-      }
-    }
-    return Immutable.Map(props);
-  };
   return klass;
 };
 

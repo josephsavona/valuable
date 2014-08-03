@@ -44,10 +44,9 @@ CollectionBase.prototype.map = function Collection$map(fn) {
   return this._list.map(fn);
 };
 
-CollectionBase.prototype.factory = function Collection$factory(map) {
-  assert.ok(!map || _.isPlainObject(map), 'Collection(): factory accepts an optional object of property values');
-  map['id'] = uuid.v4();
-  return new this.model(map, this._path.concat(map['id']));
+CollectionBase.prototype.factory = function Collection$factory(attributes) {
+  assert.ok(!attributes || _.isPlainObject(attributes), 'Collection(): factory accepts an optional object of property values');
+  return new this.model(attributes, this._path.concat(attributes['id']));
 };
 
 CollectionBase.prototype.add = function Collection$add(model) {
@@ -106,7 +105,6 @@ CollectionBase.define = function Collection$$define(model) {
       items[ix] = new model(list[ix], this);
     }
     return Immutable.Vector.from(items);
-    return ilist;
   };
 
   return klass;
