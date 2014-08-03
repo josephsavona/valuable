@@ -79,8 +79,8 @@ suite('Object Creation', function() {
     var user = new store._models.users({});
   });
 
-  bench('Store - store.model(users)', function() {
-    var user = store.model('users', {});
+  bench('Store - store.factory(users)', function() {
+    var user = store.factory('users', {});
   });
 
   bench('Store - users.model()', function() {

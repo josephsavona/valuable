@@ -5,32 +5,8 @@ var _ = require('lodash'),
     Model = require('./model'),
     Collection = require('./collection');
 
-// var ModelLens = function ModelLens() {};
-
-// // usage
-// userLens.prop.val -> get literal value of prop
-// userLens.prop.val = x -> set literal value of prop
-// userLens.prop.gt('val') -> returns true/false
-// userLens.prop.inc() -> increments the literal value
-
-// userLens.relationName -> lens referring to the relation (model or collection depending on HasOne/HasMany)
-// userLens.relationName = assignment for HasOne
-// userLens.relationName.add(relationItem) -> adds a related item to the set
-
-// app.commit(userLens) -> commits all changes to userLens, including changes to its nested structures
-
-// var CollectionLens = function CollectionLens() {};
-
-// // usage
-// users = app.users -> iterable over all users
-// users.filter(fn) -> iterable over the filtered user model lenses
-// users.last() -> last item (user model lens)
-// user = users.factory({...}) -> create a new user (not yet attached)
-
-// users.add(user) -> adds the new unattached user item to the set
-// app.commit(users) -> commits all changes to users table
-
 var Store = function Store(definition) {
+  var store = {};
   if (!(this instanceof Store)) {
     return new Store(definition);
   }
@@ -42,7 +18,6 @@ var Store = function Store(definition) {
 
   this._models = {};
   this._collections = {};
-  this._store = Immutable.Map();
   this._listeners = [];
 
   var key, model, collection;
@@ -51,7 +26,7 @@ var Store = function Store(definition) {
     collection = Collection.define(model);
     this._models[key] = model;
     this._collections[key] = collection;
-    this._store = this._store.set(key, Immutable.Vector());
+    store[key] = Immutable.Vector();
 
     Object.defineProperty(this, key, {
       get: function() {
@@ -62,9 +37,10 @@ var Store = function Store(definition) {
       configurable: false
     });
   }
+  this._store = Immutable.Map.from(store);
 };
 
-Store.prototype.model = function Store$model(modelName, attributes) {
+Store.prototype.factory = function Store$factory(modelName, attributes) {
   assert.ok(modelName in this._models, 'Store(): model not defined ' + modelName);
   assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
   return new this._models[modelName](attributes, this, [modelName]);
