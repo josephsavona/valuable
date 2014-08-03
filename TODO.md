@@ -1,85 +1,91 @@
-# Notes
+var store = new Store(definition);
 
-- DONE - Struct schemas
+store.initialize(dataMap); // -> put initial state into the store {name: [modelJson, modelJson], ...}
+var dataMap = store.toJSON(); // -> get current state of the store {name: [modelJson, modelJson], ...}
 
-- DONE - typed collections (eg values must be of a type)
-	- list
-	- map
+// ad-hoc queries/updates:
+store.transaction(function(lens, commit) {
+  var user = lens.get('users', 1);
+  user.name.val = 'new name';
+  commit(user);
+});
 
-- DONE cleaner API for val/set/get:
-	- val() -> returns raw value
-	- setVal(value) -> replaces the raw value with the given value (if given a Value object, extracts its raw value with .val())
-	- get(key) -> returns the wrapped value at key
-	- set(key, value) -> maps/structs: convenience for .get(key).setVal(value) but creates the key if missing
-	- set(index, value) -> lists: convenience for .at(index).setVal(value) but creates the key if missing
+// ad-hoc realtime views:
+store.observe(function listener(lens) {}); // re-run on every commit to the store
+store.observeOnce(function cb(lens) {}); // run once on current value of store
+store.snapshot(); // -> lens  -- non-callback version to get a lens of store's current state
 
-- DONE ensure that instaces of custom lists/maps/structs (via .of/.schema) are an instanceof List/Map/Struct eg `someList instanceof List` should be true
+// or using pre-defined finders:
+store.finder('name', queryModelDef, function query(params, lens) { return lens.runQuery(params) });
+store.observe('name', {params: params}, function listener(results, query) {}); // triggers on commits and on query changes
+store.observeSnapshot('name', {params: params}, function cb(results, query) {}); // triggers only on query changes, ignores outside commits
 
-- DONE - any time a value can be set, need to check for the possibility that this is a non-literal value and replace self with a new wrapper via Valuable. probably also need to do this._replaceChild(oldValuable, newValuable)
-	- in Value.setVal(value)
-	- in Map.set(key, value) via use of class constructors
-	- in List on push/unshift/splice/replace etc
-	- Struct via .get().setVal()
-
-- DONE setVal() reuses constructor
-
-- DONE - perf. improvements - now much faster than backbone - (check with `npm run bench`)
-	
-	List Update
-	~2x faster than backbone
-	constructing a large list and modifying a prop on the middle item
-		Backbone x 937 ops/sec ±4.21% (78 runs sampled)
-		Valuable x 1,724 ops/sec ±2.98% (71 runs sampled)
-
-	Nested Create-Modify-Read
-	~9x faster than backbone
-	constructing a single-item list and modifying the item's prop
-		Native x 43,719,983 ops/sec ±2.76% (89 runs sampled)
-		Backbone x 9,000 ops/sec ±6.95% (53 runs sampled)
-		Valuable x 81,745 ops/sec ±2.82% (86 runs sampled)
-
-	Object Create-Modify-Read 
-	~40% faster than backbone
-	creating an object/model/struct and modifying a prop
-		Native x 14,491,213 ops/sec ±3.64% (86 runs sampled)
-		Backbone x 73,730 ops/sec ±2.86% (69 runs sampled)
-		Valuable x 101,921 ops/sec ±1.62% (87 runs sampled)
-
-- DONE - easy undo/redo functionality
-
-- DONE - core typed literal values, - cannot set() to anything but the exact type (throws TypeError)
-	- Decimal
-	- Bool
-	- Str
-
-- batch updates - simple - add API for setting multiple map/struct keys at once
-
-- batch updates - complex - asynchronous _notify via nextTick, but any .val() calls force a synchronous _notify and clear the queued async one. multiple _notifies along the same path should be skipped:
-	.get('a').get('b').at(0).get('k').setVal('v')
-	.get('a').get('b').at(0).set('key', 'value')
-	.get('a').get('b').push({key: 'other value'})
-	// should only schedule one _notify for the a.b path
-
-	give every Value a reference to its root, root has a list of changed nodes. any change in the tree pushes the changed node onto the root's change list. any call to val() checks root and if change list has entries triggers root._flushChanges(). otherwise, queue root._flushChanges for nextTick. flushChanges works like _notify does now, except that every recursive step up the tree removes that node from the root's change list (this is so that in the example above, the first change within a.b[0] can remove the need to also update a.b a second time). root's change list should be kept sorted by depth with deepest nodes first, to reduce the need for duplicate updates
+// or using pre-defined actions:
+store.action('name', function action(params, lens, commit) { commit(lens.updateItem(params)) });
+store.execute('name', {params: params});
 
 
-	list pop/shift is failing because the raw value has not been calculated when the shift/pop occurs. probably better to have these methods pop/shift off the wrapped value rather than raw, and let the user decide if they want to grab the value with .val() or just throw it away. problem will be once it is removed, it won't receive any pending updates from its root.
+
+// MODIFYING AN OBSERVE QUERY
+var token = store.observe('usersNamed', {name: 'me'}, function(users, query) {
+  // render form for query (query is the params parsed into the finder's model definition)
+  // render users list
+
+  ui.callback = function() {
+    query.name.val = 'not me'; // triggers observe()er to run again even if no commits happen
+  }
+});
 
 
-- consistent way of checking if an instance is a specific type, eg an equivalent to `someIntList instanceof List.of(Int)`
+// SNAPSHOTTING
+var snapshot = store.snapshot():
+var users = snapshot.get('users').filter(usersNamedMe).take(2);
+assert(users.length === 1); //pretend someone exists
+var newUser = snapshot.create('users');
+newUser.name = 'me';
+store.commit(newUser);
 
-- more array operations and better accessors, eg slice(), map (map and mapv), filter (filter and filterv), negative indexing, range indexing, etc
+var snapshot2 = store.snapshot();
+var users2 = snapshot2.get('users').filter(usersNamedMe).take(2);
+assert(users2.length === 2);
+assert(users2.get(0) === users.get(0)); // first item is identical
+assert(users2.get(1) !== newUser); // commit does not have to uphold object equality
+var me1 = users2.get(0).edit();
+me1.name = 'not me';
+store.commit(me1);
 
-- additional convenience value types
-	- UUID
-	- DateTime
-	- Range - defines a min/max, attempting to set the value below/above will force the value back to min/max respectively (eg like a Int with min/max, but prevents going outside the range and never has an error)
-	- Email
-	- USPhone
-	- MaskedStr - make it easy to generate xxxx-xxxx-xxxx-1234 for credit cards where the true value is kept interally
-	- FormattedStr - make it easy to generate (xxx) xxx-xxxx given a string xxxxxxxxxx
+var snapshot3 = store.snapshot();
+var users3 = snapshot3.get('users').filter(usersNamedMe).take(2);
+assert(users3.length === 1);
+assert(users3.get(0) === users2.get(1)); // item index has shifted, but item itself has stayed same
 
-- make val() and get() supported nested.path.0.prop style paths. split into tokens and recursively call val/get until you've walked the whole path or reached the end.
-	- subclasses should implement _val(), called by standard val()
-	- subclasses should implement _get(), called by standard get()
-	- the standard method can implement the recursive access using _val/_get
+
+
+
+// TX -> RENDER -> UPDATE
+store.transaction(function(store, commit) {
+  var users = store.get('users')
+    .filter(function(user) { return user.createdAt.val > moment().minus(1, 'day') })
+    .take(10);
+
+  // render this list, somewhere UI holds onto a ref to a user
+  var form = {user: users.oneOfThem};
+  form.onSubmit = function() {
+    // long version
+    store.transaction(function(store, commit) {
+      var user = store.get(form.user); // reload current version of same item
+      user.isChecked.negate();
+      user.lastUpdated = moment();
+      commit(user);
+    });
+    // shortcut for single item
+    form.user.transaction(function(user) {
+      user.isChecked.negate();
+      user.lastUpdated = moment();
+    });
+    // perhaps simpler:
+    form.user.isChecked.negate();
+    form.user.lastUpdated = moment();
+    form.user.commit();
+  }
+});

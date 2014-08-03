@@ -38,41 +38,38 @@ describe('Store() can add an item', function() {
     });
   });
 
-  it('can add/remove items to/from the store via commit()', function() {
+  it('can add items to the store via commit()', function() {
     var dude = {
       name: 'dude',
       age: 21
     };
-    var users = app.users;
-    var user = users.factory(dude);
-    users.add(user);
-    app.commit(users);
-    assert.equal(app.users.length, 1);
-    assert.equal(app.users.get(0).name.val, 'dude');
-
-    users.remove(user);
-    app.commit(users);
-    assert.equal(app.users.length, 0);
+    var user = app.create('users', dude);
+    app.commit(user);
+    var snapshot = app.snapshot();
+    assert.equal(snapshot.get('users').length(), 1);
+    console.dir(snapshot.get('users').first());
+    assert.equal(snapshot.get('users').first().name.val, 'dude');
   });
+
+  it('can remove items from the store via commit()');
 
   it('can update existing items in the store via commit()', function() {
     var dude = {
       name: 'dude',
       age: 21
     };
-    var users = app.users;
-    var user = users.factory(dude);
-    users.add(user);
-    app.commit(users);
-    assert.equal(app.users.length, 1);
-    assert.equal(app.users.get(0).name.val, 'dude');
+    var user = app.create('users', dude);
+    app.commit(user);
 
-    // having an issue with Vector.splice(), on hold...
-    user = app.users.get(0);
+    var snapshot = app.snapshot();
+    user = snapshot.get('users').first().forEdit();
     user.age.inc();
-    app.commit(users);
-    assert.equal(app.users.length, 1);
-    assert.equal(app.users.get(0).age.val, 22);
+    app.commit(user);
+
+    snapshot = app.snapshot();
+    assert.equal(snapshot.get('users').length(), 1);
+    assert.equal(snapshot.get('users').first().name.val, dude.name);
+    assert.equal(snapshot.get('users').first().age.val, dude.age + 1);
   });
 
   it('can find added items', function() {
@@ -80,31 +77,14 @@ describe('Store() can add an item', function() {
       name: 'dude',
       age: 21
     };
-    var users = app.users;
-    users.add(users.factory(dude));
-    app.commit(users);
+    var user = app.create('users', dude);
+    app.commit(user);
 
-    var results = app.users.query(function(users) {
-      return users.filter(function(user) { return user.name.val === 'dude'; }).first();
-    });
-    assert.equal(results.length, 1);
+    var users = app.snapshot().get('users');
+    assert.equal(users.length(), 1);
+    assert.equal(users.first().name.val, dude.name);
+    assert.equal(users.first().age.val, dude.age);
   });
 
-  it('cannot find removed items', function() {
-    var dude = {
-      name: 'dude',
-      age: 21
-    };
-    var users = app.users;
-    var user = users.factory(dude);
-    users.add(user);
-    app.commit(users);
-    users.remove(user)
-    app.commit(users);
-
-    var results = app.users.query(function(users) {
-      return users.filter(function(user) { return user.name.val === 'dude'; }).first();
-    });
-    assert.equal(results.length, 0);
-  });
+  it('cannot find removed items');
 });

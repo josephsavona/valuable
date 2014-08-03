@@ -1,9 +1,12 @@
-var assert = require('assert');
+var assert = require('assert'),
+    Literal = require('./literal');
 
 var Decimal = function Decimal(model, prop) {
   this._model = model;
   this._prop = prop;
 };
+
+Decimal.prototype = Object.create(Literal.prototype);
 
 Decimal.isValidValue = Decimal.prototype.isValidValue = function Decimal$isValidValue(val) {
   return typeof val === 'number';

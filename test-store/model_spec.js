@@ -45,8 +45,29 @@ describe('Model', function() {
     assert.deepEqual(m.val(), sample);
   });
 
+  it('can clone a model', function() {
+    var m = new MyModel(sample),
+        m2 = m.clone();
+    assert.deepEqual(m2.val(), sample);
+  });
+
+  it('cannot edit a default model', function() {
+    var m = new MyModel({});
+    assert.throws(function() {
+      m.str.val = 'fail!';
+    });
+  });
+
+  it('can edit an editable model', function() {
+    var m = new MyModel({}).forEdit();
+    assert.doesNotThrow(function() {
+      m.str.val = 'success';
+    });
+    assert.equal(m.val().str, 'success');
+  });
+
   it('can update a decimal', function() {
-    var m = new MyModel(),
+    var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.decimal.val, 0);
     m.decimal.inc();
@@ -55,7 +76,7 @@ describe('Model', function() {
   });
 
   it('can update a string', function() {
-    var m = new MyModel(),
+    var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.str.val, '');
     m.str.append('test');
@@ -64,7 +85,7 @@ describe('Model', function() {
   });
 
   it('can negate a boolean', function() {
-    var m = new MyModel(),
+    var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.bool.val, false);
     m.bool.negate();

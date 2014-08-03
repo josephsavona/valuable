@@ -1,9 +1,12 @@
-var assert = require('assert');
+var assert = require('assert'),
+    Literal = require('./literal');
 
 var Bool = function Bool(model, prop) {
   this._model = model;
   this._prop = prop;
 };
+
+Bool.prototype = Object.create(Literal.prototype);
 
 Bool.isValidValue = Bool.prototype.isValidValue = function Bool$isValidValue(val) {
   return typeof val === 'boolean';

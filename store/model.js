@@ -1,15 +1,13 @@
 var _ = require('lodash'),
     assert = require('assert'),
-    uuid = require('node-uuid'),
-    Immutable = require('immutable'),
     Bool = require('./bool'),
     Decimal = require('./decimal'),
     Str = require('./str');
 
-var ModelBase = function Model(attributes, path) {
+var ModelBase = function Model(attributes, id) {
   var key,
       map = {},
-      properties = this.properties;
+      properties = this._properties;
 
   assert.ok(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
   attributes = attributes || {};
@@ -25,34 +23,44 @@ var ModelBase = function Model(attributes, path) {
     }
   }
 
-  this._parent = null;
-  this._path = path;
+  this._editable = false;
   this._props = {};
   this._map = map;
+  this.id = id;
+  this.cid = id || _.uniqueId(this._path);
 };
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
+  assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
   var clone = _.clone(this._map);
   clone[key] = value;
-  if (this._parent) {
-    this._parent._update(this);
-  }
   this._map = clone;
 };
 
 ModelBase.prototype.set = function Model$set(map) {
+  assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
   var clone = _.clone(this._map);
   for (key in map) {
-    if (this.properties.hasOwnProperty(key)) {
-      assert.ok(this.properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+    if (this._properties.hasOwnProperty(key)) {
+      assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
       clone[key] = map[key];
     }
   }
   this._map = clone;
+};
 
-  if (this._parent) {
-    this._parent._update(this);
-  }
+ModelBase.prototype.isEditable = function Model$isEditable() {
+  return this._editable;
+};
+
+ModelBase.prototype.forEdit = function Model$forEdit() {
+  var model = new this.constructor(this._map, this.id);
+  model._editable = true;
+  return model;
+};
+
+ModelBase.prototype.clone = function Model$clone() {
+  return new this.constructor(this._map, this.id);
 };
 
 ModelBase.prototype.val = function Model$val(key) {
@@ -70,13 +78,14 @@ ModelBase.prototype.raw = function Map$raw() {
   return this._map;
 };
 
-ModelBase.define = function Model$$define(properties) {
+ModelBase.define = function Model$$define(properties, path) {
   var klass = function Model(map, path) {
     ModelBase.call(this, map, path);
   }
   klass.prototype = Object.create(ModelBase.prototype);
   klass.prototype.constructor = klass;
-  klass.prototype.properties = properties;
+  klass.prototype._properties = properties;
+  klass.prototype._path = path;
 
   _.each(properties, function(prop, key, properties) {
     Object.defineProperty(klass.prototype, key, {

@@ -1,9 +1,12 @@
-var assert = require('assert');
+var assert = require('assert'),
+    Literal = require('./literal');
 
 var Str = function Str(model, prop) {
   this._model = model;
   this._prop = prop;
 };
+
+Str.prototype = Object.create(Literal.prototype);
 
 Str.isValidValue = Str.prototype.isValidValue = function Str$isValidValue(val) {
   return typeof val === 'string';

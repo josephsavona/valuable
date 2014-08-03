@@ -94,7 +94,7 @@ suite('Object Property Access', function() {
     object = {name: 'hello'};
     backbone = new (createBackbone()).User({name: 'hello'});
     valuable = new (createValuable()).User({name: 'hello'});
-    store = (createStore()).model('users', {name: 'hello'});
+    store = (createStore()).factory('users', {name: 'hello'});
   });
 
   bench('Native', function() {
