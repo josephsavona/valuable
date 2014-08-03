@@ -23,10 +23,6 @@ Object.defineProperty(CollectionBase.prototype, 'length', {
   configurable: false
 });
 
-CollectionBase.prototype.editable = function Collection$editable() {
-  return new this.constructor(this._list, this._path);
-};
-
 CollectionBase.prototype.query = function Collection$filter(fn) {
   var results = fn(this._list);
   return new this.constructor(Immutable.Vector.from(results), this._path);
