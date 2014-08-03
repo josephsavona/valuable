@@ -63,6 +63,11 @@ ModelBase.prototype.clone = function Model$clone() {
   return new this.constructor(this._map, this.id);
 };
 
+ModelBase.prototype.destroy = function Model$destroy() {
+  this._editable = false;
+  this._destroy = true;
+};
+
 ModelBase.prototype.val = function Model$val(key) {
   if (typeof key !== 'undefined') {
     return this._map[key];

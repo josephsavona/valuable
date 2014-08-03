@@ -47,7 +47,6 @@ describe('Store() can add an item', function() {
     app.commit(user);
     var snapshot = app.snapshot();
     assert.equal(snapshot.get('users').length(), 1);
-    console.dir(snapshot.get('users').first());
     assert.equal(snapshot.get('users').first().name.val, 'dude');
   });
 

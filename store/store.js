@@ -46,16 +46,20 @@ Store.prototype.commit = function Store$private$commit() {
     model = arguments[ix];
     path = model._path;
     collection = source.get(path);
-    console.dir(collection);
-    if (model.id) {
+    if (model._destroy) {
+      if (!model.id) { continue; }
       index = collection.findIndex(function(x) { return x.id === model.id });
-      source = source.set(path, collection.set(index, model.clone()));
+      collection = collection.destroy(index);
+      collection = collection.filter(function(x) { return ~x });
+    } else if (model.id) {
+      index = collection.findIndex(function(x) { return x.id === model.id });
+      collection = collection.set(index, model.clone());
     } else {
       model = model.clone();
       model.id = uuid.v4();
-      source = source.set(path, collection.push(model));
+      collection = collection.push(model);
     }
-    console.dir(source.get(path));
+    source = source.set(path, collection);
     // TODO: iterate model's relations and add/update anything there...
     // unless we always make the user explicitly add these to the commit
   }

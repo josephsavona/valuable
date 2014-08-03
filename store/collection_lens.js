@@ -13,6 +13,7 @@ CollectionLens.prototype.length = function CollectionLens$length() {
 };
 
 CollectionLens.prototype.get = function CollectionLens$get(i) {
+  return this._source.get(i);
 };
 
 module.exports = CollectionLens;
