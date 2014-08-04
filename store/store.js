@@ -36,7 +36,8 @@ Store.prototype.snapshot = function Store$snapshot() {
 };
 
 Store.prototype.commit = function Store$private$commit() {
-  var length = arguments.length,
+  var args = _.flatten(arguments),
+      length = args.length,
       source = this._source,
       model,
       index,
@@ -44,7 +45,7 @@ Store.prototype.commit = function Store$private$commit() {
       id,
       collection;
   for (var ix = 0; ix < length; ix++) {
-    model = arguments[ix];
+    model = args[ix];
     path = model._path;
     collection = source.get(path);
     if (model._destroy) {

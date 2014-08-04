@@ -18,9 +18,9 @@ suite('Create & Update Collection', function() {
   bench('native', function() {
     var models = _.cloneDeep(data);
     models[updateIndex].label = 'changed';
-    models[updateIndex].id = _.uniqueId('item');
+    models[updateIndex].key = _.uniqueId('item');
     models.push({
-      id: _.uniqueId('item'),
+      key: _.uniqueId('item'),
       label: 'new item'
     });
     return models[updateIndex].label;
@@ -29,9 +29,9 @@ suite('Create & Update Collection', function() {
   bench('backbone', function() {
     var models = new backbone.Collection(backboneData);
     models.at(updateIndex).set('label', 'changed');
-    models.at(updateIndex).set('id', _.uniqueId('item'));
+    models.at(updateIndex).set('key', _.uniqueId('item'));
     models.push({
-      id: _.uniqueId('item'),
+      key: _.uniqueId('item'),
       label: 'new item'
     });
     return models.at(updateIndex).get('label');
@@ -40,9 +40,9 @@ suite('Create & Update Collection', function() {
   bench('valuable', function() {
     var models = new valuable.Collection(valuableData);
     models.at(updateIndex).set('label', 'changed!');
-    models.at(updateIndex).set('id', _.uniqueId('item'));
+    models.at(updateIndex).set('key', _.uniqueId('item'));
     models.push({
-      id: _.uniqueId('item'),
+      key: _.uniqueId('item'),
       label: 'new item'
     });
     return models.at(updateIndex).val('label');
@@ -50,11 +50,11 @@ suite('Create & Update Collection', function() {
 
   bench('store', function() {
     var app = store.app,
-        models = app.models;
+        models = [];
     storeData.forEach(function(item) {
-      models.add(models.factory(item))
+      models.push(app.create('models', item));
     });
-    app.commit(models);
-    return app.models.get(updateIndex).label.val;
+    app.commit(models)
+    return app.get('models').first().label.val;
   });
 });

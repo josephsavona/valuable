@@ -8,22 +8,22 @@ suite('Create & Update Model', function() {
   bench('native', function() {
     var model = {};
     model.label = 'new item';
-    model.id = 1;
+    model.key = 1;
     return model.label;
   });
 
   bench('backbone - set(k,v)', function() {
     var model = new backbone.Model();
     model.set('label', 'changed');
-    model.set('id', _.uniqueId('item'));
+    model.set('key', _.uniqueId('item'));
     return model.get('label');
   });
 
-    bench('backbone - set({})', function() {
+  bench('backbone - set({})', function() {
     var model = new backbone.Model();
     model.set({
       label: 'changed',
-      id: _.uniqueId('item')
+      key: _.uniqueId('item')
     });
     return model.get('label');
   });
@@ -31,22 +31,22 @@ suite('Create & Update Model', function() {
   bench('valuable', function() {
     var model = new valuable.Model();
     model.set('label', 'changed!');
-    model.set('id', _.uniqueId('item'));
+    model.set('key', _.uniqueId('item'));
     return model.val('label');
   });
 
   bench('store - set(k,v)', function() {
-    var model = store.app.models.factory({});
+    var model = store.app.create('models', {}).forEdit();
     model.label.val = 'changed';
-    model.id.val = _.uniqueId('item');
+    model.key.val = _.uniqueId('item');
     return model.label.val;
   });
 
   bench('store - set({})', function() {
-    var model = store.app.models.factory({});
+    var model = store.app.create('models', {}).forEdit();
     model.set({
       label: 'changed',
-      id: _.uniqueId('item')
+      key: _.uniqueId('item')
     });
     return model.label.val;
   });

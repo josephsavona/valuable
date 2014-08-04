@@ -19,7 +19,7 @@ module.exports.makeData = function() {
   var updateIndex = Math.floor(length/2);
   for (var ix = 0; ix < length; ix++) {
     initializeState.push({
-      id: _.uniqueId('item'),
+      key: _.uniqueId('item'),
       label: 'list item ' + ix
     });
   }
