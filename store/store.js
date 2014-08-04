@@ -71,6 +71,10 @@ Store.prototype.commit = function Store$private$commit() {
   this._snapshot = new Snapshot(this._source);
 };
 
+Store.prototype.get = function Store$get() {
+  return this._snapshot.get.apply(this._snapshot, arguments);
+};
+
 Store.prototype.create = function Store$create(model, attributes) {
   assert.ok(model in this._models, 'Store(): model not defined ' + model);
   assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');

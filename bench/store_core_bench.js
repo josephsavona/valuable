@@ -56,7 +56,6 @@ suite('Object Creation', function() {
     valuable = createValuable();
     valuable.collection = new valuable.Users();
     store = createStore();
-    store.collection = store.users;
   });
 
   bench('Backbone - new User()', function() {
@@ -79,12 +78,8 @@ suite('Object Creation', function() {
     var user = new store._models.users({});
   });
 
-  bench('Store - store.factory(users)', function() {
-    var user = store.factory('users', {});
-  });
-
-  bench('Store - users.model()', function() {
-    var user = store.collection.factory({});
+  bench('Store - store.create(users)', function() {
+    var user = store.create('users', {});
   });
 });
 
@@ -94,7 +89,7 @@ suite('Object Property Access', function() {
     object = {name: 'hello'};
     backbone = new (createBackbone()).User({name: 'hello'});
     valuable = new (createValuable()).User({name: 'hello'});
-    store = (createStore()).factory('users', {name: 'hello'});
+    store = (createStore()).create('users', {name: 'hello'});
   });
 
   bench('Native', function() {
@@ -134,15 +129,11 @@ suite('Collection Creation', function() {
     var users = new valuable.Users();
   });
 
-  bench('Store - store.users (getter)', function() {
-    var users = store.users;
+  bench('Store - store.get(users))', function() {
+    var users = store.get('users');
   });
 
-  bench('Store - store.collection(users)', function() {
-    var users = store.collection('users');
-  });
-
-  bench('Store - (private) new Users()', function() {
-    var users = new store._collections.users();
+  bench('Store - store.snapshot.get(users)', function() {
+    var users = store.snapshot().get('users');
   });
 });
