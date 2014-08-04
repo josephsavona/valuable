@@ -66,7 +66,7 @@ describe('Model', function() {
     assert.equal(m.val().str, 'success');
   });
 
-  it('can update a decimal', function() {
+  it('can update a decimal with inc()', function() {
     var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.decimal.val, 0);
@@ -75,7 +75,13 @@ describe('Model', function() {
     assert.deepEqual(m.decimal.val, 1);
   });
 
-  it('can update a string', function() {
+  it('can update a decimal via handleChange()', function() {
+    var m = new MyModel().forEdit();
+    m.decimal.handleChange()({target: {value: 1}});
+    assert.deepEqual(m.decimal.val, 1);
+  });
+
+  it('can update a string with append()', function() {
     var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.str.val, '');
@@ -84,12 +90,24 @@ describe('Model', function() {
     assert.deepEqual(m.str.val, 'test');
   });
 
-  it('can negate a boolean', function() {
+  it('can update a string via handleChange()', function() {
+    var m = new MyModel().forEdit();
+    m.str.handleChange()({target: {value: 'hello'}});
+    assert.deepEqual(m.str.val, 'hello');
+  });
+
+  it('can update a boolean with negate()', function() {
     var m = new MyModel().forEdit(),
         raw = m.raw();
     assert.deepEqual(m.bool.val, false);
     m.bool.negate();
     assert.notEqual(m.raw(), raw);
+    assert.deepEqual(m.bool.val, true);
+  });
+
+  it('can update a boolean via handleChange()', function() {
+    var m = new MyModel().forEdit();
+    m.bool.handleChange()({target: {value: true}});
     assert.deepEqual(m.bool.val, true);
   });
 });

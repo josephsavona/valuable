@@ -11,6 +11,12 @@ Literal.isValidValue = Literal.prototype.isValidValue = function Literal$isValid
 
 Literal.defaultValue = Literal.prototype.defaultValue = null;
 
+Literal.prototype.handleChange = function Literal$handleChange() {
+  return this._handleChange || (this._handleChange = function(event) {
+    this.val = event.target.value;
+  }.bind(this));
+};
+
 Object.defineProperties(Literal.prototype, {
   val: {
     get: function() {
