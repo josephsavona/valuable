@@ -1,109 +1,21 @@
-var _ = require('lodash'),
-    assert = require('assert'),
-    uuid = require('node-uuid'),
-    Immutable = require('immutable'),
-    Bool = require('./bool'),
-    Decimal = require('./decimal'),
-    Str = require('./str');
+var Lazy = require('lazy.js');
 
-var CollectionBase = function Collection(list, path) {
-  if (!(list instanceof Immutable.Vector)) {
-    list = this.constructor._convertList(list);
-  }
+var Collection = function Collection(source, path, snapshot) {
+  this._source = source;
   this._path = path;
-  this._list = list;
-  this._changes = [];
+  this._snapshot = snapshot;
 };
 
-Object.defineProperty(CollectionBase.prototype, 'length', {
-  get: function() {
-    return this._list.length;
-  },
-  enumerable: true,
-  configurable: false
-});
+Collection.prototype = Object.create(Lazy.ArrayLikeSequence.prototype);
 
-CollectionBase.prototype.query = function Collection$filter(fn) {
-  var results = fn(this._list);
-  return new this.constructor(Immutable.Vector.from(results), this._path);
+Collection.prototype.length = function Collection$length() {
+  return this._source.length;
 };
 
-CollectionBase.prototype.get = function Collection$get(ix) {
-  return this._list.get(ix);
-};
-
-CollectionBase.prototype.forEach = function Collection$forEach(fn) {
-  return this._list.forEach(fn);
-};
-
-CollectionBase.prototype.map = function Collection$map(fn) {
-  return this._list.map(fn);
-};
-
-CollectionBase.prototype.factory = function Collection$factory(attributes) {
-  assert.ok(!attributes || _.isPlainObject(attributes), 'Collection(): factory accepts an optional object of property values');
-  return new this.model(attributes, this._path.concat(attributes['id']));
-};
-
-CollectionBase.prototype.add = function Collection$add(model) {
-  assert.ok(model instanceof this.model, 'Collection(): can only add models of the collection type');
-
-  // this._list = this._list.push(model);
-  this._changes.push({
-    type: 'add',
-    target: model
-  });
-  model._parent = this;
+Collection.prototype.get = function Collection$get(i) {
+  var model = this._source.get(i).clone();
+  model._snapshot = this._snapshot;
   return model;
 };
 
-CollectionBase.prototype.remove = function Collection$remove(model) {
-  assert.ok(model instanceof this.model, 'Collection(): can only add models of the collection type');
-
-  // this._list = this._list.remove(model);
-  this._changes.push({
-    type: 'remove',
-    target: model
-  });
-};
-
-CollectionBase.prototype._update = function Collection$private$update(model) {
-  this._changes.push({
-    type: 'update',
-    target: model
-  });
-};
-
-CollectionBase.prototype.val = function Collection$val() {
-  return this._list.toJS();
-};
-
-CollectionBase.prototype.toJS = function CollectionBase$toJSON() {
-  return this._list.toJS();
-};
-
-CollectionBase.prototype.raw = function Collection$raw() {
-  return this._list;
-};
-
-CollectionBase.define = function Collection$$define(model) {
-  var klass = function Collection(list, parent) {
-    CollectionBase.call(this, list, parent);
-  };
-  klass.prototype = Object.create(CollectionBase.prototype);
-  klass.prototype.constructor = klass;
-  klass.prototype.model = model;
-
-  klass._convertList = function Collection$private$convertList(list) {
-    var items = [];
-    list = list || []; 
-    for (var ix = 0; ix < list.length; ix++) {
-      items[ix] = new model(list[ix], this);
-    }
-    return Immutable.Vector.from(items);
-  };
-
-  return klass;
-};
-
-module.exports = CollectionBase;
+module.exports = Collection;

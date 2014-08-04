@@ -15,7 +15,7 @@ describe('Store() constructor', function() {
     });
   });
 
-  it('can create a store', function() {
+  it('can create a store with a valid definition', function() {
     assert.doesNotThrow(function() {
       var app = new Store({
         user: {
@@ -27,8 +27,8 @@ describe('Store() constructor', function() {
   });
 });
 
-describe('Store() can add an item', function() {
-  var app;
+describe('Store() snapshot/commit', function() {
+  var app, dude;
   beforeEach(function() {
     app = new Store({
       users: {
@@ -36,13 +36,13 @@ describe('Store() can add an item', function() {
         age: Model.Decimal
       }
     });
-  });
-
-  it('can add items to the store via commit()', function() {
-    var dude = {
+    dude = {
       name: 'dude',
       age: 21
     };
+  });
+
+  it('can add items to the store via commit()', function() {
     var user = app.create('users', dude);
     app.commit(user);
     var snapshot = app.snapshot();
@@ -50,13 +50,18 @@ describe('Store() can add an item', function() {
     assert.equal(snapshot.get('users').first().name.val, 'dude');
   });
 
-  it('can remove items from the store via commit()');
+  it('can remove items from the store via commit()', function() {
+    var user = app.create('users', dude);
+    app.commit(user);
+
+    user = app.snapshot().get('users', user.id); // reload user
+    user.destroy();
+    app.commit(user);
+    var snapshot = app.snapshot();
+    assert.equal(snapshot.get('users').length(), 0);
+  });
 
   it('can update existing items in the store via commit()', function() {
-    var dude = {
-      name: 'dude',
-      age: 21
-    };
     var user = app.create('users', dude);
     app.commit(user);
 
@@ -72,10 +77,6 @@ describe('Store() can add an item', function() {
   });
 
   it('can find added items', function() {
-    var dude = {
-      name: 'dude',
-      age: 21
-    };
     var user = app.create('users', dude);
     app.commit(user);
 
@@ -84,6 +85,4 @@ describe('Store() can add an item', function() {
     assert.equal(users.first().name.val, dude.name);
     assert.equal(users.first().age.val, dude.age);
   });
-
-  it('cannot find removed items');
 });

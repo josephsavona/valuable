@@ -4,8 +4,8 @@ var _ = require('lodash'),
     Immutable = require('immutable'),
     Literal = require('./literal'),
     Model = require('./model'),
-    CollectionLens = require('./collection_lens'),
-    StoreLens = require('./store_lens');
+    Collection = require('./collection'),
+    Snapshot = require('./snapshot');
 
 var Store = function Store(definition) {
   assert.ok(_.isPlainObject(definition) && !_.isEmpty(definition), 'Store(): definition must be an object of modelName:string -> modelProps:object');
@@ -28,11 +28,11 @@ var Store = function Store(definition) {
   }
   this._models = models;
   this._source = Immutable.fromJS(store);
-  this._lens = new StoreLens(this._source, this);
+  this._snapshot = new Snapshot(this._source);
 };
 
 Store.prototype.snapshot = function Store$snapshot() {
-  return this._lens;
+  return this._snapshot;
 };
 
 Store.prototype.commit = function Store$private$commit() {
@@ -41,6 +41,7 @@ Store.prototype.commit = function Store$private$commit() {
       model,
       index,
       path,
+      id,
       collection;
   for (var ix = 0; ix < length; ix++) {
     model = arguments[ix];
@@ -49,14 +50,16 @@ Store.prototype.commit = function Store$private$commit() {
     if (model._destroy) {
       if (!model.id) { continue; }
       index = collection.findIndex(function(x) { return x.id === model.id });
-      collection = collection.destroy(index);
-      collection = collection.filter(function(x) { return ~x });
+      collection = collection.delete(index);
+      collection = Immutable.Vector.from(collection.filter(function(x) { return x !== null }));
     } else if (model.id) {
       index = collection.findIndex(function(x) { return x.id === model.id });
       collection = collection.set(index, model.clone());
     } else {
+      id = uuid.v4();
+      model.id = id; // set id of original model
       model = model.clone();
-      model.id = uuid.v4();
+      model.id = id; // set id of clone
       collection = collection.push(model);
     }
     source = source.set(path, collection);
@@ -65,7 +68,7 @@ Store.prototype.commit = function Store$private$commit() {
   }
   // replace the source of truth, create a new lens into it
   this._source = source;
-  this._lens = new StoreLens(this._source, this);
+  this._snapshot = new Snapshot(this._source);
 };
 
 Store.prototype.create = function Store$create(model, attributes) {

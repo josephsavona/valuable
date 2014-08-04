@@ -1,11 +1,12 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
+    Immutable = require('immutable'),
     Model = require('../store/model'),
     Collection = require('../store/collection');
 
-describe('Model', function() {
-  var properties, sample, emptySample, MyModel, MyCollection;
+describe('Collection', function() {
+  var properties, sample, emptySample, items, snapshot, MyModel, MyCollection;
   beforeEach(function() {
     properties = {
       decimal: Model.Decimal,
@@ -23,66 +24,40 @@ describe('Model', function() {
       str: ''
     };
     MyModel = Model.define(properties);
-    MyCollection = Collection.define(MyModel);
+    items = Immutable.Vector.from([
+      new MyModel(sample),
+      new MyModel(emptySample)
+    ]);
+    snapshot = {};
   });
 
   it('can create an empty collection', function() {
-    var c = new MyCollection();
-    assert.deepEqual(c.val(), []);
-  });
-
-  it('can create a collection with an empty model', function() {
-    var c = new MyCollection([{}]);
-    assert.deepEqual(c.get(0).val(), emptySample);
-    // assert.deepEqual(c.val(), [emptySample]);
-  });
-
-  it('can create a collection with a model with all fields', function() {
-    var c = new MyCollection([sample]);
-    assert.deepEqual(c.get(0).val(), sample);
+    var collection = new Collection(items, 'my_model', snapshot),
+        models = collection.map(function(m) { return m.val() }).toArray();
+    assert.equal(models.length, 2);
+    assert.deepEqual(models[0], sample);
+    assert.deepEqual(models[1], emptySample);
   });
 
   it('can filter a collection', function() {
-    var items = [];
-    for (var ix = 0; ix < 100; ix++) {
-      items.push({
-        decimal: ix,
-        bool: ix % 2 === 0,
-        str: 'name' + ix
-      });
-    }
-    var c = new MyCollection(items);
-    var item35 = c.get(35);
-    var results = c.query(function(items) {
-      return items.filter(function(item) {
-        return item.decimal.val === 35;
-      });
-    });
-    assert.equal(results.get(0).raw(), item35.raw());
-    assert.equal(results.get(0).decimal.val, 35);
-    assert.equal(c.length, 100);
+    var collection = new Collection(items, 'my_model', snapshot),
+        models;
+    models = collection.filter(function(m) { return m.str.val === sample.str })
+      .map(function(m) { return m.val() })
+      .toArray();
+    assert.equal(models.length, 1);
+    assert.deepEqual(models[0], sample);
   });
 
   it('can create a chained filter of a collection', function() {
-    var items = [];
-    for (var ix = 0; ix < 100; ix++) {
-      items.push({
-        decimal: ix,
-        bool: ix % 2 === 0,
-        str: 'name' + ix
-      });
-    }
-    var c = new MyCollection(items);
-    var results = c.query(function(items) {
-      return items.filter(function(item) {
-        return item.decimal.val > 35 && item.decimal.val <= 50;
-      })
-      .filter(function(item) {
-        return item.bool.val; // true if even
-      })
-      .first()
-    });
-    assert.equal(results.length, 1);
-    assert.equal(results.get(0).decimal.val, 36);
+    var collection = new Collection(items, 'my_model', snapshot),
+        models;
+    models = collection
+      .filter(function(m) { return m.str.val === sample.str })
+      .filter(function(m) { return m.bool.val === sample.bool })
+      .map(function(m) { return m.val() })
+      .toArray();
+    assert.equal(models.length, 1);
+    assert.deepEqual(models[0], sample);
   });
 });
