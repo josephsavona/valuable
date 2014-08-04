@@ -54,13 +54,19 @@ ModelBase.prototype.isEditable = function Model$isEditable() {
 };
 
 ModelBase.prototype.forEdit = function Model$forEdit() {
-  var model = new this.constructor(this._map, this.id);
-  model._editable = true;
-  return model;
+  var clone = this.clone();
+  clone._editable = true;
+  return clone;
 };
 
 ModelBase.prototype.clone = function Model$clone() {
-  return new this.constructor(this._map, this.id);
+  var clone = Object.create(this.constructor.prototype);
+  clone._map = this._map;
+  clone._editable = this._editable;
+  clone._props = {};
+  clone.cid = this.cid;
+  clone.id = this.id;
+  return clone;
 };
 
 ModelBase.prototype.destroy = function Model$destroy() {
