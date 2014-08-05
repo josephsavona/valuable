@@ -1,7 +1,8 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Model = require('../store/model');
+    Model = require('../store/model'),
+    Store = require('../store/store');
 
 describe('Model', function() {
   var properties, sample, emptySample;
@@ -38,6 +39,15 @@ describe('Model', function() {
         assert.deepEqual(m.val(), d);
       }
     }
+  });
+
+  it('identifies equal models', function() {
+    var a = new MyModel(),
+        b = a.clone(),
+        c = a.forEdit();
+    c.set('bool', true);
+    assert.ok(Store.is(a,b));
+    assert.notOk(Store.is(a,c));
   });
 
   it('can create a model with all fields', function() {

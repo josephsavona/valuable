@@ -29,7 +29,7 @@ Bool.prototype.ne = function Bool$ne(x) {
 Object.defineProperties(Bool.prototype, {
   val: {
     get: function() {
-      return this._model._map[this._prop];
+      return this._model._source[this._prop];
     },
     set: function(val) {
       if (typeof val === 'undefined') {

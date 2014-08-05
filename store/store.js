@@ -33,8 +33,24 @@ var Store = function Store(definition) {
   this._snapshot = new Snapshot(this._source);
 };
 
+Store.prototype.is = Store.is = function Store$is(a, b) {
+  return a === b || a._source === b._source;
+};
+
 Store.prototype.snapshot = function Store$snapshot() {
   return this._snapshot;
+};
+
+Store.prototype.get = function Store$get() {
+  return this._snapshot.get.apply(this._snapshot, arguments);
+};
+
+Store.prototype.create = function Store$create(model, attributes) {
+  if (process.env.NODE_ENV !== 'production') {
+    assert.ok(model in this._models, 'Store(): model not defined ' + model);
+    assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
+  }
+  return new this._models[model](attributes);
 };
 
 Store.prototype.commit = function Store$commit(args) {
@@ -68,18 +84,6 @@ Store.prototype.commit = function Store$commit(args) {
   }
   this._source = source;
   this._snapshot = new Snapshot(this._source);
-};
-
-Store.prototype.get = function Store$get() {
-  return this._snapshot.get.apply(this._snapshot, arguments);
-};
-
-Store.prototype.create = function Store$create(model, attributes) {
-  if (process.env.NODE_ENV !== 'production') {
-    assert.ok(model in this._models, 'Store(): model not defined ' + model);
-    assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
-  }
-  return new this._models[model](attributes);
 };
 
 module.exports = Store;

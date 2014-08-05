@@ -29,7 +29,7 @@ var ModelBase = function Model(attributes, id) {
 
   this._editable = false;
   this._props = {};
-  this._map = map;
+  this._source = map;
   this.id = id;
   this.cid = id || _.uniqueId(this._path);
 };
@@ -38,16 +38,16 @@ ModelBase.prototype._set = function Model$private$set(key, value) {
   if (process.env.NODE_ENV !== 'production') {
     assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
   }
-  var clone = _.clone(this._map);
+  var clone = _.clone(this._source);
   clone[key] = value;
-  this._map = clone;
+  this._source = clone;
 };
 
 ModelBase.prototype.set = function Model$set(map) {
   if (process.env.NODE_ENV !== 'production') {
     assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
   }
-  var clone = _.clone(this._map);
+  var clone = _.clone(this._source);
   for (key in map) {
     if (this._properties.hasOwnProperty(key)) {
       if (process.env.NODE_ENV !== 'production') {
@@ -56,7 +56,7 @@ ModelBase.prototype.set = function Model$set(map) {
       clone[key] = map[key];
     }
   }
-  this._map = clone;
+  this._source = clone;
 };
 
 ModelBase.prototype.isEditable = function Model$isEditable() {
@@ -71,7 +71,7 @@ ModelBase.prototype.forEdit = function Model$forEdit() {
 
 ModelBase.prototype.clone = function Model$clone() {
   var clone = Object.create(this.constructor.prototype);
-  clone._map = this._map;
+  clone._source = this._source;
   clone._editable = this._editable;
   clone._props = {};
   clone.cid = this.cid;
@@ -86,17 +86,17 @@ ModelBase.prototype.destroy = function Model$destroy() {
 
 ModelBase.prototype.val = function Model$val(key) {
   if (typeof key !== 'undefined') {
-    return this._map[key];
+    return this._source[key];
   }
-  return this._map;
+  return this._source;
 };
 
 ModelBase.prototype.toJS = function Model$toJSON() {
-  return this._map;
+  return this._source;
 };
 
 ModelBase.prototype.raw = function Map$raw() {
-  return this._map;
+  return this._source;
 };
 
 ModelBase.define = function Model$$define(properties, path) {
