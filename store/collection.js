@@ -13,7 +13,13 @@ Collection.prototype.length = function Collection$length() {
 };
 
 Collection.prototype.get = function Collection$get(i) {
-  var model = this._source.get(i).clone();
+  var model = this._source.values().get(i).clone();
+  model._snapshot = this._snapshot;
+  return model;
+};
+
+Collection.prototype.id = function Collection$id(id) {
+  var model = this._source.get(id).clone();
   model._snapshot = this._snapshot;
   return model;
 };

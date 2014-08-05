@@ -7,6 +7,8 @@ var Snapshot = function Snapshot(source) {
 };
 
 Snapshot.prototype.get = function Snapshot$get(modelName, id) {
+  var model;
+
   // load a model's value in the current snapshot
   if (modelName instanceof Model) {
     return this.get(modelName._path, modelName.id);
@@ -14,8 +16,9 @@ Snapshot.prototype.get = function Snapshot$get(modelName, id) {
 
   // find a model by id
   if (typeof id !== 'undefined') {
-    // TODO: need an id->model mapping
-    return this.get(modelName).findWhere({id: id});
+    model = this.get(modelName).id(id).clone();
+    model._snapshot = this;
+    return model;
   }
 
   // otherwise get the full collection

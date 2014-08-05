@@ -50,11 +50,26 @@ suite('Create & Update Collection', function() {
 
   bench('store', function() {
     var app = store.app,
-        models = [];
+        models = [],
+        update,
+        add;
     storeData.forEach(function(item) {
       models.push(app.create('models', item));
     });
-    app.commit(models)
+    app.commit(models);
+
+    update = app.get('models').get(updateIndex).forEdit();
+    update.set({
+      label: 'changed!',
+      key: _.uniqueId('item')
+    });
+    add = app.create('models', {
+      key: _.uniqueId('item'),
+      label: 'new item'
+    });
+
+    app.commit(update, add);
+
     return app.get('models').first().label.val;
   });
 });

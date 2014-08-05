@@ -9,14 +9,18 @@ var ModelBase = function Model(attributes, id) {
       map = {},
       properties = this._properties;
 
-  assert.ok(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
+  if (process.env.NODE_ENV !== 'production') {
+    assert.ok(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
+  }
   attributes = attributes || {};
   for (key in properties) {
     if (!properties.hasOwnProperty(key)) {
       continue;
     }
     if (typeof attributes[key] !== 'undefined') {
-      assert.ok(properties[key].isValidValue(attributes[key]), 'Model(): invalid value for property ' + key);
+      if (process.env.NODE_ENV !== 'production') {
+        assert.ok(properties[key].isValidValue(attributes[key]), 'Model(): invalid value for property ' + key);
+      }
       map[key] = attributes[key];
     } else {
       map[key] = properties[key].defaultValue;
@@ -31,18 +35,24 @@ var ModelBase = function Model(attributes, id) {
 };
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
-  assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
+  if (process.env.NODE_ENV !== 'production') {
+    assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
+  }
   var clone = _.clone(this._map);
   clone[key] = value;
   this._map = clone;
 };
 
 ModelBase.prototype.set = function Model$set(map) {
-  assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
+  if (process.env.NODE_ENV !== 'production') {
+    assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
+  }
   var clone = _.clone(this._map);
   for (key in map) {
     if (this._properties.hasOwnProperty(key)) {
-      assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+      if (process.env.NODE_ENV !== 'production') {
+        assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+      }
       clone[key] = map[key];
     }
   }
