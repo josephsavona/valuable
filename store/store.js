@@ -30,7 +30,7 @@ var Store = function Store(definition) {
   }
   this._models = models;
   this._source = store;
-  this._snapshot = new Snapshot(this._source);
+  this._snapshot = new Snapshot(this._source, this._models);
 };
 
 Store.prototype.is = Store.is = function Store$is(a, b) {
@@ -41,8 +41,8 @@ Store.prototype.snapshot = function Store$snapshot() {
   return this._snapshot;
 };
 
-Store.prototype.get = function Store$get() {
-  return this._snapshot.get.apply(this._snapshot, arguments);
+Store.prototype.get = function Store$get(modelName, id) {
+  return this._snapshot.get(modelName, id);
 };
 
 Store.prototype.create = function Store$create(model, attributes) {
@@ -50,7 +50,7 @@ Store.prototype.create = function Store$create(model, attributes) {
     assert.ok(model in this._models, 'Store(): model not defined ' + model);
     assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
   }
-  return new this._models[model](attributes).forEdit();
+  return new this._models[model](attributes);
 };
 
 Store.prototype.commit = function Store$commit(_args) {
@@ -70,18 +70,21 @@ Store.prototype.commit = function Store$commit(_args) {
     if (model._destroy) {
       collection = mori.dissoc(collection, model.id);
     } else if (model.id) {
-      collection = mori.assoc(collection, model.id, model.clone());
+      if (typeof model.id !== 'string' && !model.id.length) {
+        console.log('no ID')
+        console.dir(model.id)
+      } else {
+        console.log('has ID', model.id);
+      }
+      collection = mori.assoc(collection, model.id, model.raw());
     } else {
-      id = uuid.v4();
-      model.id = id;
-      model = model.clone();
-      model.id = id;
-      collection = mori.assoc(collection, id, model);
+      model.id = uuid.v4();
+      collection = mori.assoc(collection, id, model.raw());
     }
     source = mori.assoc(source, modelName, collection);
   }
   this._source = source;
-  this._snapshot = new Snapshot(this._source);
+  this._snapshot = new Snapshot(this._source, this._models);
 };
 
 Store.prototype._commit = function Store$commit(args) {
@@ -102,19 +105,17 @@ Store.prototype._commit = function Store$commit(args) {
         if (!model.id) { continue };
         models = models.delete(model.id);
       } else if (model.id) {
-        models = models.set(model.id, model);
+        models = models.set(model.id, model.raw());
       } else {
         id = uuid.v4();
         model.id = id;
-        model = model.clone();
-        model.id = id;
-        models = models.set(model.id, model);
+        models = models.set(model.id, model.raw());
       }
     }
     source = source.set(modelName, models.asImmutable());
   }
   this._source = source;
-  this._snapshot = new Snapshot(this._source);
+  this._snapshot = new Snapshot(this._source, this._models);
 };
 
 module.exports = Store;

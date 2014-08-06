@@ -46,7 +46,7 @@ describe('Model', function() {
   it('identifies equal models', function() {
     var a = new MyModel(),
         b = a.clone(),
-        c = a.forEdit();
+        c = new MyModel();
     c.set('bool', true);
     assert.ok(Store.is(a,b));
     assert.notOk(Store.is(a,c));
@@ -63,23 +63,8 @@ describe('Model', function() {
     assert.deepEqual(m2.val(), sample);
   });
 
-  it('cannot edit a default model', function() {
-    var m = new MyModel({});
-    assert.throws(function() {
-      m.str.val = 'fail!';
-    });
-  });
-
-  it('can edit an editable model', function() {
-    var m = new MyModel({}).forEdit();
-    assert.doesNotThrow(function() {
-      m.str.val = 'success';
-    });
-    assert.equal(m.val().str, 'success');
-  });
-
   it('can update a decimal with inc()', function() {
-    var m = new MyModel().forEdit(),
+    var m = new MyModel(),
         raw = m.raw();
     assert.deepEqual(m.decimal.val, 0);
     m.decimal.inc();
@@ -88,13 +73,13 @@ describe('Model', function() {
   });
 
   it('can update a decimal via handleChange()', function() {
-    var m = new MyModel().forEdit();
+    var m = new MyModel();
     m.decimal.handleChange()({target: {value: 1}});
     assert.deepEqual(m.decimal.val, 1);
   });
 
   it('can update a string with append()', function() {
-    var m = new MyModel().forEdit(),
+    var m = new MyModel(),
         raw = m.raw();
     assert.deepEqual(m.str.val, '');
     m.str.append('test');
@@ -103,13 +88,13 @@ describe('Model', function() {
   });
 
   it('can update a string via handleChange()', function() {
-    var m = new MyModel().forEdit();
+    var m = new MyModel();
     m.str.handleChange()({target: {value: 'hello'}});
     assert.deepEqual(m.str.val, 'hello');
   });
 
   it('can update a boolean with negate()', function() {
-    var m = new MyModel().forEdit(),
+    var m = new MyModel(),
         raw = m.raw();
     assert.deepEqual(m.bool.val, false);
     m.bool.negate();
@@ -118,7 +103,7 @@ describe('Model', function() {
   });
 
   it('can update a boolean via handleChange()', function() {
-    var m = new MyModel().forEdit();
+    var m = new MyModel();
     m.bool.handleChange()({target: {value: true}});
     assert.deepEqual(m.bool.val, true);
   });

@@ -27,25 +27,18 @@ var ModelBase = function Model(attributes) {
     }
   }
 
-  this._editable = false;
   this._props = {};
   this._source = map;
   this.cid = this.id || _.uniqueId(this._path);
 };
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
-  if (process.env.NODE_ENV !== 'production') {
-    assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
-  }
   var clone = _.clone(this._source);
   clone[key] = value;
   this._source = clone;
 };
 
 ModelBase.prototype.set = function Model$set(map) {
-  if (process.env.NODE_ENV !== 'production') {
-    assert.ok(this._editable, 'Model(): use forEdit() to get an editable version');
-  }
   var clone = _.clone(this._source);
   for (key in map) {
     if (this._properties.hasOwnProperty(key)) {
@@ -62,27 +55,15 @@ ModelBase.prototype.set = function Model$set(map) {
   this._source = clone;
 };
 
-ModelBase.prototype.isEditable = function Model$isEditable() {
-  return this._editable;
-};
-
-ModelBase.prototype.forEdit = function Model$forEdit() {
-  var clone = this.clone();
-  clone._editable = true;
-  return clone;
-};
-
 ModelBase.prototype.clone = function Model$clone() {
   var clone = Object.create(this.constructor.prototype);
   clone._source = this._source;
-  clone._editable = this._editable;
   clone._props = {};
   clone.cid = this.cid;
   return clone;
 };
 
 ModelBase.prototype.destroy = function Model$destroy() {
-  this._editable = false;
   this._destroy = true;
 };
 
@@ -110,7 +91,14 @@ ModelBase.define = function Model$$define(properties, path) {
   klass.prototype._properties = properties;
   klass.prototype._path = path;
 
-  // special handling for 'id' prop
+  // quickly create a model w/o parsing attributes
+  klass.from = function Model$from(attributes) {
+    var model = new klass({});
+    model._source = attributes;
+    return model;
+  };
+
+  // define 'id' prop and getter/setter
   properties.id = Str;
   Object.defineProperty(klass.prototype, 'id', {
     get: function() {
@@ -123,7 +111,7 @@ ModelBase.define = function Model$$define(properties, path) {
     configurable: false
   });
 
-  // all other props
+  // getters for all other props
   _.each(properties, function(prop, key, properties) {
     if (key === 'id') return;
     Object.defineProperty(klass.prototype, key, {

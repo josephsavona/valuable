@@ -54,6 +54,8 @@ describe('Store() snapshot/commit', function() {
     var user = app.create('users', dude);
     app.commit(user);
 
+    console.dir(app._source);
+
     user = app.snapshot().get('users', user.id); // reload user
     user.destroy();
     app.commit(user);
@@ -66,7 +68,7 @@ describe('Store() snapshot/commit', function() {
     app.commit(user);
 
     var snapshot = app.snapshot();
-    user = snapshot.get('users').first().forEdit();
+    user = snapshot.get('users').first();
     user.age.inc();
     app.commit(user);
 

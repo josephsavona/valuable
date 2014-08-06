@@ -2,9 +2,10 @@ var Model = require('./model'),
     Collection = require('./collection'),
     mori = require('mori');
 
-var Snapshot = function Snapshot(source) {
+var Snapshot = function Snapshot(source, models) {
   this._source = source;
   this._collections = {};
+  this._models = models;
 };
 
 Snapshot.prototype.get = function Snapshot$get(modelName, id) {
@@ -27,6 +28,10 @@ Snapshot.prototype.get = function Snapshot$get(modelName, id) {
     this._collections[modelName] = new Collection(mori.get(this._source, modelName), modelName, this);
   }
   return this._collections[modelName];
+};
+
+Snapshot.prototype._from = function Snapshot$_from(modelName, attributes) {
+  return this._models[modelName].from(attributes);
 };
 
 module.exports = Snapshot;

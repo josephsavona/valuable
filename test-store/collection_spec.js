@@ -4,6 +4,7 @@ var assert = require('chai').assert,
     mori = require('mori'),
     Model = require('../store/model'),
     Collection = require('../store/collection'),
+    Snapshot = require('../store/snapshot'),
     Store = require('../store/store');
 
 describe('Collection', function() {
@@ -27,8 +28,10 @@ describe('Collection', function() {
       id: ''
     };
     MyModel = Model.define(properties);
-    items = mori.hash_map("1", new MyModel(sample), "2", new MyModel(emptySample));
-    snapshot = {};
+    items = mori.hash_map("1", sample, "2", emptySample);
+    snapshot = new Snapshot({}, {
+      my_model: MyModel
+    });
   });
 
   it('can create an empty collection', function() {
