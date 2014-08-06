@@ -2,16 +2,18 @@ var _ = require('lodash'),
     helpers = require('./helpers'),
     backbone = require('./models/backbone'),
     valuable = require('./models/valuable'),
-    store = require('./models/store');
+    store = require('./models/store'),
+    mori = require('./models/mori');
 
 suite('Create & Update Collection', function() {
-  var data, backboneData, valuableData, storeData, updateIndex;
+  var data, backboneData, valuableData, storeData, moriData, updateIndex;
 
   before(function() {
-    data = helpers.makeData();
+    data = helpers.makeData(100);
     backboneData = _.cloneDeep(data);
     valuableData = _.cloneDeep(data);
     storeData = _.cloneDeep(data);
+    moriData = _.cloneDeep(data);
     updateIndex = Math.floor(data.length / 2);
   });
 
@@ -24,6 +26,15 @@ suite('Create & Update Collection', function() {
       label: 'new item'
     });
     return models[updateIndex].label;
+  });
+
+  bench('mori', function() {
+    var app = store.app,
+        source = mori.init();
+    for (var ix = 0; ix < moriData.length; ix++) {
+      moriData[ix] = app.create('models', moriData[ix]);
+    }
+    source = mori.commit(source, moriData);
   });
 
   bench('backbone', function() {
@@ -53,10 +64,10 @@ suite('Create & Update Collection', function() {
         models = [],
         update,
         add;
-    storeData.forEach(function(item) {
-      models.push(app.create('models', item));
-    });
-    app.commit(models);
+    for (var ix = 0; ix < storeData.length; ix++) {
+      storeData[ix] = app.create('models', storeData[ix]);
+    }
+    app.commit(storeData);
 
     update = app.get('models').get(updateIndex).forEdit();
     update.set({

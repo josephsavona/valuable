@@ -12,11 +12,12 @@
 //   delete global.navigator;
 // };
 
-module.exports.makeData = function() {
+module.exports.makeData = function(length) {
   var _ = require('lodash');
   var initializeState = [];
-  var length = 50;
   var updateIndex = Math.floor(length/2);
+
+  length = length || 25;
   for (var ix = 0; ix < length; ix++) {
     initializeState.push({
       key: _.uniqueId('item'),

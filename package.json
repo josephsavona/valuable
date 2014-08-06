@@ -37,6 +37,7 @@
     "lazy.js": "^0.3.2",
     "lodash": "~2.4.1",
     "moment": "^2.7.0",
+    "mori": "^0.2.9",
     "node-uuid": "^1.4.1"
   },
   "devDependencies": {

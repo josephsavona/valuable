@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Immutable = require('immutable'),
+    mori = require('mori'),
     Model = require('../store/model'),
     Collection = require('../store/collection'),
     Store = require('../store/store');
@@ -25,10 +25,7 @@ describe('Collection', function() {
       str: ''
     };
     MyModel = Model.define(properties);
-    items = Immutable.Vector.from([
-      new MyModel(sample),
-      new MyModel(emptySample)
-    ]);
+    items = mori.hash_map("1", new MyModel(sample), "2", new MyModel(emptySample));
     snapshot = {};
   });
 
@@ -43,9 +40,19 @@ describe('Collection', function() {
   it('identifies equal collections', function() {
     var a = new Collection(items, 'a', snapshot),
         b = new Collection(items, 'b', snapshot),
-        c = new Collection(Immutable.Vector.from([], 'c', snapshot));
+        c = new Collection(mori.hash_map(), 'c', snapshot);
     assert.ok(Store.is(a,b));
     assert.notOk(Store.is(a,c));
+  });
+
+  it.only('can get the nth item from a collection', function() {
+    var items = mori.hash_map(),
+        count = 1000,
+        collection;
+    for (var ix = 0; ix < count; ix++) {
+      items = mori.assoc(items, ix, new MyModel({decimal: ix}));
+    }
+    collection = new Collection(items, 'a', snapshot);
   });
 
   it('can filter a collection', function() {

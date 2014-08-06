@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     assert = require('assert'),
     uuid = require('node-uuid'),
-    Immutable = require('immutable'),
+    mori = require('mori'),
     Literal = require('./literal'),
     Model = require('./model'),
     Collection = require('./collection'),
@@ -18,18 +18,18 @@ var Store = function Store(definition) {
     });
   }
 
-  var store = {},
+  var store = mori.hash_map(),
       models = {},
       modelName;
 
   for (modelName in definition) {
     if (definition.hasOwnProperty(modelName)) {
       models[modelName] = Model.define(definition[modelName], modelName);
-      store[modelName] = {};
+      store = mori.assoc(store, modelName, mori.hash_map());
     }
   }
   this._models = models;
-  this._source = Immutable.fromJS(store);
+  this._source = store;
   this._snapshot = new Snapshot(this._source);
 };
 
@@ -53,7 +53,38 @@ Store.prototype.create = function Store$create(model, attributes) {
   return new this._models[model](attributes);
 };
 
-Store.prototype.commit = function Store$commit(args) {
+Store.prototype.commit = function Store$commit(_args) {
+  var args = _.isArray(_args) ? _args : arguments,
+      source = this._source,
+      collection,
+      modelName,
+      model,
+      id,
+      index,
+      length;
+  length = args.length;
+  for (index = 0; index < length; index++) {
+    model = args[index];
+    modelName = model._path;
+    collection = mori.get(source, modelName);
+    if (model._destroy) {
+      collection = mori.dissoc(collection, model.id);
+    } else if (model.id) {
+      collection = mori.assoc(collection, model.id, model.clone());
+    } else {
+      id = uuid.v4();
+      model.id = id;
+      model = model.clone();
+      model.id = id;
+      collection = mori.assoc(collection, id, model);
+    }
+    source = mori.assoc(source, modelName, collection);
+  }
+  this._source = source;
+  this._snapshot = new Snapshot(this._source);
+};
+
+Store.prototype._commit = function Store$commit(args) {
   var modelsByPath = _.groupBy(_.isArray(args) ? args : arguments, '_path'),
       source = this._source,
       modelName,
