@@ -50,7 +50,7 @@ Store.prototype.create = function Store$create(model, attributes) {
     assert.ok(model in this._models, 'Store(): model not defined ' + model);
     assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
   }
-  return new this._models[model](attributes);
+  return new this._models[model](attributes).forEdit();
 };
 
 Store.prototype.commit = function Store$commit(_args) {

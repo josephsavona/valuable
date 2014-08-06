@@ -15,12 +15,14 @@ describe('Model', function() {
     sample = {
       decimal: 98.6,
       str: 'hi',
-      bool: true
+      bool: true,
+      id: ''
     };
     emptySample = {
       decimal: 0,
       bool: false,
-      str: ''
+      str: '',
+      id: ''
     };
     MyModel = Model.define(properties);
   });

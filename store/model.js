@@ -4,7 +4,7 @@ var _ = require('lodash'),
     Decimal = require('./decimal'),
     Str = require('./str');
 
-var ModelBase = function Model(attributes, id) {
+var ModelBase = function Model(attributes) {
   var key,
       map = {},
       properties = this._properties;
@@ -30,8 +30,7 @@ var ModelBase = function Model(attributes, id) {
   this._editable = false;
   this._props = {};
   this._source = map;
-  this.id = id;
-  this.cid = id || _.uniqueId(this._path);
+  this.cid = this.id || _.uniqueId(this._path);
 };
 
 ModelBase.prototype._set = function Model$private$set(key, value) {
@@ -50,10 +49,14 @@ ModelBase.prototype.set = function Model$set(map) {
   var clone = _.clone(this._source);
   for (key in map) {
     if (this._properties.hasOwnProperty(key)) {
-      if (process.env.NODE_ENV !== 'production') {
-        assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+      if (typeof map[key] !== 'undefined') {
+        if (process.env.NODE_ENV !== 'production') {
+          assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+        }
+        clone[key] = map[key];
+      } else {
+        clone[key] = this._properties[key].defaultValue;
       }
-      clone[key] = map[key];
     }
   }
   this._source = clone;
@@ -75,7 +78,6 @@ ModelBase.prototype.clone = function Model$clone() {
   clone._editable = this._editable;
   clone._props = {};
   clone.cid = this.cid;
-  clone.id = this.id;
   return clone;
 };
 
@@ -108,7 +110,22 @@ ModelBase.define = function Model$$define(properties, path) {
   klass.prototype._properties = properties;
   klass.prototype._path = path;
 
+  // special handling for 'id' prop
+  properties.id = Str;
+  Object.defineProperty(klass.prototype, 'id', {
+    get: function() {
+      return this._source.id;
+    },
+    set: function(id) {
+      this._set('id', id);
+    },
+    enumerable: true,
+    configurable: false
+  });
+
+  // all other props
   _.each(properties, function(prop, key, properties) {
+    if (key === 'id') return;
     Object.defineProperty(klass.prototype, key, {
       get: function() {
         return this._props[key] || (this._props[key] = new (properties[key])(this, key));

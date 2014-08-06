@@ -34,7 +34,6 @@ var createValuable = function() {
 var createStore = function() {
   return new Store({
     users: {
-      id: Model.Str,
       name: Model.Str,
       age: Model.Decimal,
       dev: Model.Bool

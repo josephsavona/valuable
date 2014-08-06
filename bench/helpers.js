@@ -1,3 +1,4 @@
+var uuid = require('node-uuid');
 // var jsdom = require('jsdom');
 
 // module.exports.setupDom = function setupDom() {
@@ -20,6 +21,7 @@ module.exports.makeData = function(length) {
   length = length || 25;
   for (var ix = 0; ix < length; ix++) {
     initializeState.push({
+      id: uuid.v4(),
       key: _.uniqueId('item'),
       label: 'list item ' + ix
     });

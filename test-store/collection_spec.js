@@ -17,12 +17,14 @@ describe('Collection', function() {
     sample = {
       decimal: 98.6,
       str: 'hi',
-      bool: true
+      bool: true,
+      id: ''
     };
     emptySample = {
       decimal: 0,
       bool: false,
-      str: ''
+      str: '',
+      id: ''
     };
     MyModel = Model.define(properties);
     items = mori.hash_map("1", new MyModel(sample), "2", new MyModel(emptySample));
@@ -45,7 +47,7 @@ describe('Collection', function() {
     assert.notOk(Store.is(a,c));
   });
 
-  it.only('can get the nth item from a collection', function() {
+  it('can get the nth item from a collection', function() {
     var items = mori.hash_map(),
         count = 1000,
         collection;
