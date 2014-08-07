@@ -54,11 +54,10 @@ describe('Store() snapshot/commit', function() {
     var user = app.create('users', dude);
     app.commit(user);
 
-    console.dir(app._source);
-
     user = app.snapshot().get('users', user.id); // reload user
     user.destroy();
     app.commit(user);
+    
     var snapshot = app.snapshot();
     assert.equal(snapshot.get('users').length(), 0);
   });

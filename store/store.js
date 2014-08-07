@@ -70,16 +70,10 @@ Store.prototype.commit = function Store$commit(_args) {
     if (model._destroy) {
       collection = mori.dissoc(collection, model.id);
     } else if (model.id) {
-      if (typeof model.id !== 'string' && !model.id.length) {
-        console.log('no ID')
-        console.dir(model.id)
-      } else {
-        console.log('has ID', model.id);
-      }
       collection = mori.assoc(collection, model.id, model.raw());
     } else {
       model.id = uuid.v4();
-      collection = mori.assoc(collection, id, model.raw());
+      collection = mori.assoc(collection, model.id, model.raw());
     }
     source = mori.assoc(source, modelName, collection);
   }

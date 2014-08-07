@@ -36,14 +36,14 @@ suite('Create & Update Model', function() {
   });
 
   bench('store - set(k,v)', function() {
-    var model = store.app.create('models', {}).forEdit();
+    var model = store.app.create('models', {});
     model.label.val = 'changed';
     model.key.val = _.uniqueId('item');
     return model.label.val;
   });
 
   bench('store - set({})', function() {
-    var model = store.app.create('models', {}).forEdit();
+    var model = store.app.create('models', {});
     model.set({
       label: 'changed',
       key: _.uniqueId('item')

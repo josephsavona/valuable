@@ -2,6 +2,7 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
     Model = require('../store/model'),
+    observableModel = require('../store/observable_model'),
     Store = require('../store/store');
 
 describe('Model', function() {
@@ -61,6 +62,16 @@ describe('Model', function() {
     var m = new MyModel(sample),
         m2 = m.clone();
     assert.deepEqual(m2.val(), sample);
+    assert.ok(Store.is(m, m2), 'Store.is() identifies unmodified clones as equal')
+  });
+
+  it('can observe a model', function() {
+    var m = new MyModel(),
+        o = sinon.spy();
+    observableModel(m);
+    m.observe(o);
+    m.set(sample);
+    assert.equal(o.callCount, 1, 'observer called once');
   });
 
   it('can update a decimal with inc()', function() {

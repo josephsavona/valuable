@@ -74,12 +74,15 @@ ModelBase.prototype.val = function Model$val(key) {
   return this._source;
 };
 
-ModelBase.prototype.toJS = function Model$toJSON() {
+ModelBase.prototype.raw = function Model$raw() {
   return this._source;
 };
 
-ModelBase.prototype.raw = function Map$raw() {
-  return this._source;
+ModelBase.prototype.observe = function Model$observe(fn) {
+  // circular dependency
+  makeObservable = require('./observable_model');
+  makeObservable(this);
+  this.observe(fn);
 };
 
 ModelBase.define = function Model$$define(properties, path) {
