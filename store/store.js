@@ -28,7 +28,7 @@ var Store = function Store(definition) {
       store = mori.assoc(store, modelName, mori.hash_map());
     }
   }
-  this._finders = {};
+  this._listeners = [];
   this._models = models;
   this._source = store;
   this._snapshot = new Snapshot(this._source, this._models);
@@ -52,6 +52,20 @@ Store.prototype.create = function Store$create(model, attributes) {
     assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
   }
   return new this._models[model](attributes);
+};
+
+Store.prototype.observe = function Store$observe(fn) {
+  if (process.env.NODE_ENV === 'production') {
+    assert.equal(typeof fn, 'function', 'Store(): observer must be a function');
+  }
+  this._listeners.push(fn);
+};
+
+Store.prototype._notify = function Store$private$notify() {
+  var length = this._listeners.length;
+  for (var ix = 0; ix < length; ix++) {
+    this._listeners[ix]();
+  }
 };
 
 Store.prototype.commit = function Store$commit(_args) {
@@ -80,24 +94,7 @@ Store.prototype.commit = function Store$commit(_args) {
   }
   this._source = source;
   this._snapshot = new Snapshot(this._source, this._models);
-};
-
-Store.prototype.finder = function Store$finder(name, paramTypes, fn) {
-  if (process.env.NODE_ENV !== 'production') {
-    assert.ok(name && typeof name === 'string', 'Store(): finder name must be string');
-    assert.ok(_.isPlainObject(paramTypes), 'Store(): paramTypes must be a model-like schema of key:string -> type:Str/Decimal/Bool');
-  }
-  this._finders[name] = {
-    paramModel: Model.define(paramTypes),
-    fn: fn
-  };
-};
-
-Store.prototype.observe = function Store$observe(name, params, fn) {
-  assert.ok(name in this._finders, 'Store(): finder name must be a defined finder() ' + name);
-  var finder = this._finders[name],
-      params = new finder.paramModel(params);
-  fn(finder.fn(this._snapshot, params), params);
+  this._notify();
 };
 
 Store.prototype._commit = function Store$commit(args) {

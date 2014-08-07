@@ -2,12 +2,13 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
     Store = require('../store/store'),
+    Finder = require('../store/finder'),
     Model = require('../store/model'),
     Collection = require('../store/collection'),
     rawValues = require('../test/mock_values');
 
-function makeFinder(app) {
-  app.finder('usersByName', {
+function makeFinder(finder) {
+  finder.finder('usersByName', {
     query: Model.Str
   }, function(snapshot, query) {
     return snapshot.get('users').filter(function(user) {
@@ -17,7 +18,7 @@ function makeFinder(app) {
 };
 
 describe('Store() finder/observer', function() {
-  var app, sample, emptySample;
+  var app, finder, sample, emptySample;
   beforeEach(function() {
     app = new Store({
       users: {
@@ -26,6 +27,7 @@ describe('Store() finder/observer', function() {
         isDev: Model.Bool
       }
     });
+    finder = new Finder(app);
     samples = [{
       age: 21,
       name: 'Dev',
@@ -42,17 +44,35 @@ describe('Store() finder/observer', function() {
 
   it('can define finder()s', function() {
     assert.doesNotThrow(function() {
-      makeFinder(app);
+      makeFinder(finder);
     });
   });
 
   it('can get results from a finder with observe()', function() {
-    makeFinder(app);
-    app.observe('usersByName', {query: 'Dev'}, function(results, params) {
+    makeFinder(finder);
+    var expectedMatchCount = 1;
+    var params;
+    var observer = sinon.spy(function(results, _params) {
       results = results.toArray();
-      assert.equal(params.val('query'), 'Dev', 'query value matches passed values');
-      assert.equal(results.length, 1, 'one matching result');
-      assert.equal(results[0].val('name'), 'Dev', 'results match query params');
+      params = _params;
+      assert.equal(results.length, expectedMatchCount, 'result count is expected amount');
+      results.forEach(function(result) {
+        assert.equal(results[0].val('name'), params.query.val, 'results match query params');
+      });
     });
+    var unobserve = finder.observe('usersByName', observer, {query: 'Dev'});
+    assert.equal(observer.callCount, 1, 'observer called once initially');
+
+    expectedMatchCount = 2;
+    app.commit(app.create('users', {
+      age: 50,
+      name: 'Dev',
+      isDev: true
+    }));
+    assert.equal(observer.callCount, 2, 'observer called after every commit');
+
+    expectedMatchCount = 1;
+    params.query.val = 'Person';
+    assert.equal(observer.callCount, 3, 'observer called when query cahnges');
   });
 }); 
