@@ -3,12 +3,6 @@ var store = new Store(definition);
 store.initialize(dataMap); // -> put initial state into the store {name: [modelJson, modelJson], ...}
 var dataMap = store.toJSON(); // -> get current state of the store {name: [modelJson, modelJson], ...}
 
-// ad-hoc queries/updates:
-store.transaction(function(lens, commit) {
-  var user = lens.get('users', 1);
-  user.name.val = 'new name';
-  commit(user);
-});
 
 // ad-hoc realtime views:
 store.observe(function listener(lens) {}); // re-run on every commit to the store

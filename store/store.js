@@ -28,6 +28,7 @@ var Store = function Store(definition) {
       store = mori.assoc(store, modelName, mori.hash_map());
     }
   }
+  this._finders = {};
   this._models = models;
   this._source = store;
   this._snapshot = new Snapshot(this._source, this._models);
@@ -79,6 +80,24 @@ Store.prototype.commit = function Store$commit(_args) {
   }
   this._source = source;
   this._snapshot = new Snapshot(this._source, this._models);
+};
+
+Store.prototype.finder = function Store$finder(name, paramTypes, fn) {
+  if (process.env.NODE_ENV !== 'production') {
+    assert.ok(name && typeof name === 'string', 'Store(): finder name must be string');
+    assert.ok(_.isPlainObject(paramTypes), 'Store(): paramTypes must be a model-like schema of key:string -> type:Str/Decimal/Bool');
+  }
+  this._finders[name] = {
+    paramModel: Model.define(paramTypes),
+    fn: fn
+  };
+};
+
+Store.prototype.observe = function Store$observe(name, params, fn) {
+  assert.ok(name in this._finders, 'Store(): finder name must be a defined finder() ' + name);
+  var finder = this._finders[name],
+      params = new finder.paramModel(params);
+  fn(finder.fn(this._snapshot, params), params);
 };
 
 Store.prototype._commit = function Store$commit(args) {
