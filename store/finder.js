@@ -14,6 +14,7 @@ Finder.prototype.finder = function Finder$finder(name, paramTypes, fn) {
   if (process.env.NODE_ENV !== 'production') {
     assert.ok(name && typeof name === 'string', 'Finder(): finder name must be string');
     assert.ok(_.isPlainObject(paramTypes), 'Finder(): paramTypes must be a model-like schema of key:string -> type:Str/Decimal/Bool');
+    assert.equal(typeof fn, 'function', 'Finder(): finder function must be function');
   }
   this._finders[name] = {
     paramClass: Model.define(paramTypes),
