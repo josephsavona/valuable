@@ -61,11 +61,10 @@ Store.prototype.observe = function Store$observe(fn) {
   this._listeners.push(fn);
 };
 
-Store.prototype._notify = function Store$private$notify() {
-  var length = this._listeners.length;
-  for (var ix = 0; ix < length; ix++) {
-    this._listeners[ix]();
-  }
+Store.prototype.restoreSnapshot = function Store$restoreSnapshot(snapshot) {
+  assert.ok(snapshot instanceof Snapshot, 'Store(): can only restore from a snapshot()');
+  this._source = snapshot._source;
+  this._notify();
 };
 
 Store.prototype.commit = function Store$commit(_args) {
@@ -97,35 +96,11 @@ Store.prototype.commit = function Store$commit(_args) {
   this._notify();
 };
 
-Store.prototype._commit = function Store$commit(args) {
-  var modelsByPath = _.groupBy(_.isArray(args) ? args : arguments, '_path'),
-      source = this._source,
-      modelName,
-      models,
-      model,
-      id,
-      index,
-      length;
-  for (modelName in modelsByPath) {
-    models = source.get(modelName).asMutable();
-    length = modelsByPath[modelName].length;
-    for (index = 0; index < length; index++) {
-      model = modelsByPath[modelName][index];
-      if (model._destroy) {
-        if (!model.id) { continue };
-        models = models.delete(model.id);
-      } else if (model.id) {
-        models = models.set(model.id, model.raw());
-      } else {
-        id = uuid.v4();
-        model.id = id;
-        models = models.set(model.id, model.raw());
-      }
-    }
-    source = source.set(modelName, models.asImmutable());
+Store.prototype._notify = function Store$private$notify() {
+  var length = this._listeners.length;
+  for (var ix = 0; ix < length; ix++) {
+    this._listeners[ix]();
   }
-  this._source = source;
-  this._snapshot = new Snapshot(this._source, this._models);
 };
 
 module.exports = Store;
