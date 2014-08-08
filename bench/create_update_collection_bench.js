@@ -39,8 +39,10 @@ suite('Create & Update Collection', function() {
 
   bench('backbone', function() {
     var models = new backbone.Collection(backboneData);
-    models.at(updateIndex).set('label', 'changed');
-    models.at(updateIndex).set('key', _.uniqueId('item'));
+    models.at(updateIndex).set({
+      label: 'changed!',
+      key: _.uniqueId('item')
+    });
     models.push({
       key: _.uniqueId('item'),
       label: 'new item'
@@ -67,20 +69,20 @@ suite('Create & Update Collection', function() {
     for (var ix = 0; ix < storeData.length; ix++) {
       storeData[ix] = app.create('models', storeData[ix]);
     }
-    // app.commit(storeData);
+    app.commit(storeData);
 
-    // update = app.get('models').get(updateIndex).forEdit();
-    // update.set({
-    //   label: 'changed!',
-    //   key: _.uniqueId('item')
-    // });
-    // add = app.create('models', {
-    //   key: _.uniqueId('item'),
-    //   label: 'new item'
-    // });
+    update = app.get('models').get(updateIndex);
+    update.set({
+      label: 'changed!',
+      key: _.uniqueId('item')
+    });
+    add = app.create('models', {
+      key: _.uniqueId('item'),
+      label: 'new item'
+    });
 
-    // app.commit(update, add);
+    app.commit(update, add);
 
-    // return app.get('models').first().label.val;
+    return app.get('models').first().label.val;
   });
 });
