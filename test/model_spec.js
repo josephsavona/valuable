@@ -1,11 +1,13 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Model = require('../store/model'),
-    observableModel = require('../store/observable_model'),
-    Store = require('../store/store');
+    helpers = require('./helpers'),
+    Model = require('../src/model'),
+    observableModel = require('../src/observable_model'),
+    Store = require('../src/store');
 
 describe('Model', function() {
+  helpers.init();
   var properties, sample, emptySample;
   beforeEach(function() {
     properties = {

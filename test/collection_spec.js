@@ -2,12 +2,14 @@ var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
     mori = require('mori'),
-    Model = require('../store/model'),
-    Collection = require('../store/collection'),
-    Snapshot = require('../store/snapshot'),
-    Store = require('../store/store');
+    helpers = require('./helpers'),
+    Model = require('../src/model'),
+    Collection = require('../src/collection'),
+    Snapshot = require('../src/snapshot'),
+    Store = require('../src/store');
 
 describe('Collection', function() {
+  helpers.init();
   var properties, sample, emptySample, items, snapshot, MyModel, MyCollection;
   beforeEach(function() {
     properties = {

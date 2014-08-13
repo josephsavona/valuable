@@ -1,20 +1,23 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Value = require('../../src/value'),
-    Str = require('../../src/types/str'),
+    Model = require('../../src/model'),
+    Str = require('../../src/str'),
     rawValues = require('../mock_values');
 
+var MyModel = Model.define({
+  str: Str
+});
+
 describe('Str', function() {
-  it('has a default value of ""', function() {
-    var i = Str();
-    assert.equal(i.val(), '');
+  var model, str;
+  beforeEach(function() {
+    model = new MyModel();
+    str = model.str;
   });
 
-  it('resets to default value for setVal(undefined)', function() {
-    var i = Str('hello');
-    i.setVal();
-    assert.equal(i.val(), '');
+  it('has a default value of ""', function() {
+    assert.equal(str.val, '');
   });
 
   it('cannot construct from non-string values', function() {
@@ -23,7 +26,7 @@ describe('Str', function() {
         return;
       }
       assert.throws(function() {
-        Str(val);
+        new MyModel({str: val});
       })
     });
   });
@@ -33,10 +36,10 @@ describe('Str', function() {
       if (!_.isString(val)) {
         return;
       }
-      var d = Str(val);
-      assert.deepEqual(d.val(), val, 'value should match');
-      assert.ok(typeof d.val() === 'string', 'value should be a string');
-      assert.equal(d.length, val.length, 'length should match');
+      model = new MyModel({str: val});
+      assert.deepEqual(model.str.val, val, 'value should match');
+      assert.ok(typeof model.str.val === 'string', 'value should be a string');
+      assert.equal(model.str.length, val.length, 'length should match');
     });
   });
 
@@ -45,9 +48,8 @@ describe('Str', function() {
       if (_.isString(val)) {
         return;
       }
-      d = Str();
       assert.throws(function() {
-        d.setVal(val);
+        str.val = val;
       })
     });
   });
@@ -57,11 +59,10 @@ describe('Str', function() {
       if (!_.isString(val)) {
         return;
       }
-      var d = Str();
-      d.setVal(val);
-      assert.deepEqual(d.val(), val, 'value should match');
-      assert.ok(typeof d.val() === 'string', 'value should be a string');
-      assert.equal(d.length, val.length, 'length should match');
+      str.val = val;
+      assert.deepEqual(str.val, val, 'value should match');
+      assert.ok(typeof str.val === 'string', 'value should be a string');
+      assert.equal(str.length, val.length, 'length should match');
     });
   });
 
@@ -70,21 +71,20 @@ describe('Str', function() {
       if (_.isString(val)) {
         return;
       }
-      d = Str();
       assert.throws(function() {
-        d.append(val);
+        str.append(val);
       });
       assert.throws(function() {
-        d.prepend(val);
+        str.prepend(val);
       });
       assert.throws(function() {
-        d.wrap(val, '');
+        str.wrap(val, '');
       });
       assert.throws(function() {
-        d.wrap('', val);
+        str.wrap('', val);
       });
       assert.throws(function() {
-        d.update(function(x) {
+        str.update(function(x) {
           return val;
         });
       });
@@ -120,14 +120,13 @@ describe('Str', function() {
     var label = update.set + '.' + update.fn + '(' + (update.args || []).join(',') + ') == ' + (update.resp || update.val || 'false');
     it(label, function() {
       var d, val, resp;
-      d = Str();
-      d.setVal(update.set);
-      resp = d[update.fn].apply(d, update.args || []);
+      str.val = update.set;
+      resp = str[update.fn].apply(str, update.args || []);
       if ('resp' in update) {
         assert.deepEqual(resp, update.resp, label);
       }
       if ('val' in update) {
-        assert.deepEqual(d.val(), update.val, label);
+        assert.deepEqual(str.val, update.val, label);
       }
     });
   });

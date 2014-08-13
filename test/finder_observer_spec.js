@@ -1,11 +1,12 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Store = require('../store/store'),
-    Finder = require('../store/finder'),
-    Model = require('../store/model'),
-    Collection = require('../store/collection'),
-    rawValues = require('../test/mock_values');
+    helpers = require('./helpers'),
+    Store = require('../src/store'),
+    Finder = require('../src/finder'),
+    Model = require('../src/model'),
+    Collection = require('../src/collection'),
+    rawValues = require('./mock_values');
 
 function makeFinder(finder) {
   finder.finder('usersByName', {
@@ -18,6 +19,7 @@ function makeFinder(finder) {
 };
 
 describe('Store() finder/observer', function() {
+  helpers.init();
   var app, finder, sample, emptySample;
   beforeEach(function() {
     app = new Store({

@@ -1,12 +1,14 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Store = require('../store/store'),
-    Model = require('../store/model'),
-    Collection = require('../store/collection'),
+    helpers = require('./helpers'),
+    Store = require('../src/store'),
+    Model = require('../src/model'),
+    Collection = require('../src/collection'),
     rawValues = require('../test/mock_values');
 
 describe('Store() constructor', function() {
+  helpers.init();
   it('cannot create a store with an invalid definition', function() {
     rawValues.forEach(function(val) {
       assert.throws(function() {
@@ -28,6 +30,7 @@ describe('Store() constructor', function() {
 });
 
 describe('Store() snapshot/commit', function() {
+  helpers.init();
   var app, dude;
   beforeEach(function() {
     app = new Store({

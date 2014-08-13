@@ -1,20 +1,23 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Value = require('../../src/value'),
-    Decimal = require('../../src/types/decimal'),
+    Model = require('../../src/model'),
+    Decimal = require('../../src/decimal'),
     rawValues = require('../mock_values');
 
+var MyModel = Model.define({
+  decimal: Decimal
+});
+
 describe('Decimal', function() {
-  it('has a default value of 0', function() {
-    var i = Decimal();
-    assert.equal(i.val(), 0);
+  var model, decimal;
+  beforeEach(function() {
+    model = new MyModel();
+    decimal = model.decimal;
   });
 
-  it('resets to default value for setVal(undefined)', function() {
-    var i = Decimal(1);
-    i.setVal();
-    assert.equal(i.val(), 0);
+  it('has a default value of 0', function() {
+    assert.equal(decimal.val, 0);
   });
 
   it('cannot construct from non-number values', function() {
@@ -23,7 +26,7 @@ describe('Decimal', function() {
         return;
       }
       assert.throws(function() {
-        Decimal(val);
+        new MyModel({decimal: val});
       })
     });
   });
@@ -33,9 +36,9 @@ describe('Decimal', function() {
       if (!_.isNumber(val)) {
         return;
       }
-      var d = Decimal(val);
-      assert.deepEqual(d.val(), val);
-      assert.ok(isNaN(d.val()) || typeof d.val() === 'number');
+      model = new MyModel({decimal: val});
+      assert.deepEqual(model.decimal.val, val);
+      assert.ok(isNaN(model.decimal.val) || typeof model.decimal.val === 'number');
     });
   });
 
@@ -44,9 +47,8 @@ describe('Decimal', function() {
       if (_.isNumber(val) || val === null || typeof val === 'undefined') {
         return;
       }
-      d = Decimal();
       assert.throws(function() {
-        d.setVal(val);
+        decimal.val = val;
       })
     });
   });
@@ -56,10 +58,9 @@ describe('Decimal', function() {
       if (!_.isNumber(val)) {
         return;
       }
-      var d = Decimal();
-      d.setVal(val);
-      assert.deepEqual(d.val(), val);
-      assert.ok(isNaN(d.val()) || typeof d.val() === 'number');
+      decimal.val = val;
+      assert.deepEqual(decimal.val, val);
+      assert.ok(isNaN(decimal.val) || typeof decimal.val === 'number');
     });
   });
 
@@ -68,12 +69,11 @@ describe('Decimal', function() {
       if (_.isNumber(val)) {
         return;
       }
-      var d = Decimal();
       var methods = ['add', 'sub', 'mult', 'div', 'eq', 'ne', 'lt', 'lte', 'gt', 'gte'];
       methods.forEach(function(method) {
         assert.throws(function() {
-          d[method](val);
-        }, null, null, d.val() + '.' + method + '(' + val + ')');
+          decimal[method](val);
+        }, null, null, decimal.val + '.' + method + '(' + val + ')');
       });
     });
   });
@@ -195,14 +195,13 @@ describe('Decimal', function() {
     var label = update.set + '.' + update.fn + '(' + (update.args || []).join(',') + ') == ' + (update.resp || update.val || 'false');
     it(label, function() {
       var d, val, resp;
-      d = Decimal();
-      d.setVal(update.set);
-      resp = d[update.fn].apply(d, update.args || []);
+      decimal.val = update.set;
+      resp = decimal[update.fn].apply(decimal, update.args || []);
       if ('resp' in update) {
         assert.deepEqual(resp, update.resp, label);
       }
       if ('val' in update) {
-        assert.deepEqual(d.val(), update.val, label);
+        assert.deepEqual(decimal.val, update.val, label);
       }
     });
   });

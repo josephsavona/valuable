@@ -1,20 +1,19 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    Value = require('../../src/value'),
-    Bool = require('../../src/types/bool'),
+    Model = require('../../src/model'),
+    Bool = require('../../src/bool'),
     rawValues = require('../mock_values');
 
-describe('Bool', function() {
-  it('has a default value of 0', function() {
-    var i = Bool();
-    assert.equal(i.val(), false);
-  });
+var MyModel = Model.define({
+  bool: Bool
+});
 
-  it('resets to default value for setVal(undefined)', function() {
-    var i = Bool(true);
-    i.setVal();
-    assert.equal(i.val(), false);
+describe('Bool', function() {
+  var model;
+  it('has a default value of 0', function() {
+    var i = new MyModel();
+    assert.equal(i.val('bool'), false);
   });
 
   it('cannot construct from non-boolean values', function() {
@@ -23,15 +22,15 @@ describe('Bool', function() {
         return;
       }
       assert.throws(function() {
-        Bool(val);
+        new MyModel({bool: val});
       })
     });
   });
 
   it('constructs with the given boolean value', function() {
     [true,false].forEach(function(val) {
-      var d = Bool(val);
-      assert.deepEqual(d.val(), val);
+      var i = new MyModel({bool: val});
+      assert.deepEqual(i.bool.val, val);
     });
   });
 
@@ -40,26 +39,26 @@ describe('Bool', function() {
       if (_.isBoolean(val) || val === null || typeof val === 'undefined') {
         return;
       }
-      d = Bool();
+      var i = new MyModel();
       assert.throws(function() {
-        d.setVal(val);
+        i.bool.val = val;
       })
     });
   });
 
   it('sets to true/false', function() {
     [true,false].forEach(function(val) {
-      var d = Bool();
-      d.setVal(val);
-      assert.deepEqual(d.val(), val);
+      var i = new MyModel();
+      i.bool.val = val;
+      assert.deepEqual(i.val('bool'), val);
     });
   });
 
   it('negates the current value', function() {
     [true,false].forEach(function(val) {
-      var d = Bool(val);
-      d.negate();
-      assert.deepEqual(d.val(), !val);
+      var i = new MyModel({bool: val});
+      i.bool.negate();
+      assert.deepEqual(i.val('bool'), !val);
     });
   });
 });

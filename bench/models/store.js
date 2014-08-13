@@ -1,5 +1,5 @@
-var Store = require('../../store/store'),
-    Model = require('../../store/model'),
+var Store = require('../../src/store'),
+    Model = require('../../src/model'),
     React = require('react');
 
 var app = module.exports.app = new Store({

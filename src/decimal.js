@@ -23,43 +23,62 @@ Decimal.prototype.dec = function Decimal$dec() {
 };
 
 Decimal.prototype.add = function Decimal$add(x) {
+  assert.ok(this.isValidValue(x));
   this.val += x;
 };
 
 Decimal.prototype.sub = function Decimal$sub(x) {
+  assert.ok(this.isValidValue(x));
   this.val -= x;
 };
 
 Decimal.prototype.mult = function Decimal$mult(x) {
+  assert.ok(this.isValidValue(x));
   this.val *= x;
 };
 
 Decimal.prototype.div = function Decimal$div(x) {
+  assert.ok(this.isValidValue(x));
   this.val /= x;
 };
 
 Decimal.prototype.gt = function Decimal$gt(x) {
+  assert.ok(this.isValidValue(x));
   return this.val > x;
 };
 
 Decimal.prototype.gte = function Decimal$gte(x) {
+  assert.ok(this.isValidValue(x));
   return this.val >= x;
 };
 
 Decimal.prototype.lt = function Decimal$lt(x) {
+  assert.ok(this.isValidValue(x));
   return this.val < x;
 };
 
 Decimal.prototype.lte = function Decimal$lte(x) {
+  assert.ok(this.isValidValue(x));
   return this.val <= x;
 };
 
 Decimal.prototype.eq = function Decimal$eq(x) {
+  assert.ok(this.isValidValue(x));
   return this.val === x;
 };
 
 Decimal.prototype.ne = function Decimal$ne(x) {
+  assert.ok(this.isValidValue(x));
   return this.val !== x;
+};
+
+Decimal.prototype.isNaN = function Decimal$isNaN() {
+  return isNaN(this.val);
+};
+
+Decimal.prototype.update = function Decimal$update(fn) {
+  assert.equal(typeof fn, 'function', 'Decimal(): update must be a function');
+  this.val = fn(this.val);
 };
 
 Object.defineProperties(Decimal.prototype, {
