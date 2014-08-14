@@ -50,7 +50,9 @@ describe('Store() snapshot/commit', function() {
     app.commit(user);
     var snapshot = app.snapshot();
     assert.equal(snapshot.get('users').length(), 1);
+    assert.equal(app.get('users').length(), 1);
     assert.equal(snapshot.get('users').first().name.val, 'dude');
+    assert.equal(app.get('users').first().name.val, 'dude');
   });
 
   it('can remove items from the store via commit()', function() {

@@ -1,6 +1,11 @@
 var Lazy = require('lazy.js'),
     mori = require('mori');
 
+// transform(fn) ~= .map(fn).value()
+Lazy.Sequence.prototype.transform = function Lazy$transform(fn) {
+  return this.map(fn).value();
+};
+
 var Collection = function Collection(source, path, snapshot) {
   this._source = source;
   this._values = null;

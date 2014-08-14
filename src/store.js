@@ -61,6 +61,12 @@ Store.prototype.observe = function Store$observe(fn) {
   this._listeners.push(fn);
 };
 
+Store.prototype.unobserve = function Store$unobserve(fn) {
+ this._listeners = this._listeners.filter(function(observer) {
+    return observer !== fn;
+  }); 
+};
+
 Store.prototype.restoreSnapshot = function Store$restoreSnapshot(snapshot) {
   assert.ok(snapshot instanceof Snapshot, 'Store(): can only restore from a snapshot()');
   this._source = snapshot._source;
