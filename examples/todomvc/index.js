@@ -49,11 +49,11 @@ var TodoView = React.createClass({
   }
 });
 
-window.React = React;
-TodoApp.observe(function(val) {
-  React.renderComponent(TodoView({
-    app: TodoApp,
-    appVal: val
-  }), document.getElementById('todoapp'));
-});
-TodoApp.init(); // force a change to start rendering
+// window.React = React;
+// TodoApp.observe(function(val) {
+//   React.renderComponent(TodoView({
+//     app: TodoApp,
+//     appVal: val
+//   }), document.getElementById('todoapp'));
+// });
+// TodoApp.init(); // force a change to start rendering
