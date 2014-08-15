@@ -1,6 +1,6 @@
 var Store = require('../src/store'),
     Model = require('../src/model'),
-    Valuable = require('../old-src/index'),
+    Valuable = require('../valuable/src/index'),
     Backbone = require('backbone');
 
 Backbone.sync = function() {};

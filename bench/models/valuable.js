@@ -1,4 +1,4 @@
-var Valuable = require('../../old-src/index'),
+var Valuable = require('../../valuable/src/index'),
     React = require('react');
 
 var Model = module.exports.Model = Valuable.Struct.schema({
