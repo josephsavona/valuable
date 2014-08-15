@@ -1,9 +1,9 @@
-var Valuable = require('../index'),
+var Valuable = require('../../valuable/src/index'),
     React = require('react');
 
 var Model = module.exports.Model = Valuable.Struct.schema({
   label: Valuable.Str,
-  id: Valuable.Str
+  key: Valuable.Str
 });
 
 var Collection = module.exports.Collection = Valuable.List.of(Model);
@@ -21,7 +21,7 @@ var ListView = module.exports.ListView = React.createClass({
   render: function() {
     return React.DOM.div({},
       this.props.models.map(function(model) {
-        return ItemView({key: model.val('id'), model: model});
+        return ItemView({key: model.val('key'), model: model});
       })
     );
   },

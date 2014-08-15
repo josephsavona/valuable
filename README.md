@@ -3,28 +3,26 @@
 valuable
 ========
 
-Provides [immutable*](#immutability) structs, maps, lists, and literal values that you can observe for changes. Use a `Valuable` object as a central source of truth and update your (React) app whenever data changes. Freely pass around wrapped data and manipulate it anywhere in your view. `Valuable` bubbles these changes up so that React can re-render top-down. See the [intro post](https://medium.com/@josephsavona/valuable-a-data-model-for-react-1b8868493bf6).
+An *immutable data store* for the client supporting *transactional* add/modify/remove. Use a valuable `Store` as your central source of truth, and efficiently re-render only the necessary part of your app on changes. 
 
 ```javascript
-var value = Valuable({
-  items: [1,2,3],
-  name: 'numbers'
+var store = new Store({
+  todos: {
+    title: Store.Str, // dynamically type-checked string
+    isCompleted: Store.Bool // dynamically type-checked boolean
+  }
 });
-value.observe(function(val) {
-  // val: combined results of updates:
-  { items: [1,2,3,4], name: '4 numbers' }
+
+store.observe(function() {
+  // called on every `store.commit()`
 });
-// the following modifications are batched
-// and observe() callbacks are called only once per event loop cycle
-// via process.nextTick()
-value.set('name', '4 numbers') 
-value.get('items').push(4)
 
-// get the literal value:
-value.val() // => { items: [1,2,3,4], name: '4 numbers'}
+var todo = store.create('todos'); // create empty todo
+todo.title.val = 'Build an app';
 
-// or a nested value:
-value.get('name').val() // => '4 numbers'
+store.commit(todo); // `observer()` callback called
+
+store.get('todos').length(); // => 1
 ```
 
 # Use It
@@ -38,12 +36,17 @@ Via browserify/webpack:
 var Valuable = require('valuable');
 ```
 
-Or grab `dist/valuable.js` and use `window.Valuable`.
+Or download `dist/valuable.js`:
+```javascript
+var Store = window.Valuable;
+```
 
 `valuable` is new but ready to try:
-- Extensively tested, stable API
-- Benchmarks show performance on par and better than Backbone (2x faster on list item updates)
+- Extensively tested
+- Benchmarks show performance on par and better than Backbone
 - Browser support is modern browsers and IE9+
+
+Note: IE9 required for `Object.defineProperties()` for which polyfills do not work reliably in the author's experience.
 
 # Example - TodoMVC
 
@@ -60,195 +63,243 @@ npm start &
 open 'http://localhost:8080'
 ```
 
-# Immutability
-
-Valuable objects are mutable but the literal values returned by `value.val()` are immutable copies - every mutable modification creates an internal clone. This means you get the benefit of `O(1)` checking for changes while still being able to use a more familiar mutable-style API.
-
-```javascript
-var list = Valuable([1,2,3]);
-var v1 = list.val();
-var v2 = list.val();
-assert.ok(v1 === v2, 'val() returns same object if not modified');
-
-list.push(4);
-var v3 = list.val();
-assert.notOk(v1 === v3, 'val() returns new object for every modification');
-```
-
 # API
 
-## `Valuable`
+## `Store`
 
-`var Valuable = require('valuable');` returns a special constructor that attempts to find the best possible wrapped type for the value you give it.
+### `var store = new Store(schema)`
 
-Examples:
+Creates a new store with the given model schema. Example:
 
 ```javascript
-// arrays auto-convert to List
-var list = Valuable([1,2,3]); // => list instanceof Valuable.List
+var schema = {
+  // modelName: propertyMap
+  users: {
+    // propName: propType
+    name: Store.Str,
+    age: Store.Decimal,
+    isDeveloper: Store.Bool
+  },
+  otherModel: {/*...*/}
+};
+var store = new Store(schema);
+``` 
 
-// objects auto-convert to Map
-var map = Valuable({key:'value'}); // => map instanceof Valuable.Map
+### `var model = store.create('<modelName>'[, attributes])`
 
-// everything else auto-converts to Value
-var int = Valuable(1); // => int instanceof Valuable.Value
+Creates a new empty model instance of the given model name, optionally with the attributs if given. Example:
 
-// nested lists/objects are handled too:
-var mixed = Valuable([
-  {
-    key: 'value'
+```javascript
+var user = store.create('users'); // model name matches above
+```
+
+### `store.commit(model...)`
+
+Accepts 1+ model instances (either created with new or updated existing) and commits their changes to the store.
+
+```javascript
+assert.equal(store.get('users').length(), 0); // no users to start
+store.commit(user); // add new user from above
+assert.equal(store.get('users').length(), 1); // now everyone can see the new user
+```
+
+### `var models = store.get('<modelName>')`
+
+Returns a *lazy* `Collection` (array-like) of all models of the given type. To get all items, use eg `toArray()` on the result. 
+You can filter, map, reduce, on this array lazily, eg only the minimal required set of operations is performed and
+no work is done until you get a result via `toArray()`. See [lazy.js for full documentation](http://danieltao.com/lazy.js/) Example:
+
+```javascript
+var users = store.get('users');
+var userModels = users.toArray();
+
+var devsNamedBob = users
+  .filter((user) => user.name.eq('bob'))
+  .filter((user) => user.isDeveloper.isTrue())
+  .toArray();
+```
+
+
+### `var model = store.get('<modelName>', '<id>')`
+
+Retrieves the model of the given type and with the given id. This should either be a known ID if you created it,
+or the id set on a model you created with `.create()` and `.commit()`. Example:
+
+```javascript
+var model = store.create('users');
+store.commit(model); 
+var id = model.id; // model.id is set by commit()
+
+// later
+var user = store.get('users', id);
+```
+
+### `store.observe(<function>)`
+
+Schedules a function to be run after every commit. Use this for example to re-render your app on changes.
+
+```javascript
+var observer = function() {
+  React.renderComponent(
+    AppComponent({store: store}),
+    rootEl
+  );
+};
+store.observe(observer);
+```
+
+### `store.unobserve(<function>)`
+
+Removes a function previously scheduled with `.observe()`:
+
+```javascript
+store.unobserve(observer);
+```
+
+### `var snapshot = store.snapshot()`
+
+Get a reference to the current state of the store. Snapshots support the same `.get(<modelName>[, <id>])`
+function as stores, but can also be used to restore a store to a previous state:
+
+```javascript
+var snapshot = store.snapshot();
+// make changes via .commit()
+// oops, want to go back:
+store.restoreSnapshot(snapshot);
+// restored!
+```
+
+### `store.restoreSnapshot(<snapshot>)`
+
+Restores a snapshot - see `.snapshot()`
+
+## Snapshot
+
+An immutable lens into the state of the store at the moment the snapshot was created. Can be used to restore
+a store to a previous state. A snapshot is implicitly used by `store.get()`. You can take advantage of snapshots
+to do things like let a user know that the data they are editing has been changed or deleted, without updating the UI 
+out from under them. 
+
+### `snapshot.get(<modelName>[, <id>])`
+
+See `store.get()`.
+
+## `Collection`
+
+A *lazy* sequence of `Model` instances. Returned from `var collection = store.get('<modelName>')`. This is an instance of a [lazy.js ArrayLikeSequence](http://danieltao.com/lazy.js/docs/#ArrayLikeSequence) with the extra method `.id()`. 
+
+### `collection.length()`
+
+Returns the length of the collection, accounting for any previously applied filters, maps, reduce, take, etc.
+
+### `collection.get(<index>)`
+
+Returns the model at the nth `index` (zero-based).
+
+### `collection.id(<id>)`
+
+Returns the model with id `id` if present.
+
+### `collection.transform(<function>)`
+
+Shortcut for `collection.map(function).toArray()`. Note that `.map()` does not immediately apply the mapping
+but lazily creates a new, mapped sequence. `transform` is a shorcut for eg UIs, where you likely want to map 
+models directly into UI and not call another function.
+
+```javascript
+var users = store.get('users');
+var usersList = '<ul>' + users.transform((user) => '<li>' + user.name.val + '</li>') + '</ul>';
+
+// the longer way is:
+var usersList = '<ul>' + users.map((user) => '<li>' + user.name.val + '</li>').toArray() + '</ul>';
+```
+
+## `Model`
+
+### React + Model Example
+
+```javascript
+React.createClass({
+  getInitialState: function() {
+    return {
+      user: store.create('users')
+    };
+  },
+  componentDidMount: function() {
+    this.state.user.observe(this.forceUpdate);
+  },
+  componentWillUnmount: function() {
+    this.state.user.unobserve(this.forceUpdate);
+  },
+  render: function() {
+    return 
+      <form>
+        <input type="text" 
+          value={user.name.val} 
+          onChange={user.name.handleChange()} />
+      </form>;
   }
-]);
-// mixed instanceof Valuable.List
-// mixed.at(0) instanceof Valuable.Map
-// mixed.at(0).get('key') instanceof Valuable.Value
-```
-
-## `Value`
-
-`var v = Valuable(literal)` - creates a wrapped value with `literal` as the starting value
-
-- `value.val()` - get the literal value that was last assigned
-- `value.setVal(literal)` - set the value to `literal` (notifies observers).
-- `value.observe(fn)` - add `fn` to list of observers for changes. will be called at once 1 per tick
-- `value.unobserve(fn)` - remove `fn` from the list of observers
-- `value.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
-- `value.handleChange()` - returns a function that can be passed as the `onChange={}` prop in a React component or to handle any other normalized event value. the returned callback function is created only once and then cached, so repeated calls will get the original cached callback handler.
-
-```javascript
-	var value = Value('');
-	// React example
-	// dead simple onChange - no need for LinkedState or custom handlers everywhere!
-	<input type="text" value={value.val()} onChange={value.handleChange()} />
-```
-
-### `Decimal`
-
-A typed version of `Value` that only accepts values where typeof is `number`. Methods include: inc(), dec() add(x), sub(x), div(x), mult(x), update(fn(cur)->new), eq(), ne(), gt(), gte(), lt(), lte().
-
-### `Str`
-
-A typed version of `Value` that only accepts values where typeof is `string`. Methods include: append(str), prepend(str), wrap(before, after), update(fn(cur)->new), length()->int.
-
-### `Bool`
-
-A typed version of `Value` that only accepts `true` or `false` (not even falsy values - coerce to boolean for now). Methods include negate() (switches true->false and false->true).
-
-
-## `Map`
-
-Note: `Map` is an immutable representation of a key->value object/map/hash. All changes to the map - via `set()` or `del()` - will create a new internal object with the modifed value. See the [Immutability](#immutability) section for details.
-
-`var map = Valuable({...})` - creates a wrapped map (object) with the given `{...}` object literal as its starting value.
-
-- `map.val(key)` - gets the literal value at `key` (this is a normal JavaScript value)
-- `map.val()` - get the literal value of the map itself (this is a normal JavaScript object)
-- `map.setVal({})` - replaces the map with the given object, recursively wrapping all keys
-- `map.set(key,value)` - shortcut to `.get(key).setVal(value)` - set the value of `key` to `value` - but also adds keys if they are not yet defined. 
-- `map.get(key)` - gets the wrapped value at `key` (this is a `Value`)
-- `map.del(key)` - deletes the key and returns its literal value (normal JavaScript value)
-- `map.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
-
-### `Map.of(Klass)`
-
-Creates a custom `Map` class that only accepts values of the given `Klass`, which must be `Value` of a subclass. Example:
-
-```javascript
-// define custom map class
-var IntMap = Valuable.Map.of(Valuable.Decimal);
-// create map instance
-var map = IntMap([]);
-map.set('age', 21); // ok
-map.set('age', 'nope'); // throws error - value is of wrong type
-```
-
-## `List`
-
-Note: `List` is an immutable representation of a Array. All changes to the list - via `set()/push()/pop()/etc` - will create a new internal array with the modifed value. See the [Immutability](#immutability) section for details.
-
-
-`var list = Valuable([...])` - creates a wrapped list (Array) with the given `[...]` array literal as its starting value.
-
-- `list.val(index)` - gets the literal value at `index` (this is a normal JavaScript value)
-- `list.val()` - get the literal value of the list itself (this is a normal JavaScript object)
-- `list.setVal([])` - replaces the list with the given array, recursively wrapping all keys
-- `list.set(index,value)` - shortcut to `.at(index).setVal(value)` - set the value at `index` to `value`
-- `list.at(index)` - gets the wrapped value at `index` (this is a `Value`)
-- `list.push(value)` - pushes a wrapped version of `value` onto the end of the list
-- `list.unshift(value)` - unshifts a wrapped version of `value` onto the front of the list
-- `list.pop()` - removes the last item of the list and returns its literal value (normal JavaScript value)
-- `list.shift()` - removes the first item of the list and returns its literal value (normal JavaScript value)
-- `list.destroy()` - removes all listeners and cleans up the object to ensure no memory leaks
-
-### `List.of(Klass)`
-
-Creates a custom `List` class that only accepts values of the given `Klass`, which must be `Value` of a subclass. Example:
-
-```javascript
-// define custom list class
-var IntList = Valuable.List.of(Valuable.Decimal);
-// create list instance
-var ints = IntList([]);
-ints.push(1); // ok
-ints.push(true); // throws error - value is of wrong type
-```
-
-## `Struct`
-
-Allows you to define object-like structures with a defined set of keys, each with a specific type. `Struct`s cannot be created directly but must be subclassed with `schema()` or `inherits()`. `Struct` inherits from `Map` and has all the same instance methods eg `set()`, `val()`, etc.
-
-### `Struct.schema({...schema...})`
-
-Shortcut to define a Struct type with a specific schema (property values are `Value` subclasses). Example:
-
-```javascript
-var Person = Valuable.Struct.schema({
-  name: Valuable.Str, // note the use of class constructors as property values
-  age: Valuable.Decimal,
-  isDeveloper: Valuable.Bool,
-  emails: Valuable.List.of(Valuable.Str) // property can be a complex type
 });
-var mark = Person({
-  name: 'Mark',
-  age: 30,
-  isDeveloper: false,
-  emails: ['mark@example.com']
-});
-mark.observe((val) -> console.log(val) );
-mark.set('isDeveloper', true); // ok, type correct
-mark.set('isDeveloper', 'yes'); // throws error, incorrect type for property
-if (/* mark's bday */) {
-  // the wrapped age is a Valuable.Decimal which has conveniences methods like inc(), dec(), etc
-  mark.get('age').inc(); 
-}
 ```
 
-## `Undo`
+### `var model = store.create(<modelName>[, <attributes>])`
 
-An easy way to watch a `Value` object and undo/redo changes to it.
+See `store.create`
+
+### `model.attribute.val`
+
+Get the value of `attribute`
+
+### `model.attribute.val = <value>`
+
+Set the value of `attribute` to `value`.
+
+### `model.set(<attributeMap>)`
+
+Updates multiple keys at once, where keys are property names and values are property values.
+
+### `model.destroy()`
+
+Mark this model to be destroyed.
 
 ```javascript
-var list = Valuable([]);
-var history = Valuable.Undo(list);
-
-list.push(1);
-assert.deepEqual(list.val(), [1]);
-
-history.canUndo(); // -> true
-history.undo();
-assert.deepEqual(list.val(), []);
-
-history.canRedo(); // -> true 
-history.redo();
-assert.deepEqual(list.val(), [1]);
+var user = store.get('users', 123);
+user.destroy();
+store.commit(user); 
+// user is gone now
 ```
+
+### `model.observe(<function>)`
+
+Similar to `store.observe()`, but for individual models: schedules a
+function to be called whenever any attribute(s) change on the model.
+For maintaining an up-to-date view of your data it is recommended to 
+use `store.observe()`. Use `model.observe()` when you are editing a 
+model and want to update the form to show the uncommitted changes
+locally within eg a `<form>`.
+
+Non-observed models have zero overhead - all observable functionality
+is added as necessary when `.observe()` is first called on a particular
+instance.
+
+### `model.attribute.handleChange()`
+
+Lazily creates a callback that will handle onChange UI events and set the attribute's value
+to that of `event.target.value`. The generated callback is cached so that multiple calls to
+`handleChange()` will not create new anonymous functions.
+
 
 # Inspired By
 
-Valuable is inspired by and hopes to improve upon the following libraries:
-- [Backbone](http://backbonejs.org/) - Valuable adds automatic wrapping of nested objects/arrays
-- [Cortex](http://mquan.github.io/cortex/) - Valuable is similar but provides a clearer API and more data types
-- [Observ](https://github.com/Raynos/observ) - Valuable adds automatic wrapping of nested objects/arrays
+Valuable is inspired by the functional approach to mutable state, in particular the [software transaction memory approach
+of Clojure](http://clojure.org/state). Valuable provides a similar immutable, transaction-based data layer
+via a more familiar imperative, mutable-looking API. At its core, however, everything is a functional `lense`: Stores, Collections, Models, and even literal values like strings and booleans.
+Local modifications to models are just that - *local* - and visible to any other viewers until the changes are applied
+via `store.commit()`. 
+
+Other immutable/observable libraries include:
+- [Cortex](http://mquan.github.io/cortex/)
+- [Observ](https://github.com/Raynos/observ)
 
 
 # License
