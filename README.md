@@ -294,7 +294,7 @@ to that of `event.target.value`. The generated callback is cached so that multip
 Valuable is inspired by the functional approach to mutable state, in particular the [software transaction memory approach
 of Clojure](http://clojure.org/state). Valuable provides a similar immutable, transaction-based data layer
 via a more familiar imperative, mutable-looking API. At its core, however, everything is a functional `lense`: Stores, Collections, Models, and even literal values like strings and booleans.
-Local modifications to models are just that - *local* - and visible to any other viewers until the changes are applied
+Local modifications to models are just that - *local* - and are *not* visible to any other viewers until the changes are applied
 via `store.commit()`. 
 
 Other immutable/observable libraries include:
