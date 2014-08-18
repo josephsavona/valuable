@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     sinon = require('sinon'),
     _ = require('lodash'),
-    mori = require('mori'),
+    Immutable = require('immutable'),
     helpers = require('./helpers'),
     Model = require('../src/model'),
     Collection = require('../src/collection'),
@@ -30,7 +30,10 @@ describe('Collection', function() {
       id: ''
     };
     MyModel = Model.define(properties);
-    items = mori.hash_map("1", sample, "2", emptySample);
+    items = Immutable.Map({
+      "1": sample,
+      "2": emptySample
+    })
     snapshot = new Snapshot({}, {
       my_model: MyModel
     });
@@ -47,25 +50,33 @@ describe('Collection', function() {
   it('identifies equal collections', function() {
     var a = new Collection(items, 'a', snapshot),
         b = new Collection(items, 'b', snapshot),
-        c = new Collection(mori.hash_map(), 'c', snapshot);
+        c = new Collection(Immutable.Map(), 'c', snapshot);
     assert.ok(Store.is(a,b));
     assert.notOk(Store.is(a,c));
   });
 
   it('can get the nth item from a collection', function() {
-    var items = mori.hash_map(),
-        count = 1000,
-        collection;
+    var items = Immutable.Map(),
+        count = 1,
+        collection,
+        model;
     for (var ix = 0; ix < count; ix++) {
-      items = mori.assoc(items, ix, new MyModel({decimal: ix}));
+      model = new MyModel({decimal: ix});
+      items = items.set(ix, model.raw());
     }
-    collection = new Collection(items, 'a', snapshot);
+    collection = new Collection(items, 'my_model', snapshot);
+
+    for (ix = 0; ix < count; ix++) {
+      assert.ok(collection.get(ix) instanceof MyModel);
+      assert.equal(collection.get(ix).decimal.val, ix);
+    }
   });
 
   it('can filter a collection', function() {
     var collection = new Collection(items, 'my_model', snapshot),
         models;
-    models = collection.filter(function(m) { return m.str.val === sample.str })
+    models = collection
+      .filter(function(m) { return m.str.val === sample.str })
       .map(function(m) { return m.val() })
       .toArray();
     assert.equal(models.length, 1);

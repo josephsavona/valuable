@@ -1,6 +1,5 @@
 var Model = require('./model'),
-    Collection = require('./collection'),
-    mori = require('mori');
+    Collection = require('./collection');
 
 var Snapshot = function Snapshot(source, models) {
   this._source = source;
@@ -25,7 +24,7 @@ Snapshot.prototype.get = function Snapshot$get(modelName, id) {
 
   // otherwise get the full collection
   if (!(modelName in this._collections)) {
-    this._collections[modelName] = new Collection(mori.get(this._source, modelName), modelName, this);
+    this._collections[modelName] = new Collection(this._source.get(modelName), modelName, this);
   }
   return this._collections[modelName];
 };

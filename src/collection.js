@@ -1,5 +1,4 @@
-var Lazy = require('lazy.js'),
-    mori = require('mori');
+var Lazy = require('lazy.js');
 
 // transform(fn) ~= .map(fn).value()
 Lazy.Sequence.prototype.transform = function Lazy$transform(fn) {
@@ -16,17 +15,16 @@ var Collection = function Collection(source, path, snapshot) {
 Collection.prototype = Object.create(Lazy.ArrayLikeSequence.prototype);
 
 Collection.prototype.length = function Collection$length() {
-  return mori.count(this._source);
+  return this._source.length;
 };
 
 Collection.prototype.get = function Collection$get(i) {
-  this._values = this._values || mori.vals(this._source);
-  var attributes = mori.nth(this._values, i);
+  var attributes = this._source.values().get(i);
   return this._snapshot._from(this._path, attributes);
 };
 
 Collection.prototype.id = function Collection$id(id) {
-  var attributes = mori.get(this._source, id);
+  var attributes = this._source.get(id);
   return this._snapshot._from(this._path, attributes);
 };
 

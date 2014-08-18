@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     assert = require('assert'),
     uuid = require('node-uuid'),
-    mori = require('mori'),
+    Immutable = require('immutable'),
     Literal = require('./literal'),
     Model = require('./model'),
     Collection = require('./collection'),
@@ -18,14 +18,14 @@ var Store = function Store(definition) {
     });
   }
 
-  var store = mori.hash_map(),
+  var store = Immutable.Map(),
       models = {},
       modelName;
 
   for (modelName in definition) {
     if (definition.hasOwnProperty(modelName)) {
       models[modelName] = Model.define(definition[modelName], modelName);
-      store = mori.assoc(store, modelName, mori.hash_map());
+      store = store.set(modelName, Immutable.Map())
     }
   }
   this._listeners = [];
@@ -86,16 +86,14 @@ Store.prototype.commit = function Store$commit(_args) {
   for (index = 0; index < length; index++) {
     model = args[index];
     modelName = model._path;
-    collection = mori.get(source, modelName);
+    collection = source.get(modelName);
     if (model._destroy) {
-      collection = mori.dissoc(collection, model.id);
-    } else if (model.id) {
-      collection = mori.assoc(collection, model.id, model.raw());
+      collection = collection.delete(model.id);
     } else {
-      model.id = uuid.v4();
-      collection = mori.assoc(collection, model.id, model.raw());
+      model.id = model.id || uuid.v4();
+      collection = collection.set(model.id, model.raw());
     }
-    source = mori.assoc(source, modelName, collection);
+    source = source.set(modelName, collection);
   }
   this._source = source;
   this._snapshot = new Snapshot(this._source, this._models);
