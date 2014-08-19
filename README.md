@@ -25,7 +25,8 @@ store.commit(todo); // `observer()` callback called
 store.get('todos').length(); // => 1
 ```
 
-# Use It
+# Try it
+`Valuable` is in active development - try it out for side projects and give us feedback!
 
 ```bash
 npm install --save valuable
