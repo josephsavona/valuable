@@ -36,20 +36,20 @@
   },
   "homepage": "https://github.com/josephsavona/valuable",
   "dependencies": {
-    "immutable": "^2.0.10",
-    "lazy.js": "^0.3.2",
-    "lodash": "~2.4.1",
-    "moment": "^2.7.0",
-    "mori": "^0.2.9",
-    "node-uuid": "^1.4.1"
+    "immutable": "2.0.x",
+    "lazy.js": "0.3.x",
+    "node-uuid": "1.4.x"
   },
   "devDependencies": {
     "backbone": "^1.1.2",
     "browserify": "^5.9.1",
     "chai": "~1.9.1",
     "istanbul": "^0.3.0",
+    "lodash": "~2.4.1",
     "matcha": "^0.5.0",
     "mocha": "~1.20.1",
+    "moment": "^2.7.0",
+    "mori": "^0.2.9",
     "react": "^0.11.0",
     "sinon": "~1.10.3",
     "uglify-js": "^2.4.15"
