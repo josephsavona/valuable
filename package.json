@@ -11,7 +11,7 @@
     "test-watch": "NODE_ENV=test ./node_modules/.bin/mocha --watch --reporter min 'test/**/*.js'",
     "build": "npm run build-debug && npm run build-dist",
     "build-debug": "NODE_ENV=development browserify index.js --debug --s Valuable -o dist/valuable.debug.js",
-    "build-dist": "NODE_ENV=production browserify index.js --s Valuable -o dist/valuable.js",
+    "build-dist": "NODE_ENV=production browserify index.js --s Valuable -o dist/valuable.js -g uglifyify",
     "build-node": "uglifyjs --screw-ie8 --output dist/store.js --compress 'dead_code,drop_console,drop_debugger,evaluate,loops,unused,join_vars'"
   },
   "repository": {
@@ -52,7 +52,8 @@
     "mori": "^0.2.9",
     "react": "^0.11.0",
     "sinon": "~1.10.3",
-    "uglify-js": "^2.4.15"
+    "uglify-js": "^2.4.15",
+    "uglifyify": "^2.5.0"
   },
   "testling": {
     "harness": "mocha-bdd",
