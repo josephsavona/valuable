@@ -1,5 +1,4 @@
-var _ = require('lodash'),
-    assert = require('assert'),
+var _ = require('./utils'),
     Model = require('./model'),
     modelSetKey = Model.prototype._set,
     modelSetAll = Model.prototype.set;
@@ -17,7 +16,7 @@ var ObservableModelProps = {
 
   observe: function ObservableModel$observe(fn) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.equal(typeof fn, 'function', 'Model(): observer must be a function');
+      _.invariant(typeof fn === 'function', 'Model(): observer must be a function');
     }
     this._listeners.push(fn);
   },
@@ -36,7 +35,7 @@ var ObservableModelProps = {
 };
 
 module.exports = function ObservableModel$$makeObservable(model) {
-  assert.ok(model instanceof Model);
+  _.invariant(model instanceof Model);
   if (model._listeners) {
     return;
   }

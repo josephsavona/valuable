@@ -1,5 +1,4 @@
-var _ = require('lodash'),
-    assert = require('assert'),
+var _ = require('./utils'),
     uuid = require('node-uuid'),
     Immutable = require('immutable'),
     Literal = require('./literal'),
@@ -7,15 +6,19 @@ var _ = require('lodash'),
     Collection = require('./collection'),
     Snapshot = require('./snapshot');
 
+var validateDefinition = function validateDefinition(definition) {
+  _.invariant(_.isPlainObject(definition), 'Store(): definition must be an object of modelName:string -> modelProps:object');
+  _.each(definition, function(model, key) {
+    _.invariant(_.isPlainObject(model), 'Store(): each prop must be an object of propName:string -> propType:constructor (eg Model.Str) ' + key);
+    _.each(model, function(type, prop) {
+      _.invariant(type === Literal || type.prototype instanceof Literal, 'Store(): each prop must be a Literal/Decimal/Str/Bool etc ' + prop);
+    })
+  });
+};
+
 var Store = function Store(definition) {
   if (process.env.NODE_ENV !== 'production') {
-    assert.ok(_.isPlainObject(definition) && !_.isEmpty(definition), 'Store(): definition must be an object of modelName:string -> modelProps:object');
-    _.each(definition, function(model, key) {
-      assert.ok(_.isPlainObject(model), 'Store(): each prop must be an object of propName:string -> propType:constructor (eg Model.Str) ' + key);
-      _.each(model, function(type, prop) {
-        assert.ok(type === Literal || type.prototype instanceof Literal, 'Store(): each prop must be a Literal/Decimal/Str/Bool etc ' + prop);
-      })
-    });
+    validateDefinition(definition);
   }
 
   var store = Immutable.Map(),
@@ -48,15 +51,15 @@ Store.prototype.get = function Store$get(modelName, id) {
 
 Store.prototype.create = function Store$create(model, attributes) {
   if (process.env.NODE_ENV !== 'production') {
-    assert.ok(model in this._models, 'Store(): model not defined ' + model);
-    assert.ok(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
+    _.invariant(model in this._models, 'Store(): model not defined ' + model);
+    _.invariant(!attributes || _.isPlainObject(attributes), 'Store(): attributes is an optional object');
   }
   return new this._models[model](attributes);
 };
 
 Store.prototype.observe = function Store$observe(fn) {
   if (process.env.NODE_ENV === 'production') {
-    assert.equal(typeof fn, 'function', 'Store(): observer must be a function');
+    _.invariant(typeof fn === 'function', 'Store(): observer must be a function');
   }
   this._listeners.push(fn);
 };
@@ -68,7 +71,7 @@ Store.prototype.unobserve = function Store$unobserve(fn) {
 };
 
 Store.prototype.restoreSnapshot = function Store$restoreSnapshot(snapshot) {
-  assert.ok(snapshot instanceof Snapshot, 'Store(): can only restore from a snapshot()');
+  _.invariant(snapshot instanceof Snapshot, 'Store(): can only restore from a snapshot()');
   this._source = snapshot._source;
   this._notify();
 };

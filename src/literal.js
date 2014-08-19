@@ -1,5 +1,3 @@
-var assert = require('assert');
-
 var Literal = function Literal(model, prop) {
   this._model = model;
   this._prop = prop;

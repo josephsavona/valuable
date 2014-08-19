@@ -1,5 +1,4 @@
-var assert = require('assert'),
-    _ = require('lodash'),
+var _ = require('./utils'),
     Model = require('./model');
 
 var Finder = function Finder(store) {
@@ -12,9 +11,9 @@ var Finder = function Finder(store) {
 
 Finder.prototype.finder = function Finder$finder(name, paramTypes, fn) {
   if (process.env.NODE_ENV !== 'production') {
-    assert.ok(name && typeof name === 'string', 'Finder(): finder name must be string');
-    assert.ok(_.isPlainObject(paramTypes), 'Finder(): paramTypes must be a model-like schema of key:string -> type:Str/Decimal/Bool');
-    assert.equal(typeof fn, 'function', 'Finder(): finder function must be function');
+    _.invariant(name && typeof name === 'string', 'Finder(): finder name must be string');
+    _.invariant(_.isPlainObject(paramTypes), 'Finder(): paramTypes must be a model-like schema of key:string -> type:Str/Decimal/Bool');
+    _.invariant(typeof fn === 'function', 'Finder(): finder function must be function');
   }
   this._finders[name] = {
     paramClass: Model.define(paramTypes),
@@ -24,9 +23,9 @@ Finder.prototype.finder = function Finder$finder(name, paramTypes, fn) {
 
 Finder.prototype.observe = function Finder$observe(name, fn, params) {
   if (process.env.NODE_ENV === 'production') {
-    assert.ok(name in this._finders, 'Finder(): finder name must be a defined finder() ' + name);
-    assert.equal(typeof fn, 'function', 'Finder(): observer must be a function');
-    assert.ok(!params || _.isPlainObject(params), 'Finder(): params is an optional object');
+    _.invariant(name in this._finders, 'Finder(): finder name must be a defined finder() ' + name);
+    _.invariant(typeof fn === 'function', 'Finder(): observer must be a function');
+    _.invariant(!params || _.isPlainObject(params), 'Finder(): params is an optional object');
   }
   var finder = this._finders[name],
       paramModel = new finder.paramClass(params || {}),

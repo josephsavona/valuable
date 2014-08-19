@@ -1,4 +1,4 @@
-var assert = require('assert'),
+var _ = require('./utils'),
     Literal = require('./literal');
 
 var Bool = function Bool(model, prop) {
@@ -35,7 +35,7 @@ Object.defineProperties(Bool.prototype, {
       if (typeof val === 'undefined') {
         return this._model._set(this._prop, this.defaultValue);
       }
-      assert.ok(this.isValidValue(val), 'Bool(): must be a valid number');
+      _.invariant(this.isValidValue(val), 'Bool(): must be a valid number');
       this._model._set(this._prop, val);
     }
   }

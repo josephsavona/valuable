@@ -1,5 +1,4 @@
-var _ = require('lodash'),
-    assert = require('assert'),
+var _ = require('./utils'),
     Bool = require('./bool'),
     Decimal = require('./decimal'),
     Str = require('./str');
@@ -10,7 +9,7 @@ var ModelBase = function Model(attributes) {
       properties = this._properties;
 
   if (process.env.NODE_ENV !== 'production') {
-    assert.ok(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
+    _.invariant(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
   }
   attributes = attributes || {};
   for (key in properties) {
@@ -19,7 +18,7 @@ var ModelBase = function Model(attributes) {
     }
     if (typeof attributes[key] !== 'undefined') {
       if (process.env.NODE_ENV !== 'production') {
-        assert.ok(properties[key].isValidValue(attributes[key]), 'Model(): invalid value for property ' + key);
+        _.invariant(properties[key].isValidValue(attributes[key]), 'Model(): invalid value for property ' + key);
       }
       map[key] = attributes[key];
     } else {
@@ -44,7 +43,7 @@ ModelBase.prototype.set = function Model$set(map) {
     if (this._properties.hasOwnProperty(key)) {
       if (typeof map[key] !== 'undefined') {
         if (process.env.NODE_ENV !== 'production') {
-          assert.ok(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
+          _.invariant(this._properties[key].isValidValue(map[key]), 'Model(): invalid value for property ' + key);
         }
         clone[key] = map[key];
       } else {

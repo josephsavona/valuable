@@ -1,5 +1,5 @@
 var Store = require('./store'),
-    assert = require('assert');
+    _ = require('./utils');
 
 var History = function History(store) {
   this._store = store
@@ -12,7 +12,7 @@ var History = function History(store) {
 };
 
 History.prototype.setMax = function History$setMax(max) {
-  assert(typeof max === 'number' && Math.floor(max) > 1, 'History(): max must be an integer > 1');
+  _.invariant(typeof max === 'number' && Math.floor(max) > 1, 'History(): max must be an integer > 1');
   this._max = Math.floor(max);
   this._compact();
 };
@@ -22,7 +22,7 @@ History.prototype.canUndo = function History$canUndo() {
 }
 
 History.prototype.undo = function History$undo() {
-  assert.ok(this.canUndo(), 'History(): nothing to undo');
+  _.invariant(this.canUndo(), 'History(): nothing to undo');
   this._go(this._history[--this._index]);
 }
 
@@ -31,7 +31,7 @@ History.prototype.canRedo = function History$canRedo() {
 };
 
 History.prototype.redo = function History$redo() {
-  assert.ok(this.canUndo(), 'History(): nothing to redo');
+  _.invariant(this.canUndo(), 'History(): nothing to redo');
   this._go(this._history[this._index++]);
 }:
 

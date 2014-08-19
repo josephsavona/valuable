@@ -11,6 +11,9 @@ describe('Store() constructor', function() {
   helpers.init();
   it('cannot create a store with an invalid definition', function() {
     rawValues.forEach(function(val) {
+      if (_.isObject(val)) {
+        return;
+      }
       assert.throws(function() {
         new Store(val);
       });
