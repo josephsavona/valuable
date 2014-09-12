@@ -28,4 +28,5 @@ node_modules
 bower_components
 dist.js
 
-dist/valuable-debug.js
+dist/valuable.debug.js
+dist/valuable.debug.js.map
