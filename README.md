@@ -3,7 +3,7 @@
 valuable
 ========
 
-An *immutable data store* for the client supporting *transactional* add/modify/remove. Use a valuable `Store` as your central source of truth, and efficiently re-render only the necessary part of your app on changes. 
+An *immutable data store* for the client supporting *transactional* add/modify/remove. Use a valuable `Store` as your central source of truth, and efficiently re-render only the necessary part of your app on changes.
 
 ```javascript
 var store = new Store({
@@ -66,7 +66,7 @@ open 'http://localhost:8080'
 
 # API
 
-## `Store`
+## Store
 
 ### `var store = new Store(schema)`
 
@@ -84,7 +84,7 @@ var schema = {
   otherModel: {/*...*/}
 };
 var store = new Store(schema);
-``` 
+```
 
 ### `var model = store.create('<modelName>'[, attributes])`
 
@@ -106,7 +106,7 @@ assert.equal(store.get('users').length(), 1); // now everyone can see the new us
 
 ### `var models = store.get('<modelName>')`
 
-Returns a *lazy* `Collection` (array-like) of all models of the given type. To get all items, use eg `toArray()` on the result. 
+Returns a *lazy* `Collection` (array-like) of all models of the given type. To get all items, use eg `toArray()` on the result.
 You can filter, map, reduce, on this array lazily, eg only the minimal required set of operations is performed and
 no work is done until you get a result via `toArray()`. See [lazy.js for full documentation](http://danieltao.com/lazy.js/) Example:
 
@@ -128,7 +128,7 @@ or the id set on a model you created with `.create()` and `.commit()`. Example:
 
 ```javascript
 var model = store.create('users');
-store.commit(model); 
+store.commit(model);
 var id = model.id; // model.id is set by commit()
 
 // later
@@ -178,16 +178,16 @@ Restores a snapshot - see `.snapshot()`
 
 An immutable lens into the state of the store at the moment the snapshot was created. Can be used to restore
 a store to a previous state. A snapshot is implicitly used by `store.get()`. You can take advantage of snapshots
-to do things like let a user know that the data they are editing has been changed or deleted, without updating the UI 
-out from under them. 
+to do things like let a user know that the data they are editing has been changed or deleted, without updating the UI
+out from under them.
 
 ### `snapshot.get(<modelName>[, <id>])`
 
 See `store.get()`.
 
-## `Collection`
+## Collection
 
-A *lazy* sequence of `Model` instances. Returned from `var collection = store.get('<modelName>')`. This is an instance of a [lazy.js ArrayLikeSequence](http://danieltao.com/lazy.js/docs/#ArrayLikeSequence) with the extra method `.id()`. 
+A *lazy* sequence of `Model` instances. Returned from `var collection = store.get('<modelName>')`. This is an instance of a [lazy.js ArrayLikeSequence](http://danieltao.com/lazy.js/docs/#ArrayLikeSequence) with the extra method `.id()`.
 
 ### `collection.length()`
 
@@ -204,7 +204,7 @@ Returns the model with id `id` if present.
 ### `collection.transform(<function>)`
 
 Shortcut for `collection.map(function).toArray()`. Note that `.map()` does not immediately apply the mapping
-but lazily creates a new, mapped sequence. `transform` is a shorcut for eg UIs, where you likely want to map 
+but lazily creates a new, mapped sequence. `transform` is a shorcut for eg UIs, where you likely want to map
 models directly into UI and not call another function.
 
 ```javascript
@@ -215,7 +215,7 @@ var usersList = '<ul>' + users.transform((user) => '<li>' + user.name.val + '</l
 var usersList = '<ul>' + users.map((user) => '<li>' + user.name.val + '</li>').toArray() + '</ul>';
 ```
 
-## `Model`
+## Model
 
 ### React + Model Example
 
@@ -233,10 +233,10 @@ React.createClass({
     this.state.user.unobserve(this.forceUpdate);
   },
   render: function() {
-    return 
+    return
       <form>
-        <input type="text" 
-          value={user.name.val} 
+        <input type="text"
+          value={user.name.val}
           onChange={user.name.handleChange()} />
       </form>;
   }
@@ -266,7 +266,7 @@ Mark this model to be destroyed.
 ```javascript
 var user = store.get('users', 123);
 user.destroy();
-store.commit(user); 
+store.commit(user);
 // user is gone now
 ```
 
@@ -274,8 +274,8 @@ store.commit(user);
 
 Similar to `store.observe()`, but for individual models: schedules a
 function to be called whenever any attribute(s) change on the model.
-For maintaining an up-to-date view of your data it is recommended to 
-use `store.observe()`. Use `model.observe()` when you are editing a 
+For maintaining an up-to-date view of your data it is recommended to
+use `store.observe()`. Use `model.observe()` when you are editing a
 model and want to update the form to show the uncommitted changes
 locally within eg a `<form>`.
 
@@ -290,13 +290,13 @@ to that of `event.target.value`. The generated callback is cached so that multip
 `handleChange()` will not create new anonymous functions.
 
 
-# Inspired By
+# Motivation & Inspiration
 
-Valuable is inspired by the functional approach to mutable state, in particular the [software transaction memory approach
-of Clojure](http://clojure.org/state). Valuable provides a similar immutable, transaction-based data layer
+Valuable adopts a functional approach to managing mutable state, in particular the [software transaction memory
+of Clojure](http://clojure.org/state). Valuable provides an immutable, transaction-based data layer
 via a more familiar imperative, mutable-looking API. At its core, however, everything is a functional `lense`: Stores, Collections, Models, and even literal values like strings and booleans.
 Local modifications to models are just that - *local* - and are *not* visible to any other viewers until the changes are applied
-via `store.commit()`. 
+via `store.commit()`.
 
 Other immutable/observable libraries include:
 - [Cortex](http://mquan.github.io/cortex/)

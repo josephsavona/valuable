@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify src/index.js --debug -t [ reactify --everything --es6 ] -t [ envify ] -o dist.js",
+    "build": "browserify index.js --debug -t [ reactify --everything --es6 ] -t [ envify ] -o dist.js",
     "start": "node server.js",
     "install": "bower install"
   },
