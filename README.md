@@ -15,18 +15,19 @@ var store = new Store({
 
 store.observe(function() {
   // called on every `store.commit()`
+  // re-render your app here!
 });
 
 var todo = store.create('todos'); // create empty todo
 todo.title.val = 'Build an app';
 
-store.commit(todo); // `observer()` callback called
+store.commit(todo); // `observe(fn)` callbacks are called
 
 store.get('todos').length(); // => 1
 ```
 
 # Try it
-`Valuable` is in active development - try it out for side projects and give us feedback!
+`Valuable` is in active development - try it out for *side projects* and give us feedback!
 
 ```bash
 npm install --save valuable
@@ -42,9 +43,9 @@ Or download `dist/valuable.js`:
 var Store = window.Valuable;
 ```
 
-`valuable` is new but ready to try:
-- Extensively tested
-- Benchmarks show performance on par and better than Backbone
+`valuable` is:
+- Reasonably well tested...
+- Performance at least on par, often better than Backbone (despite immutability!)
 - Browser support is modern browsers and IE9+
 
 Note: IE9 required for `Object.defineProperties()` for which polyfills do not work reliably in the author's experience.

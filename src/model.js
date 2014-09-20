@@ -4,9 +4,9 @@ var _ = require('./utils'),
     Str = require('./str');
 
 var ModelBase = function Model(attributes) {
-  var key,
-      map = {},
-      properties = this._properties;
+  var key;
+  var map = {};
+  var properties = this._properties;
 
   if (process.env.NODE_ENV !== 'production') {
     _.invariant(!attributes || _.isPlainObject(attributes), 'Model(): attributes is an optional object');
@@ -39,7 +39,7 @@ ModelBase.prototype._set = function Model$private$set(key, value) {
 
 ModelBase.prototype.set = function Model$set(map) {
   var clone = _.clone(this._source);
-  for (key in map) {
+  for (var key in map) {
     if (this._properties.hasOwnProperty(key)) {
       if (typeof map[key] !== 'undefined') {
         if (process.env.NODE_ENV !== 'production') {
