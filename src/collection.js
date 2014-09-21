@@ -19,7 +19,8 @@ Collection.prototype.length = function Collection$length() {
 };
 
 Collection.prototype.get = function Collection$get(i) {
-  var attributes = this._source.values().get(i);
+  this._values = this._values || this._source.toVector();
+  var attributes = this._values.get(i);
   return this._snapshot._from(this._path, attributes);
 };
 

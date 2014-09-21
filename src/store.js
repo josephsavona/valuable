@@ -28,7 +28,7 @@ var Store = function Store(definition) {
   for (modelName in definition) {
     if (definition.hasOwnProperty(modelName)) {
       models[modelName] = Model.define(definition[modelName], modelName);
-      store = store.set(modelName, Immutable.Map())
+      store = store.set(modelName, Immutable.OrderedMap())
     }
   }
   this._listeners = [];

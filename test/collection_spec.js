@@ -30,7 +30,7 @@ describe('Collection', function() {
       id: ''
     };
     MyModel = Model.define(properties);
-    items = Immutable.Map({
+    items = Immutable.OrderedMap({
       "1": sample,
       "2": emptySample
     })
