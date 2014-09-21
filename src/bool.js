@@ -26,6 +26,14 @@ Bool.prototype.ne = function Bool$ne(x) {
   return this.val !== x;
 };
 
+Bool.prototype.isTrue = function Bool$isTrue() {
+  return this.val === true;
+};
+
+Bool.prototype.isFalse = function Bool$isFalse() {
+  return !this.val;
+};
+
 Object.defineProperties(Bool.prototype, {
   val: {
     get: function() {

@@ -19,7 +19,7 @@
   "author": "Joseph Savona <joe@josephsavona.com>",
   "license": "MIT",
   "dependencies": {
-    "react": "~0.11.0",
+    "react": "~0.11.2",
     "node-uuid": "~1.4.1"
   },
   "devDependencies": {

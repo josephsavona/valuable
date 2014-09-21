@@ -3,35 +3,46 @@ var TodoStore = require('./todo_store'),
     React = require('react');
 
 var TodoEntry = React.createClass({
-  _submitTodo: function(event) {
-    event.preventDefault();
-    var todo = this.state.todo;
-    TodoStore.commit(todo);
-    todo.title.val = '';
-    todo.id = null;
-  },
-  shouldComponentUpdate: function(newProps, newState) {
-    return !TodoStore.is(newState.todo, this.state.todo);
-  },
   getInitialState: function() {
     return {
       todo: TodoStore.create('todos')
     };
   },
+  _observe: function() {
+    this.forceUpdate();
+  },
+  _onKeyDown: function(event) {
+    if (event.keyCode === 13 /* enter */) {
+      this._submitTodo();
+    }
+  },
+  _submitTodo: function() {
+    TodoStore.commit(this.state.todo);
+    this.state.todo.set({
+      title: '',
+      id: '',
+    });
+  },
   componentDidMount: function() {
-    this.state.todo.observe(this.forceUpdate.bind(this));
+    this.state.todo.observe(this._observe);
   },
   componentWillUnmount: function() {
-    this.state.todo.unobserve(this.forceUpdate.bind(this));
+    this.state.todo.unobserve(this._observe);
+  },
+  shouldComponentUpdate: function(newProps, newState) {
+    // lightweight wrapper for object equality check
+    return !TodoStore.is(newState.todo, this.state.todo);
   },
   render: function TodoEntry$render() {
     var todo = this.state.todo;
     return (
-      <form id="newtodo" onSubmit={this._submitTodo}>
-        <input className="edit" type="text" placeholder="Add todo" autoFocus
+      <header id="header">
+        <h1>todos</h1>
+        <input id="new-todo" placeholder="What needs to be done?" autoFocus
           value={todo.title.val}
+          onKeyDown={this._onKeyDown}
           onChange={todo.title.handleChange()} />
-      </form>
+      </header>
     );
   }
 });
