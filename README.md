@@ -52,7 +52,7 @@ Note: IE9 required for `Object.defineProperties()` for which polyfills do not wo
 
 # Example - TodoMVC
 
-We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views. This includes a full undo/redo functionality for all changes to the list (see [Undo](#undo)).
+We have a partial implementation of TodoMVC in the `/examples/todomvc` directory. The example combines Valuable for data and React for views. 
 
 Feel free to clone `valuable` and run it:
 
@@ -234,6 +234,7 @@ React.createClass({
     this.state.user.unobserve(this.forceUpdate);
   },
   render: function() {
+    var user = this.state.user;
     return
       <form>
         <input type="text"
@@ -296,8 +297,8 @@ to that of `event.target.value`. The generated callback is cached so that multip
 Valuable adopts a functional approach to managing mutable state, in particular the [software transaction memory
 of Clojure](http://clojure.org/state). Valuable provides an immutable, transaction-based data layer
 via a more familiar imperative, mutable-looking API. At its core, however, everything is a functional `lense`: Stores, Collections, Models, and even literal values like strings and booleans.
-Local modifications to models are just that - *local* - and are *not* visible to any other viewers until the changes are applied
-via `store.commit()`.
+
+Local modifications to models are just that - *local* - and are *not* visible to any other viewers until the changes are applied via `store.commit()`.
 
 Other immutable/observable libraries include:
 - [Cortex](http://mquan.github.io/cortex/)
