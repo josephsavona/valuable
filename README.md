@@ -1,4 +1,4 @@
 Valuable
 ========
 
-Doodling with immutable data.
+Experimenting with immutable data.
